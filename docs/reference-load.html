@@ -184,10 +184,8 @@ footer { text-align: center; padding: 2rem 0; color: var(--text-muted); font-siz
   <ol>
     <li><strong>Database running</strong>: <code>docker compose -f db/docker-compose.yml up -d</code></li>
     <li><strong>Tables created</strong>: The <code>source_document</code> and <code>source_fragment</code> tables are created by <code>db/init.sql</code>, which runs automatically on first container start. If you reset the database, the tables are recreated.</li>
-    <li><strong>ENUM types registered</strong> (regulatory only): The <code>market_code</code> and <code>doc_type</code> enums must include all values used in your manifest. If you get an error like <code>invalid input value for enum market_code: &quot;XX&quot;</code>, you need to add the value:</li>
+    <li><strong>Metadata columns</strong>: The <code>jurisdiction</code> and <code>doc_type</code> columns are optional <code>TEXT</code> fields &mdash; any string value is accepted. For generic topics, these fields can be omitted from the manifest and will be stored as NULL in the database.</li>
   </ol>
-  <pre><code>ALTER TYPE market_code ADD VALUE 'XX';</code></pre>
-  <p>For generic topics, these enum fields can be omitted from the manifest and will be stored as NULL in the database.</p>
 </section>
 
 <section>

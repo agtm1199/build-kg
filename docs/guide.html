@@ -831,7 +831,6 @@ $$) as (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
     <tr><td>OpenAI API error 401</td><td>Parse</td><td>Check <code>OPENAI_API_KEY</code> in <code>.env</code></td></tr>
     <tr><td>Chromium not found</td><td>Crawl</td><td>Run <code>crawl4ai-setup</code></td></tr>
     <tr><td>No fragments found</td><td>Parse</td><td>Verify <code>build-kg-load</code> ran successfully</td></tr>
-    <tr><td>invalid input value for enum</td><td>Load</td><td>Add jurisdiction: <code>ALTER TYPE market_code ADD VALUE 'XX';</code> or omit for generic topics</td></tr>
     <tr><td>Ontology file not found</td><td>Parse/Setup</td><td>Check <code>--ontology</code> path is correct</td></tr>
     <tr><td>Batch still in "validating"</td><td>Batch</td><td>Wait; OpenAI batches take 1-24 hours</td></tr>
     <tr><td>DB_PASSWORD is required</td><td>Any</td><td>Run <code>cp .env.example .env</code></td></tr>

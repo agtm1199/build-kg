@@ -38,63 +38,23 @@ Each entry in the `sources` array describes one website to crawl.
 | `url` | string | yes | Starting URL for the crawl |
 | `title` | string | yes | Descriptive title of the document or source |
 | `authority` | string | no | Issuing organization (e.g., `SFA`, `CFIA`). Nullable for generic topics. |
-| `jurisdiction` | string | no | Jurisdiction code from the `market_code` enum. Nullable for generic topics. |
-| `doc_type` | string | no | Document type from the `doc_type` enum. Nullable for generic topics. |
+| `jurisdiction` | string | no | Jurisdiction code (e.g., SG, CA, US). Any string value. Nullable for generic topics. |
+| `doc_type` | string | no | Document type (e.g., regulation, documentation, tutorial). Any string value. Nullable for generic topics. |
 | `priority` | string | no | Priority tier: `P1`, `P2`, `P3`, or `P4` |
 | `sub_domains` | array | no | List of sub-domain/topic strings this source covers |
 | `depth` | integer | no | Crawl depth override (default from priority tier) |
 | `max_pages` | integer | no | Maximum pages to crawl override (default from priority tier) |
 | `delay` | integer | no | Crawl delay in milliseconds override (default from priority tier) |
 
-### Allowed `jurisdiction` Values
+### `jurisdiction` and `doc_type` Values
 
-These correspond to the `market_code` PostgreSQL enum:
+Both `jurisdiction` and `doc_type` are freeform TEXT fields in the database. You can use any string value.
 
-| Code | Country/Region |
-|------|----------------|
-| `CA` | Canada |
-| `US` | United States |
-| `EU` | European Union |
-| `UK` | United Kingdom |
-| `AU` | Australia |
-| `NZ` | New Zealand |
-| `JP` | Japan |
-| `SG` | Singapore |
-| `MY` | Malaysia |
-| `TH` | Thailand |
-| `KR` | South Korea |
-| `CN` | China |
-| `IN` | India |
-| `AE` | United Arab Emirates |
-| `SA` | Saudi Arabia |
-| `BR` | Brazil |
-| `MX` | Mexico |
-| `ZA` | South Africa |
-| `OTHER` | Any other jurisdiction |
+**Common jurisdiction codes**: `CA` (Canada), `US` (United States), `EU` (European Union), `UK` (United Kingdom), `AU` (Australia), `NZ` (New Zealand), `JP` (Japan), `SG` (Singapore), `MY` (Malaysia), `TH` (Thailand), `KR` (South Korea), `CN` (China), `IN` (India), `AE` (United Arab Emirates), `SA` (Saudi Arabia), `BR` (Brazil), `MX` (Mexico), `ZA` (South Africa). Any other code can be used as needed.
 
-For generic (non-regulatory) topics, you can omit the `jurisdiction` field entirely.
+**Common doc_type values**: `regulation`, `standard`, `guidance`, `code`, `act`, `directive`, `order`, `documentation`, `tutorial`. Any other value can be used as needed.
 
-To add a new jurisdiction, alter the PostgreSQL enum:
-
-```sql
-ALTER TYPE market_code ADD VALUE 'XX';
-```
-
-### Allowed `doc_type` Values
-
-These correspond to the `doc_type` PostgreSQL enum:
-
-| Value | Description |
-|-------|-------------|
-| `regulation` | Binding regulatory instrument (subsidiary legislation, rules) |
-| `standard` | Technical standard or code of practice |
-| `guidance` | Non-binding guidance document, FAQ, or interpretation note |
-| `code` | Code of practice or code of conduct |
-| `act` | Primary legislation (act of parliament, statute) |
-| `directive` | EU-style directive or ministerial directive |
-| `order` | Ministerial order, executive order, or gazette notice |
-
-For generic topics, you can omit the `doc_type` field.
+For generic (non-regulatory) topics, you can omit both fields entirely.
 
 ### Priority Tiers
 

@@ -108,8 +108,8 @@
     <tr><td><code>url</code></td><td>string</td><td>yes</td><td>Starting URL for the crawl</td></tr>
     <tr><td><code>title</code></td><td>string</td><td>yes</td><td>Descriptive title of the document or source</td></tr>
     <tr><td><code>authority</code></td><td>string</td><td>no</td><td>Issuing organization (e.g., <code>SFA</code>, <code>CFIA</code>). Nullable for generic topics.</td></tr>
-    <tr><td><code>jurisdiction</code></td><td>string</td><td>no</td><td>Jurisdiction code from the <code>market_code</code> enum. Nullable for generic topics.</td></tr>
-    <tr><td><code>doc_type</code></td><td>string</td><td>no</td><td>Document type from the <code>doc_type</code> enum. Nullable for generic topics.</td></tr>
+    <tr><td><code>jurisdiction</code></td><td>string</td><td>no</td><td>Jurisdiction code (e.g., SG, CA, US). Any string value. Nullable for generic topics.</td></tr>
+    <tr><td><code>doc_type</code></td><td>string</td><td>no</td><td>Document type (e.g., regulation, documentation, tutorial). Any string value. Nullable for generic topics.</td></tr>
     <tr><td><code>priority</code></td><td>string</td><td>no</td><td>Priority tier: <code>P1</code>, <code>P2</code>, <code>P3</code>, or <code>P4</code></td></tr>
     <tr><td><code>sub_domains</code></td><td>array</td><td>no</td><td>List of sub-domain/topic strings this source covers</td></tr>
     <tr><td><code>depth</code></td><td>integer</td><td>no</td><td>Crawl depth override (default from priority tier)</td></tr>
@@ -117,47 +117,13 @@
     <tr><td><code>delay</code></td><td>integer</td><td>no</td><td>Crawl delay in milliseconds override (default from priority tier)</td></tr>
   </table>
 
-  <h3>Allowed <code>jurisdiction</code> Values</h3>
-  <p>These correspond to the <code>market_code</code> PostgreSQL enum:</p>
-  <table>
-    <tr><th>Code</th><th>Country/Region</th></tr>
-    <tr><td><code>CA</code></td><td>Canada</td></tr>
-    <tr><td><code>US</code></td><td>United States</td></tr>
-    <tr><td><code>EU</code></td><td>European Union</td></tr>
-    <tr><td><code>UK</code></td><td>United Kingdom</td></tr>
-    <tr><td><code>AU</code></td><td>Australia</td></tr>
-    <tr><td><code>NZ</code></td><td>New Zealand</td></tr>
-    <tr><td><code>JP</code></td><td>Japan</td></tr>
-    <tr><td><code>SG</code></td><td>Singapore</td></tr>
-    <tr><td><code>MY</code></td><td>Malaysia</td></tr>
-    <tr><td><code>TH</code></td><td>Thailand</td></tr>
-    <tr><td><code>KR</code></td><td>South Korea</td></tr>
-    <tr><td><code>CN</code></td><td>China</td></tr>
-    <tr><td><code>IN</code></td><td>India</td></tr>
-    <tr><td><code>AE</code></td><td>United Arab Emirates</td></tr>
-    <tr><td><code>SA</code></td><td>Saudi Arabia</td></tr>
-    <tr><td><code>BR</code></td><td>Brazil</td></tr>
-    <tr><td><code>MX</code></td><td>Mexico</td></tr>
-    <tr><td><code>ZA</code></td><td>South Africa</td></tr>
-    <tr><td><code>OTHER</code></td><td>Any other jurisdiction</td></tr>
-  </table>
-  <p>For generic (non-regulatory) topics, you can omit the <code>jurisdiction</code> field entirely.</p>
-  <p>To add a new jurisdiction, alter the PostgreSQL enum:</p>
-  <pre><code>ALTER TYPE market_code ADD VALUE &#39;XX&#39;;</code></pre>
-
-  <h3>Allowed <code>doc_type</code> Values</h3>
-  <p>These correspond to the <code>doc_type</code> PostgreSQL enum:</p>
-  <table>
-    <tr><th>Value</th><th>Description</th></tr>
-    <tr><td><code>regulation</code></td><td>Binding regulatory instrument (subsidiary legislation, rules)</td></tr>
-    <tr><td><code>standard</code></td><td>Technical standard or code of practice</td></tr>
-    <tr><td><code>guidance</code></td><td>Non-binding guidance document, FAQ, or interpretation note</td></tr>
-    <tr><td><code>code</code></td><td>Code of practice or code of conduct</td></tr>
-    <tr><td><code>act</code></td><td>Primary legislation (act of parliament, statute)</td></tr>
-    <tr><td><code>directive</code></td><td>EU-style directive or ministerial directive</td></tr>
-    <tr><td><code>order</code></td><td>Ministerial order, executive order, or gazette notice</td></tr>
-  </table>
-  <p>For generic topics, you can omit the <code>doc_type</code> field.</p>
+  <h3><code>jurisdiction</code> and <code>doc_type</code> Values</h3>
+  <p>Both <code>jurisdiction</code> and <code>doc_type</code> are stored as plain <code>TEXT</code> columns in PostgreSQL. Any string value is accepted &mdash; there is no fixed enum. Common conventions:</p>
+  <ul>
+    <li><strong>Jurisdiction</strong>: Use ISO-style country codes such as <code>CA</code>, <code>US</code>, <code>EU</code>, <code>UK</code>, <code>SG</code>, <code>AU</code>, <code>JP</code>, etc. You can use any value that makes sense for your domain.</li>
+    <li><strong>Document type</strong>: Common values include <code>regulation</code>, <code>standard</code>, <code>guidance</code>, <code>act</code>, <code>directive</code>, <code>order</code>, <code>documentation</code>, <code>tutorial</code>, but any string is accepted.</li>
+  </ul>
+  <p>For generic (non-regulatory) topics, you can omit both fields entirely &mdash; they are nullable in the database.</p>
 
   <h3>Priority Tiers</h3>
   <p>Priority tiers provide recommended crawl parameters:</p>

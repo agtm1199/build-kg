@@ -556,19 +556,6 @@ json_schema: |
 
 <p>The relational layer in PostgreSQL bridges the raw crawled content to the Apache AGE graph. Two tables serve as the source of truth for provenance.</p>
 
-<h3>Custom Types</h3>
-
-<pre><code>CREATE TYPE market_code AS ENUM (
-    'CA', 'US', 'EU', 'UK', 'AU', 'NZ', 'JP',
-    'SG', 'MY', 'TH', 'KR', 'CN', 'IN',
-    'AE', 'SA', 'BR', 'MX', 'ZA', 'OTHER'
-);
-
-CREATE TYPE doc_type AS ENUM (
-    'regulation', 'standard', 'guidance', 'code',
-    'act', 'directive', 'order'
-);</code></pre>
-
 <h3>source_document</h3>
 
 <p>One row per crawled source document (webpage). Linked to entries in the crawl manifest.</p>
@@ -591,9 +578,9 @@ CREATE TYPE doc_type AS ENUM (
     </tr>
     <tr>
       <td><code>jurisdiction</code></td>
-      <td>market_code</td>
+      <td>TEXT</td>
       <td>yes</td>
-      <td>Jurisdiction enum (null for generic topics)</td>
+      <td>Jurisdiction code, e.g. CA, SG, US (null for generic topics)</td>
     </tr>
     <tr>
       <td><code>authority</code></td>
@@ -609,9 +596,9 @@ CREATE TYPE doc_type AS ENUM (
     </tr>
     <tr>
       <td><code>doc_type</code></td>
-      <td>doc_type</td>
+      <td>TEXT</td>
       <td>yes</td>
-      <td>Document type enum (null for generic topics)</td>
+      <td>Document type, e.g. regulation, act, guidance (null for generic topics)</td>
     </tr>
     <tr>
       <td><code>title</code></td>
@@ -728,7 +715,7 @@ CREATE TYPE doc_type AS ENUM (
     </tr>
     <tr>
       <td><code>jurisdiction</code></td>
-      <td>market_code</td>
+      <td>TEXT</td>
       <td>yes</td>
       <td>Inherited from source_document (null for generic)</td>
     </tr>
@@ -740,7 +727,7 @@ CREATE TYPE doc_type AS ENUM (
     </tr>
     <tr>
       <td><code>doc_type</code></td>
-      <td>doc_type</td>
+      <td>TEXT</td>
       <td>yes</td>
       <td>Inherited from source_document (null for generic)</td>
     </tr>

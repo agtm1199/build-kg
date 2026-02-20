@@ -119,13 +119,7 @@ The loader connects to PostgreSQL using the credentials in `.env` (or environmen
 
 1. **Database running**: `docker compose -f db/docker-compose.yml up -d`
 2. **Tables created**: The `source_document` and `source_fragment` tables are created by `db/init.sql`, which runs automatically on first container start. If you reset the database, the tables are recreated.
-3. **ENUM types registered** (regulatory only): The `market_code` and `doc_type` enums must include all values used in your manifest. If you get an error like `invalid input value for enum market_code: "XX"`, you need to add the value:
-
-```sql
-ALTER TYPE market_code ADD VALUE 'XX';
-```
-
-For generic topics, these enum fields can be omitted from the manifest and will be stored as NULL in the database.
+3. **Metadata fields**: The `jurisdiction` and `doc_type` columns are optional TEXT fields. Any string value is accepted. For generic topics, these fields can be omitted from the manifest and will be stored as NULL in the database.
 
 ## Source Matching Troubleshooting
 

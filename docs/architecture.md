@@ -265,21 +265,6 @@ A constraint makes a requirement machine-testable.
 
 The relational layer in PostgreSQL bridges the raw crawled content to the Apache AGE graph. Two tables serve as the source of truth for provenance.
 
-### Custom Types
-
-```sql
-CREATE TYPE market_code AS ENUM (
-    'CA', 'US', 'EU', 'UK', 'AU', 'NZ', 'JP',
-    'SG', 'MY', 'TH', 'KR', 'CN', 'IN',
-    'AE', 'SA', 'BR', 'MX', 'ZA', 'OTHER'
-);
-
-CREATE TYPE doc_type AS ENUM (
-    'regulation', 'standard', 'guidance', 'code',
-    'act', 'directive', 'order'
-);
-```
-
 ### source_document
 
 One row per crawled source document (webpage). Linked to entries in the crawl manifest.
@@ -287,10 +272,10 @@ One row per crawled source document (webpage). Linked to entries in the crawl ma
 | Column | Type | Nullable | Description |
 |--------|------|----------|-------------|
 | `doc_id` | UUID (PK) | no | Auto-generated primary key |
-| `jurisdiction` | market_code | yes | Jurisdiction enum (null for generic topics) |
+| `jurisdiction` | TEXT | yes | Jurisdiction code (null for generic topics) |
 | `authority` | TEXT | yes | Source organization name (null for generic topics) |
 | `publisher` | TEXT | yes | Publishing organization |
-| `doc_type` | doc_type | yes | Document type enum (null for generic topics) |
+| `doc_type` | TEXT | yes | Document type (null for generic topics) |
 | `title` | TEXT | no | Document title |
 | `canonical_citation` | TEXT | yes | Official citation reference |
 | `url` | TEXT | no | Source URL |
@@ -314,9 +299,9 @@ One row per chunk of a source document. This is the table the parser reads from.
 | `context_before` | TEXT | yes | Last 200 characters of the preceding chunk |
 | `context_after` | TEXT | yes | First 200 characters of the following chunk |
 | `source_url` | TEXT | yes | URL of the original source |
-| `jurisdiction` | market_code | yes | Inherited from source_document (null for generic) |
+| `jurisdiction` | TEXT | yes | Inherited from source_document (null for generic) |
 | `authority` | TEXT | yes | Inherited from source_document (null for generic) |
-| `doc_type` | doc_type | yes | Inherited from source_document (null for generic) |
+| `doc_type` | TEXT | yes | Inherited from source_document (null for generic) |
 | `metadata` | JSONB | yes | Arbitrary key-value metadata |
 | `created_at` | TIMESTAMPTZ | no | Row creation time |
 

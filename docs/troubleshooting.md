@@ -12,7 +12,6 @@ Common errors and their solutions when running the build-kg pipeline.
 | OpenAI API error 401 | Parse | Check `OPENAI_API_KEY` in `.env` |
 | Chromium not found | Crawl | Run `crawl4ai-setup` |
 | No fragments found | Parse | Verify the database load succeeded |
-| invalid input value for enum market_code | Load | Add the jurisdiction to the enum, or omit for generic topics |
 | Batch still in "validating" | Batch Parse | Wait; batches take 1-24 hours |
 | UNKNOWN authority on all provisions | Parse | Check metadata and source matching |
 | PDF support not installed | Chunk | Install the `[pdf]` extra |
@@ -233,30 +232,6 @@ SELECT jurisdiction, COUNT(*) FROM source_fragment GROUP BY jurisdiction;
 
 ---
 
-### invalid input value for enum market_code
-
-**Symptom:**
-
-```
-psycopg2.errors.InvalidTextRepresentation: invalid input value for enum market_code: "PH"
-```
-
-**Cause:** The jurisdiction code in your manifest is not in the `market_code` PostgreSQL enum. The default enum includes: CA, US, EU, UK, AU, NZ, JP, SG, MY, TH, KR, CN, IN, AE, SA, BR, MX, ZA, OTHER.
-
-**Fix:**
-
-Add the new jurisdiction to the enum:
-
-```bash
-docker exec build-kg-db psql -U buildkg -d buildkg -c "ALTER TYPE market_code ADD VALUE 'PH';"
-```
-
-Or use `OTHER` as a temporary workaround in your manifest.
-
-Note: PostgreSQL enum values cannot be removed once added. Plan your jurisdiction codes carefully.
-
----
-
 ### Batch still in "validating"
 
 **Symptom:**
@@ -349,22 +324,6 @@ brew install poppler tesseract
 # Fedora/RHEL
 sudo dnf install poppler-utils tesseract
 ```
-
----
-
-### invalid input value for enum doc_type
-
-**Symptom:**
-
-```
-psycopg2.errors.InvalidTextRepresentation: invalid input value for enum doc_type: "policy"
-```
-
-**Cause:** The `doc_type` value in your manifest is not in the PostgreSQL enum. Allowed values are: `regulation`, `standard`, `guidance`, `code`, `act`, `directive`, `order`.
-
-**Fix:** Either:
-- Change the `doc_type` in your manifest to one of the allowed values.
-- Add the new type: `ALTER TYPE doc_type ADD VALUE 'policy';`
 
 ---
 

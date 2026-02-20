@@ -151,15 +151,10 @@ This is one of the highest-impact contributions you can make. Each new profile u
 
 ## Adding a New Jurisdiction
 
-To add support for a new country/jurisdiction:
+The `jurisdiction` field is a freeform TEXT column in the database, so no schema changes are needed to support a new country. To add support for a new jurisdiction:
 
-1. Add the market code to `db/init.sql` in the `market_code` enum
-2. If you have a running database, alter the type:
-   ```sql
-   ALTER TYPE market_code ADD VALUE IF NOT EXISTS 'XX';
-   ```
-3. Add authority-specific regex patterns to `src/build_kg/id_extractors.py` if the jurisdiction uses a unique ID format
-4. Update the jurisdiction list in `.claude/commands/build-kg.md`
+1. Add authority-specific regex patterns to `src/build_kg/id_extractors.py` if the jurisdiction uses a unique ID format
+2. Update the jurisdiction list in `.claude/commands/build-kg.md`
 
 ## Adding ID Extraction Patterns
 
