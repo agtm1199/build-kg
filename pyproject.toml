@@ -63,10 +63,10 @@ build-kg-verify = "build_kg.verify:main"
 build-kg-domains = "build_kg.domain:_cli_list_profiles"
 
 [project.urls]
-Homepage = "https://github.com/mergen-ai/build-kg"
-Documentation = "https://github.com/mergen-ai/build-kg/tree/main/docs"
-Repository = "https://github.com/mergen-ai/build-kg"
-Issues = "https://github.com/mergen-ai/build-kg/issues"
+Homepage = "https://github.com/agtm1199/build-kg"
+Documentation = "https://github.com/agtm1199/build-kg/tree/main/docs"
+Repository = "https://github.com/agtm1199/build-kg"
+Issues = "https://github.com/agtm1199/build-kg/issues"
 
 [tool.hatch.build]
 include = ["src/build_kg/**/*.py", "src/build_kg/**/*.yaml"]

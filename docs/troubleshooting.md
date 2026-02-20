@@ -406,7 +406,7 @@ If your issue is not listed here:
 
 1. Run `build-kg-verify` to check the overall system health.
 2. Check the Docker container logs: `docker compose -f db/docker-compose.yml logs`
-3. Open an issue at [github.com/mergen-ai/build-kg/issues](https://github.com/mergen-ai/build-kg/issues) with:
+3. Open an issue at [github.com/agtm1199/build-kg/issues](https://github.com/agtm1199/build-kg/issues) with:
    - The exact error message
    - The command you ran
    - Your Python version (`python3 --version`)

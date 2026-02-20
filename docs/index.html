@@ -133,18 +133,6 @@
   .pipe-label{font-size:12px;font-weight:600;color:var(--heading);line-height:1.3}
   .pipe-arrow{flex-shrink:0;width:40px;display:flex;align-items:center;justify-content:center;color:var(--border);font-size:18px;padding-bottom:10px}
 
-  /* ── FOOTER ──────────────────────────────────── */
-  footer{border-top:1px solid var(--border);padding:40px 0;margin-top:40px}
-  .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
-  .footer-brand{display:flex;flex-direction:column;gap:4px}
-  .footer-brand .name{font-size:16px;font-weight:600;color:var(--heading)}
-  .footer-brand .name b{color:var(--blue)}
-  .footer-brand .license{font-size:12px;color:var(--muted)}
-  .footer-links{display:flex;gap:24px}
-  .footer-links a{color:var(--muted);font-size:13px;font-weight:500}
-  .footer-links a:hover{color:var(--heading);text-decoration:none}
-  .footer-copy{font-size:12px;color:var(--muted);width:100%;text-align:center;margin-top:16px;padding-top:20px;border-top:1px solid var(--border)}
-
   /* ── RESPONSIVE ──────────────────────────────── */
   @media(max-width:900px){
     .cards-3,.features-grid{grid-template-columns:1fr 1fr}
@@ -169,10 +157,11 @@
   <div class="nav-inner">
     <a href="#" class="nav-logo">build-<b>kg</b></a>
     <div class="nav-links">
+      <a href="documentation.html">Docs</a>
       <a href="#how-it-works" class="hide-mobile">How it works</a>
       <a href="#topics" class="hide-mobile">Topics</a>
       <a href="guide.html">Guide</a>
-      <a href="https://github.com/mergen-ai/build-kg" class="gh" target="_blank" rel="noopener">
+      <a href="https://github.com/agtm1199/build-kg" class="gh" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
@@ -192,7 +181,7 @@
 
     <div class="hero-ctas">
       <a href="guide.html" class="btn btn-primary">Get Started</a>
-      <a href="https://github.com/mergen-ai/build-kg" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+      <a href="https://github.com/agtm1199/build-kg" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
     </div>
 
     <div class="terminal">
@@ -205,39 +194,21 @@
       <div class="terminal-body">
 <span class="prompt">$</span> <span class="cmd">/build-kg kubernetes networking</span>
 
-<span class="phase">Phase 0.5 &mdash; Generating ontology...</span>
-<span class="check">&check;</span> Created 3 node types: <span class="val">Component</span>, <span class="val">Concept</span>, <span class="val">Configuration</span>
-<span class="check">&check;</span> Created 3 edge types: <span class="val">USES</span>, <span class="val">CONFIGURES</span>, <span class="val">DEPENDS_ON</span>
-<span class="check">&check;</span> Saved <span class="dim">ontology.yaml</span>
+<span class="phase">Ontology</span>  <span class="check">&check;</span> 3 node types &middot; 3 edge types &middot; saved <span class="dim">ontology.yaml</span>
+<span class="phase">Discover</span>  <span class="check">&check;</span> <span class="val">14</span> sources found across 5 rounds
+<span class="phase">Crawl</span>     <span class="check">&check;</span> <span class="val">247</span> pages &rarr; <span class="dim">crawl_output/</span>
+<span class="phase">Chunk</span>     <span class="check">&check;</span> <span class="val">1,832</span> fragments &rarr; <span class="dim">chunk_output/</span>
+<span class="phase">Load</span>      <span class="check">&check;</span> <span class="val">14</span> docs &middot; <span class="val">1,832</span> fragments &rarr; PostgreSQL
+<span class="phase">Parse</span>     <span class="check">&check;</span> <span class="val">892</span> Components &middot; <span class="val">341</span> Concepts &middot; <span class="val">127</span> Configs
 
-<span class="phase">Phase 1 &mdash; Discovering sources (5 rounds)...</span>
-<span class="check">&check;</span> Found <span class="val">14</span> authoritative sources
-<span class="check">&check;</span> Wrote <span class="dim">crawl_manifest.json</span>
-
-<span class="phase">Phase 2 &mdash; Crawling 14 sources...</span>
-<span class="check">&check;</span> Crawled <span class="val">247</span> pages &rarr; <span class="dim">./crawl_output/</span>
-
-<span class="phase">Phase 3 &mdash; Chunking documents...</span>
-<span class="check">&check;</span> Created <span class="val">1,832</span> fragments &rarr; <span class="dim">./chunk_output/</span>
-
-<span class="phase">Phase 4 &mdash; Loading to PostgreSQL...</span>
-<span class="check">&check;</span> Inserted <span class="val">14</span> documents, <span class="val">1,832</span> fragments
-
-<span class="phase">Phase 5 &mdash; Parsing with GPT-4o-mini...</span>
-<span class="check">&check;</span> Extracted <span class="val">892</span> Components, <span class="val">341</span> Concepts, <span class="val">127</span> Configurations
-<span class="check">&check;</span> Created <span class="val">1,247</span> relationships
-
-<span class="phase">Phase 6 &mdash; Validation report</span>
-<span class="tbl">&boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;</span>
-<span class="tbl">&boxv;</span> Node Type      <span class="tbl">&boxv;</span> Count <span class="tbl">&boxv;</span>
-<span class="tbl">&boxvr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxvl;</span>
-<span class="tbl">&boxv;</span> Component      <span class="tbl">&boxv;</span>   <span class="val">892</span> <span class="tbl">&boxv;</span>
-<span class="tbl">&boxv;</span> Concept        <span class="tbl">&boxv;</span>   <span class="val">341</span> <span class="tbl">&boxv;</span>
-<span class="tbl">&boxv;</span> Configuration  <span class="tbl">&boxv;</span>   <span class="val">127</span> <span class="tbl">&boxv;</span>
-<span class="tbl">&boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxuh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;</span>
-Total: <span class="val">1,360</span> nodes, <span class="val">1,247</span> edges
-Graph: <span class="val">kg_k8s_net</span> <span class="dim">(Apache AGE)</span>
-Cost: <span class="check">$0.27</span>
+<span class="dim">───────────────────────────────────</span>
+  Component      <span class="val">892</span>
+  Concept        <span class="val">341</span>
+  Configuration  <span class="val">127</span>
+<span class="dim">───────────────────────────────────</span>
+  <span class="val">1,360</span> nodes &middot; <span class="val">1,247</span> edges
+  Graph: <span class="val">kg_k8s_net</span> <span class="dim">(Apache AGE)</span>
+  Cost:  <span class="check">$0.27</span>
       </div>
     </div>
   </div>
@@ -506,26 +477,6 @@ Cost: <span class="check">$0.27</span>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════
-     FOOTER
-     ════════════════════════════════════════════════ -->
-<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="name">build-<b>kg</b></span>
-        <span class="license">Apache 2.0 License</span>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com/mergen-ai/build-kg" target="_blank" rel="noopener">GitHub</a>
-        <a href="guide.html">Guide</a>
-        <a href="documentation.html">Docs</a>
-        <a href="https://github.com/mergen-ai/build-kg/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a>
-      </div>
-    </div>
-    <p class="footer-copy">&copy; 2025 Mergen AI</p>
-  </div>
-</footer>
 
 </body>
 </html>

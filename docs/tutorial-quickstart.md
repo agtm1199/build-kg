@@ -13,7 +13,7 @@ Before you begin, make sure you have:
 ## Step 1: Clone and Install
 
 ```bash
-git clone https://github.com/mergen-ai/build-kg.git
+git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
 
 # Create virtual environment and install dependencies

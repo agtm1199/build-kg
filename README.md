@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![CI](https://github.com/mergen-ai/build-kg/actions/workflows/ci.yml/badge.svg)](https://github.com/mergen-ai/build-kg/actions/workflows/ci.yml)
+[![CI](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml)
 
 **One command. Any topic. Knowledge graph in your own PostgreSQL.**
 
@@ -101,7 +101,7 @@ Every constraint is machine-testable: thresholds with operators and units, regex
 ### Install
 
 ```bash
-git clone https://github.com/mergen-ai/build-kg.git
+git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
 
 # Option A: Full setup (creates venv, starts DB, initializes graph)
@@ -293,7 +293,7 @@ Some ways to contribute:
 - **Add a domain profile** for your area (pharma, environmental, telecom, etc.)
 - **Add ID extraction patterns** for your jurisdiction's regulatory ID format
 - **Improve the pipeline** with better chunking strategies, parsing prompts, or graph enrichment
-- **Report bugs** and suggest features via [GitHub Issues](https://github.com/mergen-ai/build-kg/issues)
+- **Report bugs** and suggest features via [GitHub Issues](https://github.com/agtm1199/build-kg/issues)
 
 ## License
 
