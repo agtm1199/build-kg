@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation - build-kg</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --heading: #f0f6fc;
+    --link: #58a6ff;
+    --accent: #1f6feb;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --code-bg: #0d1117;
+    --inline-code-bg: #1c2128;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 3rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero .tagline {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero .badges {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.blue { border-color: var(--link); color: var(--link); }
+  .badge.purple { border-color: var(--purple); color: var(--purple); }
+
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 1.8rem;
+    color: var(--heading);
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+  }
+
+  p { margin-bottom: 1rem; }
+
+  :not(pre) > code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    background: var(--inline-code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+
+  /* Doc cards grid */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0 3rem;
+  }
+
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .doc-card:hover {
+    border-color: var(--accent);
+  }
+
+  .doc-card a {
+    text-decoration: none;
+  }
+
+  .doc-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .doc-card .card-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .doc-card .card-tag {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: fit-content;
+  }
+
+  .card-tag.guide { border-color: var(--green); color: var(--green); }
+  .card-tag.tutorial { border-color: var(--orange); color: var(--orange); }
+  .card-tag.reference { border-color: var(--link); color: var(--link); }
+  .card-tag.arch { border-color: var(--purple); color: var(--purple); }
+  .card-tag.help { border-color: var(--red); color: var(--red); }
+
+  /* Section dividers */
+  .section-group {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-group:last-child { border-bottom: none; }
+
+  /* Quick start */
+  .quickstart {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .quickstart h3 {
+    font-size: 1.1rem;
+    color: var(--heading);
+    margin-bottom: 0.75rem;
+  }
+
+  .quickstart pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .quickstart code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.875em;
+  }
+
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 2rem; }
+    .doc-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;font-size:0.9rem;backdrop-filter:blur(8px);">
+  <a href="index.html" style="color:var(--heading);font-weight:700;text-decoration:none;">build-<span style="color:var(--link)">kg</span></a>
+  <a href="documentation.html" style="color:var(--heading);">Docs</a>
+  <a href="guide.html">Guide</a>
+  <a href="full-guide.html">Full Guide</a>
+  <a href="https://github.com/mergen-ai/build-kg" style="margin-left:auto;">GitHub</a>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<header class="hero">
+  <h1>build-kg</h1>
+  <p class="tagline">Documentation</p>
+  <div class="badges">
+    <span class="badge green">Apache 2.0</span>
+    <span class="badge blue">Python 3.10+</span>
+    <span class="badge purple">Apache AGE</span>
+  </div>
+</header>
+
+<!-- Quick start -->
+<div class="quickstart">
+  <h3>Get started in one command</h3>
+  <p>With <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, run the <code>/build-kg</code> skill:</p>
+  <pre><code>/build-kg kubernetes networking
+/build-kg machine learning optimization algorithms
+/build-kg GDPR compliance requirements for SaaS companies</code></pre>
+</div>
+
+<!-- Guide -->
+<div class="section-group">
+  <h2>Guide</h2>
+  <div class="doc-grid">
+    <a href="guide.html" class="doc-card">
+      <div class="card-title">Usage Guide</div>
+      <div class="card-desc">Complete guide covering installation, quickstart, pipeline, ontology system, domain profiles, CLI reference, configuration, and examples.</div>
+      <span class="card-tag guide">Guide</span>
+    </a>
+    <a href="architecture.html" class="doc-card">
+      <div class="card-title">Architecture</div>
+      <div class="card-desc">Pipeline overview, graph ontology, database schema, ontology configuration, ID extraction, domain profiles, and batch vs sync tradeoffs.</div>
+      <span class="card-tag arch">Architecture</span>
+    </a>
+  </div>
+</div>
+
+<!-- Tutorials -->
+<div class="section-group">
+  <h2>Tutorials</h2>
+  <div class="doc-grid">
+    <a href="tutorial-quickstart.html" class="doc-card">
+      <div class="card-title">Quickstart</div>
+      <div class="card-desc">Zero to working knowledge graph in 10 steps. Covers setup, crawling, chunking, loading, parsing, and validation.</div>
+      <span class="card-tag tutorial">Tutorial</span>
+    </a>
+    <a href="tutorial-singapore.html" class="doc-card">
+      <div class="card-title">Singapore F&amp;B Regulations</div>
+      <div class="card-desc">Full worked example building a regulatory KG from 12 Singapore sources across SFA, Parliament, HPB, and MUIS.</div>
+      <span class="card-tag tutorial">Tutorial</span>
+    </a>
+  </div>
+</div>
+
+<!-- CLI Reference -->
+<div class="section-group">
+  <h2>CLI Reference</h2>
+  <div class="doc-grid">
+    <a href="reference-crawl.html" class="doc-card">
+      <div class="card-title"><code>build-kg-crawl</code></div>
+      <div class="card-desc">Crawl websites to markdown using headless Chromium. Options for depth, page limits, delay, and output format.</div>
+      <span class="card-tag reference">Reference</span>
+    </a>
+    <a href="reference-chunk.html" class="doc-card">
+      <div class="card-title"><code>build-kg-chunk</code></div>
+      <div class="card-desc">Split documents into semantically coherent JSON fragments. Strategies: <code>by_title</code> and <code>basic</code>.</div>
+      <span class="card-tag reference">Reference</span>
+    </a>
+    <a href="reference-load.html" class="doc-card">
+      <div class="card-title"><code>build-kg-load</code></div>
+      <div class="card-desc">Load chunk JSON files into PostgreSQL with metadata from the crawl manifest. Source matching and dry-run support.</div>
+      <span class="card-tag reference">Reference</span>
+    </a>
+    <a href="reference-parse.html" class="doc-card">
+      <div class="card-title"><code>build-kg-parse</code></div>
+      <div class="card-desc">Parse fragments into graph nodes using OpenAI. Sync and batch modes, ontology-driven and regulatory modes, cost comparison.</div>
+      <span class="card-tag reference">Reference</span>
+    </a>
+  </div>
+</div>
+
+<!-- Specification -->
+<div class="section-group">
+  <h2>Specification</h2>
+  <div class="doc-grid">
+    <a href="manifest-format.html" class="doc-card">
+      <div class="card-title">Manifest Format</div>
+      <div class="card-desc">JSON schema for <code>crawl_manifest.json</code> &mdash; source objects, jurisdictions, doc types, defaults, and coverage tracking.</div>
+      <span class="card-tag reference">Reference</span>
+    </a>
+  </div>
+</div>
+
+<!-- Help -->
+<div class="section-group">
+  <h2>Help</h2>
+  <div class="doc-grid">
+    <a href="troubleshooting.html" class="doc-card">
+      <div class="card-title">Troubleshooting</div>
+      <div class="card-desc">Quick reference table of common errors plus detailed solutions for database, API, crawling, loading, and parsing issues.</div>
+      <span class="card-tag help">Troubleshooting</span>
+    </a>
+  </div>
+</div>
+
+<footer style="text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem;">
+  <p>build-kg &mdash; Apache 2.0 License &mdash; <a href="https://github.com/mergen-ai/build-kg">GitHub</a></p>
+</footer>
+
+</div>
+</body>
+</html>
