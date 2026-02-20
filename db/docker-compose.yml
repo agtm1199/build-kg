@@ -1,0 +1,22 @@
+services:
+  age-postgres:
+    image: apache/age
+    container_name: build-kg-db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-buildkg}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-buildkg_dev}
+      POSTGRES_DB: ${DB_NAME:-buildkg}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-buildkg}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:

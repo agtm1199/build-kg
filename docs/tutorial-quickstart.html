@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quickstart Tutorial - build-kg</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --text-muted: #8b949e;
+    --heading: #f0f6fc; --link: #58a6ff; --accent: #1f6feb; --green: #3fb950; --orange: #d29922;
+    --red: #f85149; --purple: #bc8cff; --code-bg: #0d1117; --inline-code-bg: #1c2128;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .hero { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .hero h1 { font-size: 2.5rem; color: var(--heading); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .hero .tagline { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--border); color: var(--text-muted); }
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.blue { border-color: var(--link); color: var(--link); }
+  .badge.purple { border-color: var(--purple); color: var(--purple); }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem 2rem; margin-bottom: 3rem; }
+  .toc h2 { font-size: 1.1rem; color: var(--heading); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .toc ol { list-style: none; counter-reset: toc; columns: 2; column-gap: 2rem; }
+  .toc li { counter-increment: toc; padding: 0.25rem 0; }
+  .toc li::before { content: counter(toc) "."; color: var(--text-muted); margin-right: 0.5rem; font-size: 0.85rem; }
+  .toc a { color: var(--link); text-decoration: none; font-size: 0.95rem; }
+  .toc a:hover { text-decoration: underline; }
+  section { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; color: var(--heading); margin-bottom: 1rem; padding-top: 1rem; }
+  h3 { font-size: 1.3rem; color: var(--heading); margin: 1.5rem 0 0.75rem; }
+  h4 { font-size: 1.05rem; color: var(--heading); margin: 1.25rem 0 0.5rem; }
+  p { margin-bottom: 1rem; }
+  ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+  li { margin-bottom: 0.25rem; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; font-size: 0.875rem; line-height: 1.5; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.875em; }
+  :not(pre) > code { background: var(--inline-code-bg); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border); }
+  th { background: var(--surface); color: var(--heading); font-weight: 600; }
+  tr:nth-child(even) { background: rgba(22, 27, 34, 0.5); }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1rem 0; }
+  .callout.tip { border-left-color: var(--green); }
+  .callout.warn { border-left-color: var(--orange); }
+  .callout strong { display: block; margin-bottom: 0.25rem; color: var(--heading); }
+  footer { text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem; }
+  @media (max-width: 700px) { .toc ol { columns: 1; } .hero h1 { font-size: 2rem; } }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;font-size:0.9rem;backdrop-filter:blur(8px);">
+  <a href="../site/index.html" style="color:var(--heading);font-weight:700;text-decoration:none;">build-<span style="color:var(--link)">kg</span></a>
+  <a href="index.html">Docs</a>
+  <a href="guide.html">Guide</a>
+  <a href="tutorial-quickstart.html" style="color:var(--heading);">Quickstart</a>
+  <a href="https://github.com/mergen-ai/build-kg" style="margin-left:auto;">GitHub</a>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>build-kg</h1>
+    <div class="tagline">Quickstart Tutorial</div>
+    <div class="badges">
+      <span class="badge green">Apache 2.0</span>
+      <span class="badge blue">Python 3.10+</span>
+      <span class="badge purple">Apache AGE</span>
+    </div>
+  </div>
+
+  <p>Get from zero to a working knowledge graph in 5 minutes. This tutorial crawls a small public website, chunks the content, loads it into PostgreSQL, and parses it into an Apache AGE graph.</p>
+
+  <!-- Table of Contents -->
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#step-1">Clone and Install</a></li>
+      <li><a href="#step-2">Start the Database</a></li>
+      <li><a href="#step-3">Configure Environment</a></li>
+      <li><a href="#step-4">Initialize the Graph</a></li>
+      <li><a href="#step-5">Verify Setup</a></li>
+      <li><a href="#step-6">Crawl a Small Website</a></li>
+      <li><a href="#step-7">Chunk the Output</a></li>
+      <li><a href="#step-8">Load to Database</a></li>
+      <li><a href="#step-9">Parse with LLM</a></li>
+      <li><a href="#step-10">Verify the Graph</a></li>
+      <li><a href="#cost-summary">Cost Summary</a></li>
+      <li><a href="#next-steps">Next Steps</a></li>
+    </ol>
+  </nav>
+
+  <!-- Prerequisites -->
+  <section id="prerequisites">
+    <h2>Prerequisites</h2>
+    <p>Before you begin, make sure you have:</p>
+    <ul>
+      <li><strong>Python 3.10+</strong> (<code>python3 --version</code>)</li>
+      <li><strong>Docker</strong> (<code>docker --version</code>)</li>
+      <li><strong>An OpenAI API key</strong> (get one at <a href="https://platform.openai.com">platform.openai.com</a>)</li>
+    </ul>
+  </section>
+
+  <!-- Step 1 -->
+  <section id="step-1">
+    <h2>Step 1: Clone and Install</h2>
+<pre><code>git clone https://github.com/mergen-ai/build-kg.git
+cd build-kg
+
+# Create virtual environment and install dependencies
+python3 -m venv venv
+source venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+
+# Install Chromium for the web crawler
+crawl4ai-setup</code></pre>
+    <p>Expected output (last few lines):</p>
+<pre><code>Successfully installed build-kg-0.3.0
+[crawl4ai] Chromium installed successfully</code></pre>
+  </section>
+
+  <!-- Step 2 -->
+  <section id="step-2">
+    <h2>Step 2: Start the Database</h2>
+<pre><code>docker compose -f db/docker-compose.yml up -d</code></pre>
+    <p>Wait a few seconds for PostgreSQL to initialize. Check that it is running:</p>
+<pre><code>docker compose -f db/docker-compose.yml ps</code></pre>
+    <p>Expected output:</p>
+<pre><code>NAME           IMAGE        ...   STATUS                    PORTS
+build-kg-db    apache/age   ...   Up 5 seconds (healthy)    0.0.0.0:5432-&gt;5432/tcp</code></pre>
+  </section>
+
+  <!-- Step 3 -->
+  <section id="step-3">
+    <h2>Step 3: Configure Environment</h2>
+<pre><code>cp .env.example .env</code></pre>
+    <p>Edit <code>.env</code> and set your OpenAI API key:</p>
+<pre><code>OPENAI_API_KEY=sk-your-actual-key-here</code></pre>
+    <p>The database credentials in <code>.env.example</code> already match the Docker container defaults, so no other changes are needed.</p>
+  </section>
+
+  <!-- Step 4 -->
+  <section id="step-4">
+    <h2>Step 4: Initialize the Graph</h2>
+<pre><code>python -m build_kg.setup_graph</code></pre>
+    <p>Expected output:</p>
+<pre><code>======================================================================
+Apache AGE Graph Setup
+======================================================================
+Checking for Apache AGE extension...
+  Apache AGE extension already installed
+  AGE loaded into search path
+
+Checking for graph 'reg_ca'...
+Creating graph 'reg_ca'...
+  Graph 'reg_ca' created successfully
+
+Creating graph schema...
+  Graph schema initialized
+
+Vertex labels created:
+  - RegulatorySource
+  - Provision
+  - Requirement
+  - Constraint
+
+======================================================================
+  Setup completed successfully!
+Graph 'reg_ca' is ready for use
+======================================================================</code></pre>
+    <p>To create a graph with a custom ontology (for generic topics):</p>
+<pre><code>AGE_GRAPH_NAME=kg_k8s_net python -m build_kg.setup_graph --ontology ./ontology.yaml</code></pre>
+    <p>This creates vertex labels from the ontology definition instead of the default regulatory labels.</p>
+  </section>
+
+  <!-- Step 5 -->
+  <section id="step-5">
+    <h2>Step 5: Verify Setup</h2>
+<pre><code>python -m build_kg.verify</code></pre>
+    <p>Expected output:</p>
+<pre><code>======================================================================
+Setup Verification
+======================================================================
+1. Verifying database connection...
+     Connected to PostgreSQL
+     Version: PostgreSQL 16.x
+2. Verifying Apache AGE extension...
+     AGE extension installed (version 1.5.0)
+     Graph 'reg_ca' exists
+3. Verifying source data...
+     Found 0 fragments with excerpts
+     Found 0 source documents
+4. Verifying OpenAI API access...
+     OpenAI API connection successful
+     Model: gpt-4o-mini
+======================================================================
+  All checks passed! System is ready.
+======================================================================</code></pre>
+  </section>
+
+  <!-- Step 6 -->
+  <section id="step-6">
+    <h2>Step 6: Crawl a Small Website</h2>
+    <p>For this tutorial, we will crawl 3 pages from a public website. Replace the URL below with any public page you want to index.</p>
+<pre><code>mkdir -p tutorial/crawl_output tutorial/chunk_output
+
+build-kg-crawl \
+  --url &quot;https://www.canada.ca/en/health-canada/services/food-nutrition/food-labelling.html&quot; \
+  --depth 1 \
+  --pages 3 \
+  --delay 2000 \
+  --format markdown \
+  --output ./tutorial/crawl_output/hc_labelling/</code></pre>
+    <p>Expected output:</p>
+<pre><code>Web Crawler Started
+
+Configuration:
+  Start URL:      https://www.canada.ca/en/health-canada/services/food-nutrition/food-labelling.html
+  Delay:          2000ms
+  Output Format:  markdown
+  Max Pages:      3
+  Max Depth:      1
+  Output Dir:     /path/to/build-kg/tutorial/crawl_output/hc_labelling
+
+Starting crawl...
+
+[1/3] Crawling (depth 0): https://www.canada.ca/.../food-labelling.html
+  Status: 200
+  Saved: food-labelling_depth0_20260218_143022.md
+
+[2/3] Crawling (depth 1): https://www.canada.ca/.../nutrition-labelling.html
+  Status: 200
+  Saved: nutrition-labelling_depth1_20260218_143025.md
+
+[3/3] Crawling (depth 1): https://www.canada.ca/.../ingredient-list.html
+  Status: 200
+  Saved: ingredient-list_depth1_20260218_143028.md
+
+Crawling Complete!
+
+Summary:
+  Pages Crawled:  3
+  Output Files:   3
+  Output Dir:     /path/to/build-kg/tutorial/crawl_output/hc_labelling</code></pre>
+    <p><strong>Cost: Free.</strong> Crawling uses no API calls.</p>
+  </section>
+
+  <!-- Step 7 -->
+  <section id="step-7">
+    <h2>Step 7: Chunk the Output</h2>
+<pre><code>build-kg-chunk \
+  ./tutorial/crawl_output/ \
+  ./tutorial/chunk_output/ \
+  --strategy by_title \
+  --max-chars 1000</code></pre>
+    <p>Expected output (abbreviated):</p>
+<pre><code>================================================================================
+DOCUMENT CHUNKER - Powered by Unstructured
+================================================================================
+
+  PROCESSING FILE
+  File: hc_labelling/food-labelling_depth0_20260218_143022.md
+  Type: .MD
+  Strategy: by_title
+
+  [STEP 1/4] Extracted 24 elements in 45ms
+  [STEP 2/4] Generated 8 chunks in 12ms
+  [STEP 3/4] Output directory ready
+  [STEP 4/4] Saved all chunks in 5ms
+
+  COMPLETED SUCCESSFULLY
+  Total chunks: 8
+
+...
+
+PROCESSING SUMMARY
+All files processed successfully!
+
+  Total files: 3
+  Successful: 3
+  Failed: 0
+  Total time: 0.23s</code></pre>
+    <p><strong>Cost: Free.</strong> Chunking runs entirely locally.</p>
+  </section>
+
+  <!-- Step 8 -->
+  <section id="step-8">
+    <h2>Step 8: Load to Database</h2>
+    <p>First, create a minimal crawl manifest for our tutorial data:</p>
+<pre><code>cat &gt; tutorial/crawl_manifest.json &lt;&lt; 'EOF'
+{
+  &quot;topic&quot;: &quot;Canadian food labelling&quot;,
+  &quot;graph_name&quot;: &quot;reg_ca&quot;,
+  &quot;created_at&quot;: &quot;2026-02-18T14:30:00Z&quot;,
+  &quot;sources&quot;: [
+    {
+      &quot;source_name&quot;: &quot;hc_labelling&quot;,
+      &quot;url&quot;: &quot;https://www.canada.ca/en/health-canada/services/food-nutrition/food-labelling.html&quot;,
+      &quot;title&quot;: &quot;Health Canada Food Labelling&quot;,
+      &quot;authority&quot;: &quot;Health Canada&quot;,
+      &quot;jurisdiction&quot;: &quot;CA&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P1&quot;
+    }
+  ],
+  &quot;defaults&quot;: {
+    &quot;jurisdiction&quot;: &quot;CA&quot;,
+    &quot;authority&quot;: &quot;Health Canada&quot;,
+    &quot;doc_type&quot;: &quot;guidance&quot;
+  }
+}
+EOF</code></pre>
+    <p>Now load the chunks:</p>
+<pre><code>build-kg-load ./tutorial/chunk_output/ --manifest ./tutorial/crawl_manifest.json</code></pre>
+    <p>Expected output:</p>
+<pre><code>============================================================
+  Chunk-to-Database Loader
+============================================================
+  Manifest: tutorial/crawl_manifest.json
+  Sources:  1
+  Defaults: jurisdiction=CA, authority=Health Canada
+
+Scanning chunk files...
+  Found 22 chunks across 3 documents
+
+Processing: food-labelling_depth0_20260218_143022 (8 chunks)
+  Document: a1b2c3d4... (Health Canada, CA)
+  Fragments: 8 inserted
+
+Processing: nutrition-labelling_depth1_20260218_143025 (7 chunks)
+  Document: e5f6g7h8... (Health Canada, CA)
+  Fragments: 7 inserted
+
+Processing: ingredient-list_depth1_20260218_143028 (7 chunks)
+  Document: i9j0k1l2... (Health Canada, CA)
+  Fragments: 7 inserted
+
+============================================================
+  LOAD COMPLETE
+============================================================
+  Documents inserted:  3
+  Documents skipped:   0
+  Fragments inserted:  22
+  Errors:              0
+============================================================</code></pre>
+  </section>
+
+  <!-- Step 9 -->
+  <section id="step-9">
+    <h2>Step 9: Parse with LLM</h2>
+    <p>Run the parser in test mode first (5 fragments only):</p>
+<pre><code>build-kg-parse --test</code></pre>
+    <p>Then parse a small batch (10 fragments):</p>
+<pre><code>build-kg-parse --limit 10</code></pre>
+    <p>Expected output (abbreviated):</p>
+<pre><code>======================================================================
+Knowledge Graph Parser
+======================================================================
+Graph: reg_ca
+Model: gpt-4o-mini
+Batch size: 10
+======================================================================
+
+Fetching fragments (limit=10, offset=0, jurisdiction=None)...
+Found 10 fragments to process
+
+======================================================================
+Batch 1/1
+======================================================================
+
+Processing fragment a1b2c3d4...
+  Regex extracted ID: B.01.008 (confidence: 0.85, method: regex)
+  Using regex ID: B.01.008
+  Extracted 2 requirements
+  Loaded to graph
+
+Processing fragment e5f6g7h8...
+  No ID extracted from regex or LLM
+  Extracted 1 requirements
+  Loaded to graph
+
+...
+
+======================================================================
+SUMMARY
+======================================================================
+Total processed:  10
+  Success:        8
+  Failed:         0
+  Skipped:        2
+
+ID Extraction Methods:
+  Regex:          5
+  LLM:            3
+
+Duration:         15.2 seconds
+Avg per fragment: 1.52 seconds
+======================================================================</code></pre>
+    <p>For <strong>generic topics</strong> with a custom ontology, pass the <code>--ontology</code> flag:</p>
+<pre><code>AGE_GRAPH_NAME=kg_k8s_net build-kg-parse --ontology ./ontology.yaml --limit 10</code></pre>
+    <p><strong>Cost: ~$0.003.</strong> GPT-4o-mini charges roughly $0.30 per 1,000 fragments. Ten fragments cost less than a penny.</p>
+  </section>
+
+  <!-- Step 10 -->
+  <section id="step-10">
+    <h2>Step 10: Verify the Graph</h2>
+    <p>Query the graph using Cypher through PostgreSQL:</p>
+<pre><code>python3 -c &quot;
+import psycopg2
+from build_kg.config import DB_CONFIG, AGE_GRAPH_NAME
+
+conn = psycopg2.connect(**DB_CONFIG)
+conn.set_isolation_level(0)
+cur = conn.cursor()
+cur.execute(\&quot;LOAD 'age';\&quot;)
+cur.execute(\&quot;SET search_path = ag_catalog, '\$user', public;\&quot;)
+
+graph = AGE_GRAPH_NAME
+
+# Count all node types
+for label in ['Provision', 'Requirement', 'Constraint']:
+    cur.execute(f\&quot;SELECT * FROM cypher('{graph}', \$\$ MATCH (n:{label}) RETURN count(n) \$\$) as (cnt agtype);\&quot;)
+    print(f'{label}s: {cur.fetchone()[0]}')
+
+# Sample a provision with its requirements
+cur.execute(f\&quot;\&quot;\&quot;
+    SELECT * FROM cypher('{graph}', \$\$
+        MATCH (r:Requirement)-[:DERIVED_FROM]-&gt;(p:Provision)
+        RETURN p.provision_id, p.authority, r.requirement_type, r.description
+        LIMIT 3
+    \$\$) as (prov_id agtype, authority agtype, req_type agtype, description agtype);
+\&quot;\&quot;\&quot;)
+
+print()
+print('Sample requirements:')
+for row in cur.fetchall():
+    print(f'  [{row[0]}] ({row[1]}) {row[2]}: {row[3][:80]}...')
+
+conn.close()
+&quot;</code></pre>
+    <p>Expected output:</p>
+<pre><code>Provisions: 8
+Requirements: 18
+Constraints: 15
+
+Sample requirements:
+  [&quot;B.01.008&quot;] (&quot;Health Canada&quot;) &quot;labelling&quot;: &quot;Sodium content must be declared per serving on the nutrition facts table&quot;...
+  [&quot;UNKNOWN&quot;] (&quot;Health Canada&quot;) &quot;labelling&quot;: &quot;The ingredient list must appear on the label in descending order of propor&quot;...
+  [&quot;B.01.008.2&quot;] (&quot;Health Canada&quot;) &quot;composition&quot;: &quot;Total fat content must not exceed the prescribed daily value percentage&quot;...</code></pre>
+  </section>
+
+  <!-- Cost Summary -->
+  <section id="cost-summary">
+    <h2>Cost Summary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Crawl (3 pages)</td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td>Chunk (3 files)</td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td>Load to DB</td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td>Parse (10 fragments, sync)</td>
+          <td>~$0.003</td>
+        </tr>
+        <tr>
+          <td><strong>Total</strong></td>
+          <td><strong>~$0.003</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>At scale, parsing 1,000 fragments with the batch API costs approximately $0.15.</p>
+  </section>
+
+  <!-- Next Steps -->
+  <section id="next-steps">
+    <h2>Next Steps</h2>
+    <ul>
+      <li>Read the <a href="architecture.md">Architecture</a> guide to understand the ontology system and pipeline design.</li>
+      <li>Follow the <a href="tutorial-singapore.md">Singapore F&amp;B Tutorial</a> for a full worked example with real regulatory data.</li>
+      <li>Use <code>/build-kg &lt;your topic&gt;</code> in Claude Code for fully automated graph building with auto-generated ontology.</li>
+      <li>See the CLI reference docs for detailed flag descriptions:
+        <ul>
+          <li><a href="reference-crawl.md">Crawler</a></li>
+          <li><a href="reference-chunk.md">Chunker</a></li>
+          <li><a href="reference-load.md">Loader</a></li>
+          <li><a href="reference-parse.md">Parser</a></li>
+        </ul>
+      </li>
+      <li>Check <a href="troubleshooting.md">Troubleshooting</a> if you hit any errors.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>build-kg &mdash; Apache 2.0 License &mdash; <a href="https://github.com/mergen-ai/build-kg">GitHub</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

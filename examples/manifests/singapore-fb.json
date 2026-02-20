@@ -1,0 +1,132 @@
+{
+  "topic": "full regulatory compliance landscape of Singapore for F&B",
+  "graph_name": "reg_sg_fb",
+  "created_at": "2026-02-17T00:00:00Z",
+  "sources": [
+    {
+      "source_name": "sale_food_act",
+      "url": "https://sso.agc.gov.sg/Act/SFA1973",
+      "title": "Sale of Food Act 1973",
+      "authority": "Parliament of SG",
+      "jurisdiction": "SG",
+      "doc_type": "act",
+      "depth": 1,
+      "max_pages": 20
+    },
+    {
+      "source_name": "food_regs",
+      "url": "https://sso.agc.gov.sg/SL/SFA1973-RG1",
+      "title": "Food Regulations (subsidiary legislation under Sale of Food Act)",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "regulation",
+      "depth": 2,
+      "max_pages": 50
+    },
+    {
+      "source_name": "fssa_2025",
+      "url": "https://sso.agc.gov.sg/Act/FSSA2025",
+      "title": "Food Safety and Security Act 2025",
+      "authority": "Parliament of SG",
+      "jurisdiction": "SG",
+      "doc_type": "act",
+      "depth": 2,
+      "max_pages": 40
+    },
+    {
+      "source_name": "eph_food_hygiene",
+      "url": "https://sso.agc.gov.sg/SL/EPHA1987-RG16",
+      "title": "Environmental Public Health (Food Hygiene) Regulations",
+      "authority": "NEA/SFA",
+      "jurisdiction": "SG",
+      "doc_type": "regulation",
+      "depth": 1,
+      "max_pages": 30
+    },
+    {
+      "source_name": "sfa_reg_standards",
+      "url": "https://www.sfa.gov.sg/regulatory-standards-frameworks-guidelines",
+      "title": "SFA Regulatory Standards, Frameworks & Guidelines",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 60
+    },
+    {
+      "source_name": "sfa_labelling",
+      "url": "https://www.sfa.gov.sg/regulatory-standards-frameworks-guidelines/food-labelling-packaging-guidelines/labelling-requirements-for-food",
+      "title": "SFA Labelling Requirements for Food",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 30
+    },
+    {
+      "source_name": "sfa_safety_limits",
+      "url": "https://www.sfa.gov.sg/regulatory-standards-frameworks-guidelines/food-safety-regulatory-limits/overview-on-food-safety-regulatory-limits",
+      "title": "SFA Food Safety Regulatory Limits",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 40
+    },
+    {
+      "source_name": "sfa_import_export",
+      "url": "https://www.sfa.gov.sg/food-import-export",
+      "title": "SFA Food Import & Export Requirements",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 40
+    },
+    {
+      "source_name": "sfa_legislation",
+      "url": "https://www.sfa.gov.sg/legislation",
+      "title": "SFA Legislation Portal",
+      "authority": "SFA",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 20
+    },
+    {
+      "source_name": "hpb_nutri_grade",
+      "url": "https://www.hpb.gov.sg/healthy-living/food-beverage/nutri-grade",
+      "title": "HPB Nutri-Grade Measures for Beverages",
+      "authority": "HPB",
+      "jurisdiction": "SG",
+      "doc_type": "regulation",
+      "depth": 2,
+      "max_pages": 20
+    },
+    {
+      "source_name": "muis_halal",
+      "url": "https://www.muis.gov.sg/halal/",
+      "title": "MUIS Halal Certification Requirements",
+      "authority": "MUIS",
+      "jurisdiction": "SG",
+      "doc_type": "guidance",
+      "depth": 2,
+      "max_pages": 30
+    },
+    {
+      "source_name": "liquor_control_act",
+      "url": "https://sso.agc.gov.sg/Act/LCSCA2015",
+      "title": "Liquor Control (Supply and Consumption) Act 2015",
+      "authority": "Parliament of SG",
+      "jurisdiction": "SG",
+      "doc_type": "act",
+      "depth": 1,
+      "max_pages": 15
+    }
+  ],
+  "defaults": {
+    "jurisdiction": "SG",
+    "authority": "SFA",
+    "doc_type": "regulation"
+  }
+}

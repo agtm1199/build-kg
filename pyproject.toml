@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "build-kg"
+version = "0.3.0"
+description = "Claude Code skill that turns any topic into a structured knowledge graph stored in Apache AGE (PostgreSQL). One command, any topic, your own database."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [
+    { name = "build-kg contributors" },
+]
+keywords = [
+    "knowledge-graph", "apache-age", "graph-database", "claude-code",
+    "nlp", "postgresql", "ontology", "information-extraction",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+dependencies = [
+    "crawl4ai>=0.4.0",
+    "unstructured[md]>=0.16.0",
+    "psycopg2-binary>=2.9.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+pdf = [
+    "unstructured[pdf,md]>=0.16.0",
+]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+]
+all = [
+    "build-kg[pdf,dev]",
+]
+
+[project.scripts]
+build-kg-crawl = "build_kg.crawl:main"
+build-kg-chunk = "build_kg.chunk:main"
+build-kg-load = "build_kg.load:main"
+build-kg-parse = "build_kg.parse:main"
+build-kg-parse-batch = "build_kg.parse_batch:main"
+build-kg-setup = "build_kg.setup_graph:main"
+build-kg-verify = "build_kg.verify:main"
+build-kg-domains = "build_kg.domain:_cli_list_profiles"
+
+[project.urls]
+Homepage = "https://github.com/mergen-ai/build-kg"
+Documentation = "https://github.com/mergen-ai/build-kg/tree/main/docs"
+Repository = "https://github.com/mergen-ai/build-kg"
+Issues = "https://github.com/mergen-ai/build-kg/issues"
+
+[tool.hatch.build]
+include = ["src/build_kg/**/*.py", "src/build_kg/**/*.yaml"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/build_kg"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

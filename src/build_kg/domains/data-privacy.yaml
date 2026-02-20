@@ -1,0 +1,195 @@
+name: "Data Privacy & Protection"
+description: "GDPR, CCPA, and data protection regulatory compliance"
+version: "2.0"
+extends: default
+
+ontology:
+  description: "Regulatory compliance ontology for data privacy"
+  root_node: Provision
+  nodes:
+    - label: Provision
+      description: "A regulatory provision from data protection legislation"
+      properties:
+        provision_id: string
+        text: string
+        jurisdiction: string
+        authority: string
+    - label: Requirement
+      description: "A specific data protection requirement derived from a provision"
+      properties:
+        requirement_type: string
+        deontic_modality: string
+        description: string
+        applies_to_scope: string
+    - label: Constraint
+      description: "A testable constraint on a requirement"
+      properties:
+        logic_type: string
+        target_signal: string
+        operator: string
+        threshold: number
+        unit: string
+        pattern: string
+        allowed_values: list
+  edges:
+    - label: DERIVED_FROM
+      source: Requirement
+      target: Provision
+      description: "Requirement is derived from this provision"
+    - label: HAS_CONSTRAINT
+      source: Requirement
+      target: Constraint
+      description: "Requirement has this testable constraint"
+  json_schema: |
+    {
+      "provision_id": "extracted ID or UNKNOWN",
+      "provision_text": "original regulatory text",
+      "requirements": [
+        {
+          "requirement_type": "one of the profile's requirement_types",
+          "deontic_modality": "must | must_not | may | should | should_not",
+          "description": "clear description of what is required",
+          "applies_to_scope": "what the requirement applies to",
+          "constraints": [
+            {
+              "logic_type": "threshold | pattern | enumeration | boolean",
+              "target_signal": "what is being measured",
+              "operator": "<= | >= | == | != (if applicable)",
+              "threshold": null,
+              "unit": null,
+              "pattern": null,
+              "allowed_values": null
+            }
+          ]
+        }
+      ]
+    }
+
+parsing:
+  system_message: "You are a regulatory compliance expert specializing in data privacy and data protection regulations. Always respond with valid JSON."
+  requirement_types:
+    - consent
+    - data_processing
+    - data_subject_rights
+    - data_transfer
+    - security
+    - breach_notification
+    - documentation
+    - prohibition
+    - process
+  deontic_modalities:
+    - must
+    - must_not
+    - may
+    - should
+    - should_not
+  constraint_logic_types:
+    - threshold
+    - pattern
+    - enumeration
+    - boolean
+  target_signal_examples:
+    - "data.personal_data"
+    - "data.sensitive_data"
+    - "consent.basis"
+    - "processing.purpose"
+    - "transfer.mechanism"
+    - "breach.notification_time"
+    - "retention.period"
+    - "dpia.required"
+  scope_examples:
+    - data_controller
+    - data_processor
+    - data_subject
+    - supervisory_authority
+    - organization
+    - website
+    - application
+
+id_patterns:
+  patterns:
+    gdpr_article:
+      regex: "\\bArticle\\s+(\\d+(?:\\(\\d+\\))?)\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    gdpr_recital:
+      regex: "\\bRecital\\s+(\\d+)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    ccpa_section:
+      regex: "\\bSection\\s*(1798(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    eu_regulation:
+      regex: "\\b(?:EU|EC)\\s+(?:No\\.?\\s*)?(\\d+/\\d{4})\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    section_numbered:
+      regex: "\\bSection\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    article:
+      regex: "\\bArticle\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+  authority_priorities:
+    European Data Protection Board:
+      - gdpr_article
+      - gdpr_recital
+      - eu_regulation
+    California Privacy Protection Agency:
+      - ccpa_section
+      - section_numbered
+    Information Commissioner's Office:
+      - gdpr_article
+      - section_numbered
+  exclusions:
+    - "\\b\\d{4}\\b"
+    - "\\b\\d{1,3}%\\b"
+    - "\\b\\d+\\s*hours\\b"
+    - "\\b\\d+\\s*days\\b"
+
+discovery:
+  search_templates:
+    - "<country> data protection authority official website"
+    - "<country> data privacy regulations"
+    - "<country> personal data protection law"
+    - "<country> data breach notification requirements"
+    - "<country> data transfer cross-border regulations"
+    - "<country> cookie consent requirements"
+    - "<country> data protection officer requirements"
+    - "<country> privacy impact assessment regulations"
+    - "<country> children data protection regulations"
+    - "<country> biometric data regulations"
+    - "<country> employee data privacy regulations"
+    - "<country> health data privacy regulations"
+  sub_domains:
+    - name: "Lawful basis for processing"
+      description: "Consent, legitimate interest, legal obligation"
+    - name: "Data subject rights"
+      description: "Access, erasure, portability, objection"
+    - name: "Data breach notification"
+      description: "Notification timelines, authority reporting"
+    - name: "Cross-border data transfers"
+      description: "Adequacy decisions, SCCs, BCRs"
+    - name: "Data protection impact assessment"
+      description: "DPIA requirements and methodology"
+    - name: "Data protection officer"
+      description: "DPO appointment, qualifications, duties"
+    - name: "Children's data"
+      description: "Age verification, parental consent"
+    - name: "Security measures"
+      description: "Technical and organizational measures"
+    - name: "Record keeping"
+      description: "Records of processing activities"
+    - name: "Automated decision-making"
+      description: "Profiling, right to human review"
+    - name: "Employee data"
+      description: "Workplace monitoring, employee consent"
+    - name: "Health data"
+      description: "Health records, clinical data processing"
+  supplementary_sources:
+    - "OECD Privacy Guidelines"
+    - "APEC Privacy Framework"
+    - "ISO 27701"
+    - "Council of Europe Convention 108+"

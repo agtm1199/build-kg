@@ -1,0 +1,197 @@
+name: "Financial AML/KYC"
+description: "Anti-money laundering, know-your-customer, and financial compliance"
+version: "2.0"
+extends: default
+
+ontology:
+  description: "Regulatory compliance ontology for AML/KYC"
+  root_node: Provision
+  nodes:
+    - label: Provision
+      description: "A regulatory provision from AML/KYC legislation"
+      properties:
+        provision_id: string
+        text: string
+        jurisdiction: string
+        authority: string
+    - label: Requirement
+      description: "A specific AML/KYC requirement derived from a provision"
+      properties:
+        requirement_type: string
+        deontic_modality: string
+        description: string
+        applies_to_scope: string
+    - label: Constraint
+      description: "A testable constraint on a requirement"
+      properties:
+        logic_type: string
+        target_signal: string
+        operator: string
+        threshold: number
+        unit: string
+        pattern: string
+        allowed_values: list
+  edges:
+    - label: DERIVED_FROM
+      source: Requirement
+      target: Provision
+      description: "Requirement is derived from this provision"
+    - label: HAS_CONSTRAINT
+      source: Requirement
+      target: Constraint
+      description: "Requirement has this testable constraint"
+  json_schema: |
+    {
+      "provision_id": "extracted ID or UNKNOWN",
+      "provision_text": "original regulatory text",
+      "requirements": [
+        {
+          "requirement_type": "one of the profile's requirement_types",
+          "deontic_modality": "must | must_not | may | should | should_not",
+          "description": "clear description of what is required",
+          "applies_to_scope": "what the requirement applies to",
+          "constraints": [
+            {
+              "logic_type": "threshold | pattern | enumeration | boolean",
+              "target_signal": "what is being measured",
+              "operator": "<= | >= | == | != (if applicable)",
+              "threshold": null,
+              "unit": null,
+              "pattern": null,
+              "allowed_values": null
+            }
+          ]
+        }
+      ]
+    }
+
+parsing:
+  system_message: "You are a regulatory compliance expert specializing in anti-money laundering, know-your-customer, and financial regulations. Always respond with valid JSON."
+  requirement_types:
+    - identification
+    - verification
+    - monitoring
+    - reporting
+    - record_keeping
+    - risk_assessment
+    - prohibition
+    - process
+    - documentation
+  deontic_modalities:
+    - must
+    - must_not
+    - may
+    - should
+    - should_not
+  constraint_logic_types:
+    - threshold
+    - pattern
+    - enumeration
+    - boolean
+  target_signal_examples:
+    - "customer.identity"
+    - "transaction.amount"
+    - "transaction.frequency"
+    - "customer.risk_rating"
+    - "report.sar"
+    - "record.retention_period"
+    - "pep.screening"
+    - "sanctions.check"
+  scope_examples:
+    - customer
+    - transaction
+    - account
+    - financial_institution
+    - designated_entity
+    - beneficial_owner
+    - correspondent_bank
+
+id_patterns:
+  patterns:
+    us_cfr_title31:
+      regex: "\\b(31\\s*CFR\\s*\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    fatf_rec:
+      regex: "\\bRecommendation\\s+(\\d+)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    eu_directive:
+      regex: "\\b(\\d{4}/\\d+/EU)\\b"
+      confidence: 0.85
+    eu_regulation:
+      regex: "\\b(?:EU|EC)\\s+(?:No\\.?\\s*)?(\\d+/\\d{4})\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    section_numbered:
+      regex: "\\bSection\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    article:
+      regex: "\\bArticle\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+  authority_priorities:
+    FinCEN:
+      - us_cfr_title31
+      - section_numbered
+    FATF:
+      - fatf_rec
+      - section_numbered
+    FCA:
+      - section_numbered
+      - article
+    European Commission:
+      - eu_directive
+      - eu_regulation
+      - article
+  exclusions:
+    - "\\b\\d{4}\\b"
+    - "\\b\\d{1,3}%\\b"
+    - "\\b\\$\\d+"
+    - "\\b\\d+\\s*EUR\\b"
+
+discovery:
+  search_templates:
+    - "<country> anti-money laundering AML regulations"
+    - "<country> know your customer KYC requirements"
+    - "<country> financial intelligence unit FIU"
+    - "<country> suspicious activity reporting requirements"
+    - "<country> beneficial ownership regulations"
+    - "<country> sanctions screening requirements"
+    - "<country> terrorist financing regulations"
+    - "<country> politically exposed persons PEP regulations"
+    - "<country> customer due diligence CDD requirements"
+    - "<country> financial compliance authority official website"
+    - "<country> bank secrecy act regulations"
+    - "<country> virtual asset service provider VASP regulations"
+  sub_domains:
+    - name: "Customer due diligence"
+      description: "CDD, simplified DD, enhanced DD requirements"
+    - name: "Transaction monitoring"
+      description: "Suspicious activity detection, threshold reporting"
+    - name: "Suspicious activity reporting"
+      description: "SAR/STR filing requirements, timelines"
+    - name: "Beneficial ownership"
+      description: "UBO identification and verification"
+    - name: "Record keeping"
+      description: "Retention periods, data requirements"
+    - name: "Risk assessment"
+      description: "Institutional and customer risk assessment"
+    - name: "Sanctions & PEPs"
+      description: "Screening, watchlist management, PEP identification"
+    - name: "Internal controls"
+      description: "Compliance officer, training, policies"
+    - name: "Correspondent banking"
+      description: "Due diligence for correspondent relationships"
+    - name: "Virtual assets"
+      description: "Crypto-asset regulations, VASP requirements"
+    - name: "Wire transfers"
+      description: "Travel rule, originator/beneficiary information"
+    - name: "Trade-based laundering"
+      description: "Trade finance, mis-invoicing, trade-based ML"
+  supplementary_sources:
+    - "FATF Recommendations"
+    - "Basel Committee guidance"
+    - "Wolfsberg Principles"
+    - "Egmont Group resources"

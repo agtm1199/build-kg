@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Singapore F&amp;B Tutorial - build-kg</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --text-muted: #8b949e;
+    --heading: #f0f6fc; --link: #58a6ff; --accent: #1f6feb; --green: #3fb950; --orange: #d29922;
+    --red: #f85149; --purple: #bc8cff; --code-bg: #0d1117; --inline-code-bg: #1c2128;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .hero { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+  .hero h1 { font-size: 2.5rem; color: var(--heading); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .hero .tagline { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--border); color: var(--text-muted); }
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.blue { border-color: var(--link); color: var(--link); }
+  .badge.purple { border-color: var(--purple); color: var(--purple); }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem 2rem; margin-bottom: 3rem; }
+  .toc h2 { font-size: 1.1rem; color: var(--heading); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .toc ol { list-style: none; counter-reset: toc; columns: 2; column-gap: 2rem; }
+  .toc li { counter-increment: toc; padding: 0.25rem 0; }
+  .toc li::before { content: counter(toc) "."; color: var(--text-muted); margin-right: 0.5rem; font-size: 0.85rem; }
+  .toc a { color: var(--link); text-decoration: none; font-size: 0.95rem; }
+  .toc a:hover { text-decoration: underline; }
+  section { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; color: var(--heading); margin-bottom: 1rem; padding-top: 1rem; }
+  h3 { font-size: 1.3rem; color: var(--heading); margin: 1.5rem 0 0.75rem; }
+  h4 { font-size: 1.05rem; color: var(--heading); margin: 1.25rem 0 0.5rem; }
+  p { margin-bottom: 1rem; }
+  ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+  li { margin-bottom: 0.25rem; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; font-size: 0.875rem; line-height: 1.5; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.875em; }
+  :not(pre) > code { background: var(--inline-code-bg); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.85em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border); }
+  th { background: var(--surface); color: var(--heading); font-weight: 600; }
+  tr:nth-child(even) { background: rgba(22, 27, 34, 0.5); }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1rem 0; }
+  .callout.tip { border-left-color: var(--green); }
+  .callout.warn { border-left-color: var(--orange); }
+  .callout strong { display: block; margin-bottom: 0.25rem; color: var(--heading); }
+  footer { text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem; }
+  @media (max-width: 700px) { .toc ol { columns: 1; } .hero h1 { font-size: 2rem; } }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;font-size:0.9rem;backdrop-filter:blur(8px);">
+  <a href="../site/index.html" style="color:var(--heading);font-weight:700;text-decoration:none;">build-<span style="color:var(--link)">kg</span></a>
+  <a href="index.html">Docs</a>
+  <a href="guide.html">Guide</a>
+  <a href="tutorial-singapore.html" style="color:var(--heading);">Singapore Tutorial</a>
+  <a href="https://github.com/mergen-ai/build-kg" style="margin-left:auto;">GitHub</a>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<header class="hero">
+  <h1>build-kg</h1>
+  <p class="tagline">Singapore F&amp;B Tutorial</p>
+  <div class="badges">
+    <span class="badge green">Apache 2.0</span>
+    <span class="badge blue">Python 3.10+</span>
+    <span class="badge purple">Apache AGE</span>
+  </div>
+</header>
+
+<!-- Table of Contents -->
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#step1">Step 1: Set Up Working Directory</a></li>
+    <li><a href="#step2">Step 2: Create the Crawl Manifest</a></li>
+    <li><a href="#step3">Step 3: Crawl All Sources</a></li>
+    <li><a href="#step4">Step 4: Chunk All Documents</a></li>
+    <li><a href="#step5">Step 5: Load to Database</a></li>
+    <li><a href="#step6">Step 6: Parse with Batch API</a></li>
+    <li><a href="#step7">Step 7: Validate the Graph</a></li>
+    <li><a href="#cost">Cost Breakdown</a></li>
+    <li><a href="#tips">Tips</a></li>
+  </ol>
+</nav>
+
+<!-- Overview -->
+<section id="overview">
+  <h2>Overview</h2>
+  <p>This tutorial walks through building a complete knowledge graph of Singapore's food and beverage regulatory landscape. By the end, you will have a graph with approximately 2,400 provisions, 6,000 requirements, and 5,700 constraints drawn from 12 sources across 4 regulatory authorities.</p>
+
+  <p>Singapore's F&amp;B regulations are issued by multiple authorities:</p>
+
+  <table>
+    <tr><th>Authority</th><th>Full Name</th><th>Role</th></tr>
+    <tr><td><strong>SFA</strong></td><td>Singapore Food Agency</td><td>Primary food safety regulator. Administers the Sale of Food Act, Food Regulations, and related subsidiary legislation.</td></tr>
+    <tr><td><strong>Parliament</strong></td><td>Parliament of Singapore</td><td>Enacted the Sale of Food Act, Environmental Public Health Act, and other primary legislation.</td></tr>
+    <tr><td><strong>HPB</strong></td><td>Health Promotion Board</td><td>Issues nutrition guidelines, Healthier Choice Symbol programme, and advertising guidelines.</td></tr>
+    <tr><td><strong>MUIS</strong></td><td>Majlis Ugama Islam Singapura</td><td>Islamic Religious Council of Singapore. Administers halal certification and the AMLA.</td></tr>
+  </table>
+</section>
+
+<!-- Prerequisites -->
+<section id="prerequisites">
+  <h2>Prerequisites</h2>
+  <p>Complete the <a href="tutorial-quickstart.html">Quickstart Tutorial</a> first. You should have:</p>
+  <ul>
+    <li>build-kg installed in a virtual environment</li>
+    <li>Docker running with the PostgreSQL + AGE container</li>
+    <li><code>.env</code> configured with your OpenAI API key</li>
+  </ul>
+</section>
+
+<!-- Step 1 -->
+<section id="step1">
+  <h2>Step 1: Set Up Working Directory</h2>
+  <pre><code>cd build-kg
+source venv/bin/activate
+
+WORK_DIR=&quot;./pipelines/reg_sg_fb_$(date +%Y%m%d)&quot;
+mkdir -p &quot;$WORK_DIR/crawl_output&quot; &quot;$WORK_DIR/chunk_output&quot;</code></pre>
+</section>
+
+<!-- Step 2 -->
+<section id="step2">
+  <h2>Step 2: Create the Crawl Manifest</h2>
+  <p>The example manifest at <code>examples/manifests/singapore-fb.json</code> lists 12 sources. Copy it into your working directory:</p>
+  <pre><code>cp examples/manifests/singapore-fb.json &quot;$WORK_DIR/crawl_manifest.json&quot;</code></pre>
+
+  <p>If the example file does not exist yet, create the manifest manually. Here is the full manifest for Singapore F&amp;B:</p>
+
+  <pre><code>{
+  &quot;topic&quot;: &quot;Full regulatory compliance landscape of Singapore for F&amp;B&quot;,
+  &quot;graph_name&quot;: &quot;reg_sg_fb&quot;,
+  &quot;created_at&quot;: &quot;2026-02-18T10:00:00Z&quot;,
+  &quot;sources&quot;: [
+    {
+      &quot;source_name&quot;: &quot;sfa_food_regs&quot;,
+      &quot;url&quot;: &quot;https://www.sfa.gov.sg/food-information/legislation&quot;,
+      &quot;title&quot;: &quot;SFA Food Regulations&quot;,
+      &quot;authority&quot;: &quot;SFA&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;regulation&quot;,
+      &quot;priority&quot;: &quot;P1&quot;,
+      &quot;sub_domains&quot;: [&quot;food_safety&quot;, &quot;labelling&quot;, &quot;additives&quot;, &quot;import_export&quot;],
+      &quot;depth&quot;: 3,
+      &quot;max_pages&quot;: 100,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sso_sale_of_food_act&quot;,
+      &quot;url&quot;: &quot;https://sso.agc.gov.sg/Act/SFA1973&quot;,
+      &quot;title&quot;: &quot;Sale of Food Act 1973&quot;,
+      &quot;authority&quot;: &quot;Parliament&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;act&quot;,
+      &quot;priority&quot;: &quot;P1&quot;,
+      &quot;sub_domains&quot;: [&quot;food_safety&quot;, &quot;licensing&quot;, &quot;enforcement&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 50,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sso_food_regulations&quot;,
+      &quot;url&quot;: &quot;https://sso.agc.gov.sg/SL/SFA1973-RG1&quot;,
+      &quot;title&quot;: &quot;Food Regulations (Cap 283, Rg 1)&quot;,
+      &quot;authority&quot;: &quot;Parliament&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;regulation&quot;,
+      &quot;priority&quot;: &quot;P1&quot;,
+      &quot;sub_domains&quot;: [&quot;labelling&quot;, &quot;composition&quot;, &quot;additives&quot;, &quot;standards&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 80,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sso_ephi_act&quot;,
+      &quot;url&quot;: &quot;https://sso.agc.gov.sg/Act/EPHA1987&quot;,
+      &quot;title&quot;: &quot;Environmental Public Health Act 1987&quot;,
+      &quot;authority&quot;: &quot;Parliament&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;act&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;food_safety&quot;, &quot;licensing&quot;, &quot;environmental_health&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 40,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sfa_import_export&quot;,
+      &quot;url&quot;: &quot;https://www.sfa.gov.sg/food-import-export&quot;,
+      &quot;title&quot;: &quot;SFA Import &amp; Export Requirements&quot;,
+      &quot;authority&quot;: &quot;SFA&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;import_export&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 50,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sfa_food_safety&quot;,
+      &quot;url&quot;: &quot;https://www.sfa.gov.sg/food-information/food-safety-education&quot;,
+      &quot;title&quot;: &quot;SFA Food Safety Guidelines&quot;,
+      &quot;authority&quot;: &quot;SFA&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;food_safety&quot;, &quot;hygiene&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 30,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;hpb_nutrition&quot;,
+      &quot;url&quot;: &quot;https://www.hpb.gov.sg/healthy-living/food-beverage&quot;,
+      &quot;title&quot;: &quot;HPB Food &amp; Beverage Guidelines&quot;,
+      &quot;authority&quot;: &quot;HPB&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;nutrition&quot;, &quot;labelling&quot;, &quot;advertising&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 40,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;hpb_hcs&quot;,
+      &quot;url&quot;: &quot;https://www.hpb.gov.sg/healthy-living/food-beverage/healthier-choice-symbol&quot;,
+      &quot;title&quot;: &quot;HPB Healthier Choice Symbol Programme&quot;,
+      &quot;authority&quot;: &quot;HPB&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;standard&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;labelling&quot;, &quot;claims&quot;, &quot;nutrition&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 25,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;muis_halal&quot;,
+      &quot;url&quot;: &quot;https://www.muis.gov.sg/Halal/Halal-Certification&quot;,
+      &quot;title&quot;: &quot;MUIS Halal Certification&quot;,
+      &quot;authority&quot;: &quot;MUIS&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;standard&quot;,
+      &quot;priority&quot;: &quot;P2&quot;,
+      &quot;sub_domains&quot;: [&quot;halal&quot;],
+      &quot;depth&quot;: 2,
+      &quot;max_pages&quot;: 30,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sso_amla&quot;,
+      &quot;url&quot;: &quot;https://sso.agc.gov.sg/Act/AMLA1966&quot;,
+      &quot;title&quot;: &quot;Administration of Muslim Law Act&quot;,
+      &quot;authority&quot;: &quot;Parliament&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;act&quot;,
+      &quot;priority&quot;: &quot;P3&quot;,
+      &quot;sub_domains&quot;: [&quot;halal&quot;],
+      &quot;depth&quot;: 1,
+      &quot;max_pages&quot;: 25,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sfa_novel_food&quot;,
+      &quot;url&quot;: &quot;https://www.sfa.gov.sg/food-information/novel-food&quot;,
+      &quot;title&quot;: &quot;SFA Novel Food Framework&quot;,
+      &quot;authority&quot;: &quot;SFA&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P3&quot;,
+      &quot;sub_domains&quot;: [&quot;novel_food&quot;],
+      &quot;depth&quot;: 1,
+      &quot;max_pages&quot;: 15,
+      &quot;delay&quot;: 2000
+    },
+    {
+      &quot;source_name&quot;: &quot;sfa_packaging&quot;,
+      &quot;url&quot;: &quot;https://www.sfa.gov.sg/food-information/food-safety/packaging-materials&quot;,
+      &quot;title&quot;: &quot;SFA Food Contact Materials&quot;,
+      &quot;authority&quot;: &quot;SFA&quot;,
+      &quot;jurisdiction&quot;: &quot;SG&quot;,
+      &quot;doc_type&quot;: &quot;guidance&quot;,
+      &quot;priority&quot;: &quot;P3&quot;,
+      &quot;sub_domains&quot;: [&quot;packaging&quot;],
+      &quot;depth&quot;: 1,
+      &quot;max_pages&quot;: 15,
+      &quot;delay&quot;: 2000
+    }
+  ],
+  &quot;defaults&quot;: {
+    &quot;jurisdiction&quot;: &quot;SG&quot;,
+    &quot;authority&quot;: &quot;SFA&quot;,
+    &quot;doc_type&quot;: &quot;regulation&quot;
+  },
+  &quot;coverage&quot;: {
+    &quot;covered&quot;: [
+      &quot;food_safety&quot;, &quot;labelling&quot;, &quot;nutrition&quot;, &quot;additives&quot;,
+      &quot;import_export&quot;, &quot;halal&quot;, &quot;novel_food&quot;, &quot;packaging&quot;,
+      &quot;licensing&quot;, &quot;environmental_health&quot;, &quot;advertising&quot;,
+      &quot;claims&quot;, &quot;composition&quot;, &quot;hygiene&quot;, &quot;standards&quot;,
+      &quot;enforcement&quot;
+    ],
+    &quot;gaps&quot;: [&quot;organic&quot;, &quot;alcoholic_beverages&quot;, &quot;weights_measures&quot;],
+    &quot;coverage_pct&quot;: 85
+  }
+}</code></pre>
+
+  <p>Save this as <code>$WORK_DIR/crawl_manifest.json</code>.</p>
+</section>
+
+<!-- Step 3 -->
+<section id="step3">
+  <h2>Step 3: Crawl All Sources</h2>
+  <p>Crawl each source from the manifest. This takes approximately 30-60 minutes depending on site response times.</p>
+
+  <pre><code># Source 1: SFA Food Regulations (P1 - Critical)
+build-kg-crawl \
+  --url &quot;https://www.sfa.gov.sg/food-information/legislation&quot; \
+  --depth 3 --pages 100 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sfa_food_regs/&quot;
+
+# Source 2: Sale of Food Act (P1)
+build-kg-crawl \
+  --url &quot;https://sso.agc.gov.sg/Act/SFA1973&quot; \
+  --depth 2 --pages 50 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sso_sale_of_food_act/&quot;
+
+# Source 3: Food Regulations (Cap 283) (P1)
+build-kg-crawl \
+  --url &quot;https://sso.agc.gov.sg/SL/SFA1973-RG1&quot; \
+  --depth 2 --pages 80 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sso_food_regulations/&quot;
+
+# Source 4: Environmental Public Health Act (P2)
+build-kg-crawl \
+  --url &quot;https://sso.agc.gov.sg/Act/EPHA1987&quot; \
+  --depth 2 --pages 40 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sso_ephi_act/&quot;
+
+# Source 5: SFA Import &amp; Export (P2)
+build-kg-crawl \
+  --url &quot;https://www.sfa.gov.sg/food-import-export&quot; \
+  --depth 2 --pages 50 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sfa_import_export/&quot;
+
+# Source 6: SFA Food Safety Guidelines (P2)
+build-kg-crawl \
+  --url &quot;https://www.sfa.gov.sg/food-information/food-safety-education&quot; \
+  --depth 2 --pages 30 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sfa_food_safety/&quot;
+
+# Source 7: HPB Food &amp; Beverage (P2)
+build-kg-crawl \
+  --url &quot;https://www.hpb.gov.sg/healthy-living/food-beverage&quot; \
+  --depth 2 --pages 40 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/hpb_nutrition/&quot;
+
+# Source 8: HPB Healthier Choice Symbol (P2)
+build-kg-crawl \
+  --url &quot;https://www.hpb.gov.sg/healthy-living/food-beverage/healthier-choice-symbol&quot; \
+  --depth 2 --pages 25 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/hpb_hcs/&quot;
+
+# Source 9: MUIS Halal Certification (P2)
+build-kg-crawl \
+  --url &quot;https://www.muis.gov.sg/Halal/Halal-Certification&quot; \
+  --depth 2 --pages 30 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/muis_halal/&quot;
+
+# Source 10: Administration of Muslim Law Act (P3)
+build-kg-crawl \
+  --url &quot;https://sso.agc.gov.sg/Act/AMLA1966&quot; \
+  --depth 1 --pages 25 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sso_amla/&quot;
+
+# Source 11: SFA Novel Food Framework (P3)
+build-kg-crawl \
+  --url &quot;https://www.sfa.gov.sg/food-information/novel-food&quot; \
+  --depth 1 --pages 15 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sfa_novel_food/&quot;
+
+# Source 12: SFA Food Contact Materials (P3)
+build-kg-crawl \
+  --url &quot;https://www.sfa.gov.sg/food-information/food-safety/packaging-materials&quot; \
+  --depth 1 --pages 15 --delay 2000 \
+  --output &quot;$WORK_DIR/crawl_output/sfa_packaging/&quot;</code></pre>
+
+  <p>After all sources are crawled, optionally clean breadcrumb navigation markers:</p>
+
+  <pre><code>grep -rl &quot;## You are here&quot; &quot;$WORK_DIR/crawl_output/&quot; | while read f; do
+  bash src/build_kg/clean.sh &quot;$f&quot;
+done</code></pre>
+
+  <p>Check the total page count:</p>
+
+  <pre><code>find &quot;$WORK_DIR/crawl_output/&quot; -name &quot;*.md&quot; | wc -l</code></pre>
+
+  <p>Expected: approximately 300-500 markdown files total.</p>
+</section>
+
+<!-- Step 4 -->
+<section id="step4">
+  <h2>Step 4: Chunk All Documents</h2>
+
+  <pre><code>build-kg-chunk \
+  &quot;$WORK_DIR/crawl_output/&quot; \
+  &quot;$WORK_DIR/chunk_output/&quot; \
+  --strategy by_title \
+  --max-chars 1000 \
+  --overlap 100</code></pre>
+
+  <p>Expected: approximately 2,000-3,000 JSON chunk files across all sources. The chunker preserves the directory structure, so chunks for each source are in their own subdirectory.</p>
+
+  <p>Check the count:</p>
+
+  <pre><code>find &quot;$WORK_DIR/chunk_output/&quot; -name &quot;*_chunk_*.json&quot; | wc -l</code></pre>
+</section>
+
+<!-- Step 5 -->
+<section id="step5">
+  <h2>Step 5: Load to Database</h2>
+  <p>Create the graph for Singapore F&amp;B (if not already using <code>reg_ca</code>):</p>
+
+  <pre><code>AGE_GRAPH_NAME=reg_sg_fb python -m build_kg.setup_graph</code></pre>
+
+  <p>Load the chunks:</p>
+
+  <pre><code>build-kg-load &quot;$WORK_DIR/chunk_output/&quot; --manifest &quot;$WORK_DIR/crawl_manifest.json&quot;</code></pre>
+
+  <p>You can preview what will be loaded first:</p>
+
+  <pre><code>build-kg-load &quot;$WORK_DIR/chunk_output/&quot; --manifest &quot;$WORK_DIR/crawl_manifest.json&quot; --dry-run</code></pre>
+
+  <p>Expected output:</p>
+
+  <pre><code>============================================================
+  Chunk-to-Database Loader
+============================================================
+  Manifest: .../crawl_manifest.json
+  Sources:  12
+  Defaults: jurisdiction=SG, authority=SFA
+
+Scanning chunk files...
+  Found 2647 chunks across 387 documents
+
+Processing: sfa_food_regs/legislation_depth0_... (12 chunks)
+  Document: a1b2c3d4... (SFA, SG)
+  Fragments: 11 inserted
+
+...
+
+============================================================
+  LOAD COMPLETE
+============================================================
+  Documents inserted:  387
+  Documents skipped:   0
+  Fragments inserted:  2483
+  Errors:              0
+============================================================</code></pre>
+</section>
+
+<!-- Step 6 -->
+<section id="step6">
+  <h2>Step 6: Parse with Batch API</h2>
+  <p>With approximately 2,500 fragments, the batch API is recommended. It is 50% cheaper and handles large volumes well.</p>
+
+  <h3 id="step6a">6a: Prepare the Batch</h3>
+
+  <pre><code>AGE_GRAPH_NAME=reg_sg_fb build-kg-parse-batch prepare \
+  --jurisdiction SG \
+  --output sg_fb_batch.jsonl</code></pre>
+
+  <p>Expected output:</p>
+
+  <pre><code>======================================================================
+Batch Preparation - Step 1
+Jurisdiction filter: SG
+======================================================================
+
+Fetching fragments (limit=None, offset=0, jurisdiction=SG)...
+Found 2483 fragments
+
+Creating batch file: batch_data/sg_fb_batch.jsonl
+Processing 2483 fragments...
+  Batch file created: batch_data/sg_fb_batch.jsonl
+  Metadata saved: batch_data/sg_fb_batch.jsonl.metadata.json
+
+======================================================================
+  Batch preparation complete!
+Next step: build-kg-parse-batch submit batch_data/sg_fb_batch.jsonl
+======================================================================</code></pre>
+
+  <h3 id="step6b">6b: Submit the Batch</h3>
+
+  <pre><code>build-kg-parse-batch submit batch_data/sg_fb_batch.jsonl</code></pre>
+
+  <p>Expected output:</p>
+
+  <pre><code>======================================================================
+Batch Submission - Step 2
+======================================================================
+
+Uploading file: batch_data/sg_fb_batch.jsonl
+  File uploaded: file-abc123...
+
+Creating batch job...
+  Batch created: batch_abc123def456
+  Status: validating
+  Total requests: 2483
+
+  Batch info saved: batch_data/batch_batch_abc123def456.info.json
+
+======================================================================
+  Batch submitted successfully!
+Batch ID: batch_abc123def456
+
+Monitor progress: build-kg-parse-batch status batch_abc123def456
+======================================================================</code></pre>
+
+  <h3 id="step6c">6c: Monitor Progress</h3>
+
+  <p>Check the batch status (one-shot):</p>
+
+  <pre><code>build-kg-parse-batch status batch_abc123def456</code></pre>
+
+  <p>Or watch until complete (polls every 60 seconds):</p>
+
+  <pre><code>build-kg-parse-batch status batch_abc123def456 --watch</code></pre>
+
+  <p>Expected output when complete:</p>
+
+  <pre><code>======================================================================
+Batch Status - Step 3
+======================================================================
+
+Batch ID: batch_abc123def456
+Status: completed
+Created: 2026-02-18 14:35:22
+
+Request Counts:
+  Total: 2483
+  Completed: 2483
+  Failed: 0
+
+  Batch completed!
+Output file ID: file-xyz789...
+
+Next step: build-kg-parse-batch process batch_abc123def456
+======================================================================</code></pre>
+
+  <p>The batch typically completes in 2-8 hours, but can take up to 24 hours.</p>
+
+  <h3 id="step6d">6d: Process Results into Graph</h3>
+
+  <pre><code>AGE_GRAPH_NAME=reg_sg_fb build-kg-parse-batch process batch_abc123def456</code></pre>
+
+  <p>Expected output:</p>
+
+  <pre><code>======================================================================
+Batch Processing - Step 4
+======================================================================
+Downloading results for batch batch_abc123def456...
+  Results downloaded: batch_data/batch_batch_abc123def456_results.jsonl
+Using metadata: sg_fb_batch.jsonl.metadata.json
+
+Processing results from: batch_data/batch_batch_abc123def456_results.jsonl
+  Processed 100 provisions...
+  Processed 200 provisions...
+  ...
+  Processed 2400 provisions...
+
+======================================================================
+SUMMARY
+======================================================================
+  Success:  2412
+  Failed:   23
+  Skipped:  48
+======================================================================</code></pre>
+</section>
+
+<!-- Step 7 -->
+<section id="step7">
+  <h2>Step 7: Validate the Graph</h2>
+  <p>Run validation queries:</p>
+
+  <pre><code>python3 -c &quot;
+import psycopg2
+from build_kg.config import DB_CONFIG
+
+conn = psycopg2.connect(**DB_CONFIG)
+conn.set_isolation_level(0)
+cur = conn.cursor()
+cur.execute(\&quot;LOAD 'age';\&quot;)
+cur.execute(\&quot;SET search_path = ag_catalog, '\$user', public;\&quot;)
+
+graph = 'reg_sg_fb'
+
+# Count nodes
+for label in ['Provision', 'Requirement', 'Constraint']:
+    cur.execute(f\&quot;SELECT * FROM cypher('{graph}', \$\$ MATCH (n:{label}) RETURN count(n) \$\$) as (cnt agtype);\&quot;)
+    print(f'{label}s: {cur.fetchone()[0]}')
+
+# Provisions by authority
+cur.execute(f\&quot;\&quot;\&quot;
+    SELECT * FROM cypher('{graph}', \$\$
+        MATCH (p:Provision)
+        RETURN p.authority, count(p)
+        ORDER BY count(p) DESC
+    \$\$) as (authority agtype, cnt agtype);
+\&quot;\&quot;\&quot;)
+print()
+print('By authority:')
+for row in cur.fetchall():
+    print(f'  {row[0]}: {row[1]} provisions')
+
+# Requirements by type
+cur.execute(f\&quot;\&quot;\&quot;
+    SELECT * FROM cypher('{graph}', \$\$
+        MATCH (r:Requirement)
+        RETURN r.requirement_type, count(r)
+        ORDER BY count(r) DESC
+    \$\$) as (req_type agtype, cnt agtype);
+\&quot;\&quot;\&quot;)
+print()
+print('By requirement type:')
+for row in cur.fetchall():
+    print(f'  {row[0]}: {row[1]}')
+
+# ID quality
+cur.execute(f\&quot;\&quot;\&quot;
+    SELECT * FROM cypher('{graph}', \$\$
+        MATCH (p:Provision)
+        WHERE p.provision_id = 'UNKNOWN'
+        RETURN count(p)
+    \$\$) as (cnt agtype);
+\&quot;\&quot;\&quot;)
+unknown = cur.fetchone()[0]
+cur.execute(f\&quot;SELECT * FROM cypher('{graph}', \$\$ MATCH (p:Provision) RETURN count(p) \$\$) as (cnt agtype);\&quot;)
+total = cur.fetchone()[0]
+print(f'\\nID quality: {(1 - int(str(unknown)) / max(int(str(total)), 1)) * 100:.1f}% non-UNKNOWN')
+
+conn.close()
+&quot;</code></pre>
+
+  <h3>Expected Final Graph Stats</h3>
+
+  <table>
+    <tr><th>Metric</th><th>Approximate Count</th></tr>
+    <tr><td>Provisions</td><td>~2,400</td></tr>
+    <tr><td>Requirements</td><td>~6,000</td></tr>
+    <tr><td>Constraints</td><td>~5,700</td></tr>
+    <tr><td>Provisions by SFA</td><td>~1,200</td></tr>
+    <tr><td>Provisions by Parliament</td><td>~800</td></tr>
+    <tr><td>Provisions by HPB</td><td>~250</td></tr>
+    <tr><td>Provisions by MUIS</td><td>~150</td></tr>
+    <tr><td>ID quality (non-UNKNOWN)</td><td>~45-65%</td></tr>
+  </table>
+
+  <h3>Sample Queries</h3>
+
+  <p>Find all labelling requirements from the Food Regulations:</p>
+
+  <pre><code>SELECT * FROM cypher('reg_sg_fb', $$
+    MATCH (r:Requirement)-[:DERIVED_FROM]-&gt;(p:Provision)
+    WHERE r.requirement_type = 'labelling'
+      AND p.authority = 'SFA'
+    RETURN p.provision_id, r.description, r.deontic_modality
+    LIMIT 10
+$$) as (prov_id agtype, description agtype, modality agtype);</code></pre>
+
+  <p>Find threshold constraints on nutritional composition:</p>
+
+  <pre><code>SELECT * FROM cypher('reg_sg_fb', $$
+    MATCH (r:Requirement)-[:HAS_CONSTRAINT]-&gt;(c:Constraint)
+    WHERE c.logic_type = 'threshold'
+      AND c.target_signal CONTAINS 'sodium'
+    RETURN r.description, c.operator, c.threshold, c.unit
+$$) as (desc agtype, op agtype, thresh agtype, unit agtype);</code></pre>
+
+  <p>Find halal requirements from MUIS:</p>
+
+  <pre><code>SELECT * FROM cypher('reg_sg_fb', $$
+    MATCH (r:Requirement)-[:DERIVED_FROM]-&gt;(p:Provision)
+    WHERE p.authority = 'MUIS'
+    RETURN p.provision_id, r.requirement_type, r.description
+    LIMIT 10
+$$) as (prov_id agtype, req_type agtype, desc agtype);</code></pre>
+</section>
+
+<!-- Cost Breakdown -->
+<section id="cost">
+  <h2>Cost Breakdown</h2>
+
+  <table>
+    <tr><th>Phase</th><th>Cost</th></tr>
+    <tr><td>Crawl (12 sources, ~400 pages)</td><td>Free</td></tr>
+    <tr><td>Chunk (~3,000 chunks)</td><td>Free</td></tr>
+    <tr><td>Load to DB</td><td>Free</td></tr>
+    <tr><td>Parse (2,483 fragments via batch API)</td><td>~$0.37</td></tr>
+    <tr><td>Graph setup and verification</td><td>Free</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>~$3-5</strong></td></tr>
+  </table>
+
+  <p>The actual cost depends on the length of the regulatory text in each fragment. Longer texts (like the full Food Regulations) consume more tokens. The estimate above assumes an average of ~500 input tokens and ~300 output tokens per fragment at batch API pricing.</p>
+
+  <p>If you use the synchronous parser instead, double the parsing cost to approximately $0.75 for 2,500 fragments.</p>
+</section>
+
+<!-- Tips -->
+<section id="tips">
+  <h2>Tips</h2>
+  <ul>
+    <li><strong>Government sites often rate-limit.</strong> If you see 403 or timeout errors, increase <code>--delay</code> to 3000-5000ms and reduce <code>--pages</code>.</li>
+    <li><strong>The Singapore Statutes Online (sso.agc.gov.sg) site</strong> renders legislation dynamically. The crawler's headless Chromium handles this, but you may need to increase the delay.</li>
+    <li><strong>Run a dry-run first</strong> (<code>build-kg-load --dry-run</code>) to verify that source matching is correct before committing to the database.</li>
+    <li><strong>Use <code>--test</code> mode</strong> on the parser to verify output quality with 5 fragments before committing to a full batch run.</li>
+    <li><strong>ID quality for Singapore</strong> tends to be lower than for Canada or the US because Singapore's statutes use section numbers (e.g., "Section 56") rather than hierarchical IDs (e.g., <code>B.01.008.2</code>). This is expected behavior.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>build-kg &mdash; Apache 2.0 License &mdash; <a href="https://github.com/mergen-ai/build-kg">GitHub</a></p>
+</footer>
+
+</div>
+</body>
+</html>

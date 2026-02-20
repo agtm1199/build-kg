@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLI Reference: Crawler - build-kg</title>
+<style>
+:root { --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --text-muted: #8b949e; --heading: #f0f6fc; --link: #58a6ff; --accent: #1f6feb; --green: #3fb950; --orange: #d29922; --red: #f85149; --purple: #bc8cff; --code-bg: #0d1117; --inline-code-bg: #1c2128; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+.container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+.hero { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+.hero h1 { font-size: 2.5rem; color: var(--heading); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+.hero .tagline { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.hero .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--border); color: var(--text-muted); }
+.badge.green { border-color: var(--green); color: var(--green); }
+.badge.blue { border-color: var(--link); color: var(--link); }
+.badge.purple { border-color: var(--purple); color: var(--purple); }
+section { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+section:last-child { border-bottom: none; }
+h2 { font-size: 1.8rem; color: var(--heading); margin-bottom: 1rem; padding-top: 1rem; }
+h3 { font-size: 1.3rem; color: var(--heading); margin: 1.5rem 0 0.75rem; }
+h4 { font-size: 1.05rem; color: var(--heading); margin: 1.25rem 0 0.5rem; }
+p { margin-bottom: 1rem; } ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; } li { margin-bottom: 0.25rem; }
+a { color: var(--link); text-decoration: none; } a:hover { text-decoration: underline; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; overflow-x: auto; margin: 1rem 0; font-size: 0.875rem; line-height: 1.5; }
+code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.875em; }
+:not(pre) > code { background: var(--inline-code-bg); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.85em; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+th, td { text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border); }
+th { background: var(--surface); color: var(--heading); font-weight: 600; }
+tr:nth-child(even) { background: rgba(22, 27, 34, 0.5); }
+footer { text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem; }
+@media (max-width: 700px) { .hero h1 { font-size: 2rem; } }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:1.5rem;font-size:0.9rem;backdrop-filter:blur(8px);">
+  <a href="../site/index.html" style="color:var(--heading);font-weight:700;text-decoration:none;">build-<span style="color:var(--link)">kg</span></a>
+  <a href="index.html">Docs</a>
+  <a href="guide.html">Guide</a>
+  <a href="reference-crawl.html" style="color:var(--heading);">Crawler</a>
+  <a href="https://github.com/mergen-ai/build-kg" style="margin-left:auto;">GitHub</a>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>build-kg</h1>
+    <p class="tagline">CLI Reference: Crawler</p>
+    <div class="badges">
+      <span class="badge green">build-kg-crawl</span>
+      <span class="badge blue">Crawl4AI</span>
+      <span class="badge purple">Headless Chromium</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>Overview</h2>
+    <p>Crawl websites and save content as markdown, HTML, or JSON files. Uses Crawl4AI with a headless Chromium browser for JavaScript-rendered pages.</p>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <pre><code>build-kg-crawl --url &lt;URL&gt; [OPTIONS]</code></pre>
+    <p>Or via Python module:</p>
+    <pre><code>python -m build_kg.crawl --url &lt;URL&gt; [OPTIONS]</code></pre>
+  </section>
+
+  <section>
+    <h2>Options</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Flag</th>
+          <th>Short</th>
+          <th>Default</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>--url URL</code></td>
+          <td><code>-u URL</code></td>
+          <td><strong>(required)</strong></td>
+          <td>Starting URL to crawl</td>
+        </tr>
+        <tr>
+          <td><code>--delay MS</code></td>
+          <td><code>-d MS</code></td>
+          <td><code>1000</code></td>
+          <td>Delay between page visits in milliseconds</td>
+        </tr>
+        <tr>
+          <td><code>--format FORMAT</code></td>
+          <td><code>-f FORMAT</code></td>
+          <td><code>markdown</code></td>
+          <td>Output format: <code>markdown</code>, <code>html</code>, or <code>json</code></td>
+        </tr>
+        <tr>
+          <td><code>--pages N</code></td>
+          <td><code>-p N</code></td>
+          <td><code>10</code></td>
+          <td>Maximum number of pages to visit</td>
+        </tr>
+        <tr>
+          <td><code>--depth N</code></td>
+          <td></td>
+          <td><code>2</code></td>
+          <td>Maximum crawl depth from the start URL</td>
+        </tr>
+        <tr>
+          <td><code>--output DIR</code></td>
+          <td><code>-o DIR</code></td>
+          <td><code>./output</code></td>
+          <td>Directory to save output files</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Behavior</h2>
+
+    <h3>Same-Domain Crawling</h3>
+    <p>The crawler only follows links within the same domain as the start URL. Links to external domains are discovered but not followed. For example, crawling <code>https://www.sfa.gov.sg/food-information/legislation</code> will follow links to other <code>www.sfa.gov.sg</code> pages but will not crawl links to <code>sso.agc.gov.sg</code>.</p>
+
+    <h3>Breadth-First Traversal</h3>
+    <p>Pages are crawled in breadth-first order. The start URL is crawled at depth 0. All links discovered on the start page are queued at depth 1, and so on up to <code>--depth</code>.</p>
+
+    <h3>Deduplication</h3>
+    <p>Each URL is visited at most once. If the same URL is linked from multiple pages, only the first encounter is crawled.</p>
+
+    <h3>Output File Naming</h3>
+    <p>Files are named using the URL path, depth, and a timestamp:</p>
+    <pre><code>{path}_depth{N}_{YYYYMMDD_HHMMSS}.{ext}</code></pre>
+    <p>Examples:</p>
+    <pre><code>food-labelling_depth0_20260218_143022.md
+regulations_food-safety_depth1_20260218_143025.md
+index_depth0_20260218_143022.md</code></pre>
+    <p>The extension is <code>.md</code> for markdown, <code>.html</code> for HTML, and <code>.json</code> for JSON format.</p>
+
+    <h3>JSON Output</h3>
+    <p>When <code>--format json</code> is used, each file contains:</p>
+    <pre><code>{
+  &quot;url&quot;: &quot;https://example.gov/regulations&quot;,
+  &quot;title&quot;: &quot;https://example.gov/regulations&quot;,
+  &quot;depth&quot;: 0,
+  &quot;status_code&quot;: 200,
+  &quot;success&quot;: true,
+  &quot;markdown&quot;: &quot;# Regulations\n\nThis page describes...&quot;,
+  &quot;html&quot;: &quot;&lt;div class=\&quot;content\&quot;&gt;...&lt;/div&gt;&quot;,
+  &quot;links&quot;: {
+    &quot;internal&quot;: [&quot;https://example.gov/regulations/food&quot;, &quot;...&quot;],
+    &quot;external&quot;: [&quot;https://other-site.org/reference&quot;, &quot;...&quot;]
+  },
+  &quot;crawled_at&quot;: &quot;2026-02-18T14:30:22.123456&quot;
+}</code></pre>
+  </section>
+
+  <section>
+    <h2>Examples</h2>
+
+    <h3>Basic crawl with defaults</h3>
+    <pre><code>build-kg-crawl --url &quot;https://www.canada.ca/en/health-canada/services/food-nutrition.html&quot;</code></pre>
+    <p>Crawls up to 10 pages, depth 2, with 1-second delay, saving markdown to <code>./output/</code>.</p>
+
+    <h3>Crawl a government regulation site</h3>
+    <pre><code>build-kg-crawl \
+  --url &quot;https://sso.agc.gov.sg/Act/SFA1973&quot; \
+  --depth 2 \
+  --pages 50 \
+  --delay 2000 \
+  --output ./pipelines/reg_sg_fb/crawl_output/sso_sale_of_food_act/</code></pre>
+
+    <h3>Crawl with JSON output for debugging</h3>
+    <pre><code>build-kg-crawl \
+  --url &quot;https://www.fda.gov/food/food-labeling-nutrition&quot; \
+  --format json \
+  --pages 5 \
+  --delay 3000 \
+  --output ./debug_output/</code></pre>
+
+    <h3>Large crawl for a primary regulatory source</h3>
+    <pre><code>build-kg-crawl \
+  --url &quot;https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._870/&quot; \
+  --depth 3 \
+  --pages 100 \
+  --delay 1500 \
+  --output ./pipelines/reg_ca_fb/crawl_output/fdr/</code></pre>
+  </section>
+
+  <section>
+    <h2>Rate Limiting</h2>
+    <p>Government websites often employ rate limiting or bot detection. If you encounter 403 errors or timeouts:</p>
+    <ol>
+      <li><strong>Increase the delay.</strong> Start with <code>--delay 2000</code> (2 seconds). For aggressive rate limiters, try 3000-5000ms.</li>
+      <li><strong>Reduce the page count.</strong> Fewer concurrent requests are less likely to trigger rate limits.</li>
+      <li><strong>Try later.</strong> Some government sites have peak-hour throttling.</li>
+    </ol>
+    <p>Recommended delay settings by site type:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Site Type</th>
+          <th>Recommended Delay</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Static HTML government pages</td>
+          <td>1000-1500ms</td>
+        </tr>
+        <tr>
+          <td>Singapore Statutes Online (sso.agc.gov.sg)</td>
+          <td>2000-3000ms</td>
+        </tr>
+        <tr>
+          <td>Canada.ca / Justice Laws</td>
+          <td>1500-2000ms</td>
+        </tr>
+        <tr>
+          <td>US FDA / eCFR</td>
+          <td>2000-3000ms</td>
+        </tr>
+        <tr>
+          <td>Sites with Cloudflare / WAF</td>
+          <td>3000-5000ms</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Chromium Requirement</h2>
+    <p>The crawler requires Chromium to render JavaScript-heavy pages. Install it with:</p>
+    <pre><code>crawl4ai-setup</code></pre>
+    <p>This downloads a Chromium binary managed by Crawl4AI. If installation fails, check that you have sufficient disk space (~400MB) and that your system supports headless Chromium (most Linux, macOS, and WSL2 environments do).</p>
+  </section>
+
+  <section>
+    <h2>Cleaning Crawled Content</h2>
+    <p>Some government websites include breadcrumb navigation (e.g., &quot;## You are here&quot;) at the top of every page. The optional <code>clean.sh</code> script removes everything above this marker:</p>
+    <pre><code># Clean a single file
+bash src/build_kg/clean.sh path/to/file.md
+
+# Clean all files in a crawl output directory
+grep -rl &quot;## You are here&quot; ./crawl_output/ | while read f; do
+  bash src/build_kg/clean.sh &quot;$f&quot;
+done</code></pre>
+  </section>
+
+  <section>
+    <h2>Troubleshooting</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&quot;Chromium not found&quot;</td>
+          <td>Run <code>crawl4ai-setup</code></td>
+        </tr>
+        <tr>
+          <td>403 Forbidden on every page</td>
+          <td>Increase <code>--delay</code> to 3000-5000ms</td>
+        </tr>
+        <tr>
+          <td>Timeout on first page</td>
+          <td>The site may block headless browsers; try a different start URL</td>
+        </tr>
+        <tr>
+          <td>No internal links found</td>
+          <td>The site may use JavaScript routing; check if <code>--format json</code> shows the HTML content</td>
+        </tr>
+        <tr>
+          <td>Output directory is empty</td>
+          <td>Check that the URL is accessible in a normal browser first</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>build-kg &mdash; Apache 2.0 License &mdash; <a href="https://github.com/mergen-ai/build-kg">GitHub</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

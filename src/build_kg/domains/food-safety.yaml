@@ -1,0 +1,262 @@
+name: "Food Safety & Labeling"
+description: "Food and beverage regulatory compliance (CFIA, FDA, SFA, etc.)"
+version: "2.0"
+extends: default
+
+ontology:
+  description: "Regulatory compliance ontology for food safety"
+  root_node: Provision
+  nodes:
+    - label: Provision
+      description: "A regulatory provision or clause from food safety legislation"
+      properties:
+        provision_id: string
+        text: string
+        jurisdiction: string
+        authority: string
+    - label: Requirement
+      description: "A specific regulatory requirement derived from a provision"
+      properties:
+        requirement_type: string
+        deontic_modality: string
+        description: string
+        applies_to_scope: string
+    - label: Constraint
+      description: "A testable constraint on a requirement (threshold, pattern, etc.)"
+      properties:
+        logic_type: string
+        target_signal: string
+        operator: string
+        threshold: number
+        unit: string
+        pattern: string
+        allowed_values: list
+  edges:
+    - label: DERIVED_FROM
+      source: Requirement
+      target: Provision
+      description: "Requirement is derived from this provision"
+    - label: HAS_CONSTRAINT
+      source: Requirement
+      target: Constraint
+      description: "Requirement has this testable constraint"
+  json_schema: |
+    {
+      "provision_id": "extracted ID or UNKNOWN",
+      "provision_text": "original regulatory text",
+      "requirements": [
+        {
+          "requirement_type": "one of the profile's requirement_types",
+          "deontic_modality": "must | must_not | may | should | should_not",
+          "description": "clear description of what is required",
+          "applies_to_scope": "what the requirement applies to",
+          "constraints": [
+            {
+              "logic_type": "threshold | pattern | enumeration | boolean",
+              "target_signal": "what is being measured",
+              "operator": "<= | >= | == | != (if applicable)",
+              "threshold": null,
+              "unit": null,
+              "pattern": null,
+              "allowed_values": null
+            }
+          ]
+        }
+      ]
+    }
+
+parsing:
+  system_message: "You are a regulatory compliance expert specializing in food safety and labeling regulations. Always respond with valid JSON."
+  requirement_types:
+    - labelling
+    - claim
+    - composition
+    - process
+    - testing
+    - documentation
+    - prohibition
+  deontic_modalities:
+    - must
+    - must_not
+    - may
+    - should
+    - should_not
+  constraint_logic_types:
+    - threshold
+    - pattern
+    - enumeration
+    - boolean
+  target_signal_examples:
+    - "product.sodium"
+    - "product.sugar"
+    - "product.fat"
+    - "label.text"
+    - "label.nutrition_panel"
+    - "ingredient.presence"
+    - "ingredient.percentage"
+    - "additive.level"
+    - "allergen.declaration"
+  scope_examples:
+    - label
+    - product
+    - manufacturer
+    - ingredient
+    - additive
+    - packaging
+    - facility
+
+id_patterns:
+  patterns:
+    cfia_bdot:
+      regex: "\\b([A-Z]\\.\\d{2}\\.\\d{3}(?:\\.\\d+)?)\\b"
+      flags: IGNORECASE
+      confidence: 0.90
+    cfia_cdot:
+      regex: "\\b([A-Z]\\.\\d{2,3})\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    cfr_full:
+      regex: "\\b(\\d{1,2}\\s*CFR\\s*\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.85
+    cfr_section:
+      regex: "\\b\u00a7\\s*(\\d+\\.\\d+)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    section_numbered:
+      regex: "\\bSection\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    subsection:
+      regex: "\\b(\\d+(?:\\.\\d+){2,})\\b"
+      confidence: 0.70
+    chapter:
+      regex: "\\bChapter\\s+([A-Z]?\\d+)\\b"
+      flags: IGNORECASE
+      confidence: 0.75
+    article:
+      regex: "\\bArticle\\s+(\\d+(?:\\.\\d+)*)\\b"
+      flags: IGNORECASE
+      confidence: 0.80
+    parenthetical:
+      regex: "\\(([A-Z]\\d+(?:\\.\\d+)+)\\)"
+      flags: IGNORECASE
+      confidence: 0.75
+    schedule:
+      regex: "\\bSchedule\\s+([IVX]+|[A-Z]|\\d+)\\b"
+      flags: IGNORECASE
+      confidence: 0.70
+  authority_priorities:
+    CFIA:
+      - cfia_bdot
+      - cfia_cdot
+      - section_numbered
+      - parenthetical
+    Health Canada:
+      - section_numbered
+      - cfia_bdot
+      - schedule
+    Department of Justice:
+      - chapter
+      - section_numbered
+      - article
+    Canadian General Standards Board:
+      - section_numbered
+      - cfia_cdot
+    World Health Organization:
+      - article
+      - section_numbered
+  format_rules:
+    CFIA:
+      - "^[A-Z]\\.\\d{2}\\.\\d{3}(?:\\.\\d+)?$"
+      - "^[A-Z]\\.\\d{2,3}$"
+    Health Canada:
+      - "^Section\\s+\\d+(?:\\.\\d+)*$"
+      - "^Schedule\\s+[IVX]+$"
+    CFR:
+      - "^\\d{1,2}\\s*CFR\\s*\\d+(?:\\.\\d+)*$"
+      - "^\\d+\\.\\d+(?:\\.\\d+)*$"
+
+discovery:
+  search_templates:
+    - "<country> food safety authority official website"
+    - "<country> food regulations complete list"
+    - "<country> food labeling laws requirements"
+    - "<country> food import export regulations"
+    - "<country> halal kosher food certification regulations"
+    - "<country> food additives permitted list regulations"
+    - "<country> food hygiene standards regulations"
+    - "<country> alcoholic beverage regulations licensing"
+    - "<country> food packaging materials safety regulations"
+    - "<country> novel food GMO regulations"
+    - "<country> infant food special dietary regulations"
+    - "<country> food advertising claims regulations"
+    - "<country> organic food certification standards"
+    - "<country> food supplements health products regulations"
+    - "<country> weights measures food trade regulations"
+  sub_domains:
+    - name: "Food safety & hygiene"
+      description: "HACCP, GMP, food handling, temperature control"
+    - name: "Labeling & claims"
+      description: "Mandatory labels, nutrition panels, health claims"
+    - name: "Nutrition"
+      description: "Nutrient reference values, daily intake limits"
+    - name: "Additives & contaminants"
+      description: "Permitted additives, max residue limits, heavy metals"
+    - name: "Import/export"
+      description: "Import permits, country-of-origin, phytosanitary"
+    - name: "Packaging & materials"
+      description: "Food-contact materials, migration limits"
+    - name: "Allergens"
+      description: "Mandatory allergen declarations, thresholds"
+    - name: "Novel foods & GMO"
+      description: "Approval processes, labeling of GM foods"
+    - name: "Organic"
+      description: "Organic certification, labeling standards"
+    - name: "Halal/Kosher"
+      description: "Religious certification requirements"
+    - name: "Beverages - non-alcoholic"
+      description: "Water quality, soft drinks, juices"
+    - name: "Beverages - alcoholic"
+      description: "Licensing, ABV limits, advertising restrictions"
+    - name: "Advertising & marketing"
+      description: "Misleading claims, children's food marketing"
+    - name: "Infant & special dietary"
+      description: "Infant formula, FSMP, dietetic foods"
+    - name: "Animal products"
+      description: "Meat, dairy, seafood, eggs - specific regulations"
+    - name: "Plant products"
+      description: "Fresh produce, grains, pesticide MRLs"
+    - name: "Supplements & health foods"
+      description: "Health supplements, functional foods, TCM"
+    - name: "Licensing & registration"
+      description: "Food business licenses, premises registration"
+    - name: "Environmental health"
+      description: "Pest control, waste, drainage in food premises"
+    - name: "Weights & measures"
+      description: "Net quantity, measurement standards"
+  priority_tiers:
+    P1:
+      description: "Primary food safety laws, core regulations"
+      depth: 3
+      max_pages: 100
+      delay: 1500
+    P2:
+      description: "Standards, codes of practice, secondary legislation"
+      depth: 2
+      max_pages: 50
+      delay: 1500
+    P3:
+      description: "Guidance docs, FAQs, interpretation notes"
+      depth: 1
+      max_pages: 25
+      delay: 2000
+    P4:
+      description: "International standards, trade agreements"
+      depth: 1
+      max_pages: 15
+      delay: 2000
+  supplementary_sources:
+    - "Codex Alimentarius"
+    - "ISO food standards"
+    - "ASEAN food standards"

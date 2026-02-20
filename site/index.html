@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>build-kg &mdash; Turn any topic into a knowledge graph in your own PostgreSQL</title>
+<meta name="description" content="A Claude Code skill that turns any topic into a structured knowledge graph stored in Apache AGE (PostgreSQL). No vendor lock-in, no hosting fees.">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0d1117;
+    --surface:#161b22;
+    --border:#30363d;
+    --text:#c9d1d9;
+    --muted:#8b949e;
+    --heading:#f0f6fc;
+    --blue:#58a6ff;
+    --green:#3fb950;
+    --orange:#d29922;
+    --red:#f85149;
+    --purple:#bc8cff;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:'JetBrains Mono','Fira Code','SF Mono','Cascadia Code','Consolas','Liberation Mono',monospace;
+    --nav-h:56px;
+  }
+
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ── NAV ─────────────────────────────────────── */
+  .nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(13,17,23,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100;display:flex;align-items:center;padding:0 24px}
+  .nav-inner{max-width:1200px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{font-size:18px;font-weight:600;color:var(--heading);letter-spacing:-.02em}
+  .nav-logo b{color:var(--blue);font-weight:700}
+  .nav-links{display:flex;gap:24px;align-items:center}
+  .nav-links a{color:var(--muted);font-size:14px;font-weight:500;transition:color .15s}
+  .nav-links a:hover{color:var(--heading);text-decoration:none}
+  .nav-links a.gh{display:flex;align-items:center;gap:6px}
+  .nav-links a.gh svg{fill:var(--muted);transition:fill .15s}
+  .nav-links a.gh:hover svg{fill:var(--heading)}
+
+  /* ── LAYOUT ──────────────────────────────────── */
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+  section{padding:80px 0}
+  .section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);margin-bottom:8px}
+  .section-title{font-size:clamp(28px,4vw,40px);font-weight:700;color:var(--heading);margin-bottom:16px;line-height:1.2}
+  .section-subtitle{color:var(--muted);font-size:18px;max-width:640px;margin-bottom:48px}
+
+  /* ── HERO ─────────────────────────────────────── */
+  .hero{padding-top:140px;padding-bottom:80px;text-align:center}
+  .hero-badge{display:inline-block;padding:4px 14px;border-radius:99px;font-size:13px;font-weight:500;color:var(--blue);border:1px solid rgba(88,166,255,.25);background:rgba(88,166,255,.08);margin-bottom:24px}
+  .hero h1{font-size:clamp(48px,8vw,80px);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:20px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .hero-sub{font-size:clamp(18px,2.5vw,24px);color:var(--text);max-width:620px;margin:0 auto 12px}
+  .hero-tagline{font-size:16px;color:var(--muted);margin-bottom:40px;font-weight:500;letter-spacing:.02em}
+  .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:transform .1s,box-shadow .15s}
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  .btn-primary{background:var(--green);color:#0d1117;border-color:var(--green)}
+  .btn-primary:hover{box-shadow:0 0 20px rgba(63,185,80,.25)}
+  .btn-secondary{background:transparent;color:var(--text);border-color:var(--border)}
+  .btn-secondary:hover{border-color:var(--muted);box-shadow:0 0 20px rgba(200,200,200,.06)}
+
+  /* ── TERMINAL ────────────────────────────────── */
+  .terminal{background:#0c1018;border:1px solid var(--border);border-radius:12px;max-width:760px;margin:0 auto;text-align:left;overflow:hidden;box-shadow:0 16px 64px rgba(0,0,0,.45)}
+  .terminal-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(22,27,34,.9);border-bottom:1px solid var(--border)}
+  .terminal-dot{width:12px;height:12px;border-radius:50%}
+  .terminal-dot.r{background:var(--red)}
+  .terminal-dot.y{background:var(--orange)}
+  .terminal-dot.g{background:var(--green)}
+  .terminal-title{font-size:12px;color:var(--muted);margin-left:8px;font-family:var(--mono)}
+  .terminal-body{padding:20px 24px;font-family:var(--mono);font-size:13px;line-height:1.75;overflow-x:auto;color:var(--text)}
+  .terminal-body .prompt{color:var(--green)}
+  .terminal-body .cmd{color:var(--heading);font-weight:600}
+  .terminal-body .phase{color:var(--blue);font-weight:600}
+  .terminal-body .check{color:var(--green)}
+  .terminal-body .dim{color:var(--muted)}
+  .terminal-body .val{color:var(--orange)}
+  .terminal-body .tbl{color:var(--muted)}
+
+  /* ── CARDS ───────────────────────────────────── */
+  .cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px 24px;transition:border-color .2s,box-shadow .2s}
+  .card:hover{border-color:var(--blue);box-shadow:0 0 24px rgba(88,166,255,.06)}
+  .card-step{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:14px;font-weight:700;margin-bottom:16px;color:var(--bg)}
+  .card-step.s1{background:var(--blue)}
+  .card-step.s2{background:var(--purple)}
+  .card-step.s3{background:var(--green)}
+  .card h3{color:var(--heading);font-size:17px;font-weight:600;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:14px;line-height:1.6}
+
+  /* ── TABLE ───────────────────────────────────── */
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface)}
+  .cmp-table{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+  .cmp-table th,.cmp-table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border)}
+  .cmp-table thead th{background:rgba(22,27,34,.7);color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+  .cmp-table thead th:first-child{border-radius:12px 0 0 0}
+  .cmp-table thead th:last-child{border-radius:0 12px 0 0}
+  .cmp-table tbody tr:last-child td{border-bottom:none}
+  .cmp-table td{color:var(--text)}
+  .cmp-table td:first-child{color:var(--muted);font-weight:500}
+  .cmp-table .hl{color:var(--green);font-weight:600}
+  .cmp-table .dl{color:var(--muted)}
+
+  /* ── TOPICS ──────────────────────────────────── */
+  .topics-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .topic-col h3{font-size:15px;font-weight:600;color:var(--heading);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .topic-col h3 .dot{width:8px;height:8px;border-radius:50%}
+  .topic-col h3 .dot.bl{background:var(--blue)}
+  .topic-col h3 .dot.or{background:var(--orange)}
+  .topic-items{display:flex;flex-direction:column;gap:10px}
+  .topic-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:border-color .2s}
+  .topic-card:hover{border-color:var(--blue)}
+  .topic-card .name{color:var(--heading);font-size:14px;font-weight:600;margin-bottom:4px}
+  .topic-card .desc{color:var(--muted);font-size:13px;line-height:1.5}
+
+  /* ── FEATURES ─────────────────────────────────── */
+  .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+  .feat:hover{border-color:var(--blue)}
+  .feat-icon{font-size:24px;margin-bottom:12px}
+  .feat h3{color:var(--heading);font-size:16px;font-weight:600;margin-bottom:6px}
+  .feat p{color:var(--muted);font-size:13px;line-height:1.55}
+
+  /* ── PIPELINE ────────────────────────────────── */
+  .pipeline{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:8px}
+  .pipe-step{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .pipe-node{width:100px;padding:16px 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;text-align:center;transition:border-color .2s,box-shadow .2s}
+  .pipe-node:hover{border-color:var(--blue);box-shadow:0 0 16px rgba(88,166,255,.1)}
+  .pipe-num{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:4px;font-family:var(--mono)}
+  .pipe-label{font-size:12px;font-weight:600;color:var(--heading);line-height:1.3}
+  .pipe-arrow{flex-shrink:0;width:40px;display:flex;align-items:center;justify-content:center;color:var(--border);font-size:18px;padding-bottom:10px}
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer{border-top:1px solid var(--border);padding:40px 0;margin-top:40px}
+  .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+  .footer-brand{display:flex;flex-direction:column;gap:4px}
+  .footer-brand .name{font-size:16px;font-weight:600;color:var(--heading)}
+  .footer-brand .name b{color:var(--blue)}
+  .footer-brand .license{font-size:12px;color:var(--muted)}
+  .footer-links{display:flex;gap:24px}
+  .footer-links a{color:var(--muted);font-size:13px;font-weight:500}
+  .footer-links a:hover{color:var(--heading);text-decoration:none}
+  .footer-copy{font-size:12px;color:var(--muted);width:100%;text-align:center;margin-top:16px;padding-top:20px;border-top:1px solid var(--border)}
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+  @media(max-width:900px){
+    .cards-3,.features-grid{grid-template-columns:1fr 1fr}
+    .topics-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:640px){
+    .cards-3,.features-grid{grid-template-columns:1fr}
+    .nav-links .hide-mobile{display:none}
+    .hero{padding-top:110px}
+    .terminal-body{font-size:11px;padding:14px 16px}
+    .pipe-node{width:80px;padding:12px 6px}
+    .pipe-arrow{width:24px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     NAVIGATION
+     ════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">build-<b>kg</b></a>
+    <div class="nav-links">
+      <a href="#how-it-works" class="hide-mobile">How it works</a>
+      <a href="#topics" class="hide-mobile">Topics</a>
+      <a href="guide.html">Guide</a>
+      <a href="https://github.com/mergen-ai/build-kg" class="gh" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <span class="hero-badge">Claude Code Skill</span>
+    <h1>build-kg</h1>
+    <p class="hero-sub">Turn any topic into a knowledge graph in your own PostgreSQL</p>
+    <p class="hero-tagline">One command. Any topic. Your database.</p>
+
+    <div class="hero-ctas">
+      <a href="guide.html" class="btn btn-primary">Get Started</a>
+      <a href="https://github.com/mergen-ai/build-kg" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">bash</span>
+      </div>
+      <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">/build-kg kubernetes networking</span>
+
+<span class="phase">Phase 0.5 &mdash; Generating ontology...</span>
+<span class="check">&check;</span> Created 3 node types: <span class="val">Component</span>, <span class="val">Concept</span>, <span class="val">Configuration</span>
+<span class="check">&check;</span> Created 3 edge types: <span class="val">USES</span>, <span class="val">CONFIGURES</span>, <span class="val">DEPENDS_ON</span>
+<span class="check">&check;</span> Saved <span class="dim">ontology.yaml</span>
+
+<span class="phase">Phase 1 &mdash; Discovering sources (5 rounds)...</span>
+<span class="check">&check;</span> Found <span class="val">14</span> authoritative sources
+<span class="check">&check;</span> Wrote <span class="dim">crawl_manifest.json</span>
+
+<span class="phase">Phase 2 &mdash; Crawling 14 sources...</span>
+<span class="check">&check;</span> Crawled <span class="val">247</span> pages &rarr; <span class="dim">./crawl_output/</span>
+
+<span class="phase">Phase 3 &mdash; Chunking documents...</span>
+<span class="check">&check;</span> Created <span class="val">1,832</span> fragments &rarr; <span class="dim">./chunk_output/</span>
+
+<span class="phase">Phase 4 &mdash; Loading to PostgreSQL...</span>
+<span class="check">&check;</span> Inserted <span class="val">14</span> documents, <span class="val">1,832</span> fragments
+
+<span class="phase">Phase 5 &mdash; Parsing with GPT-4o-mini...</span>
+<span class="check">&check;</span> Extracted <span class="val">892</span> Components, <span class="val">341</span> Concepts, <span class="val">127</span> Configurations
+<span class="check">&check;</span> Created <span class="val">1,247</span> relationships
+
+<span class="phase">Phase 6 &mdash; Validation report</span>
+<span class="tbl">&boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;</span>
+<span class="tbl">&boxv;</span> Node Type      <span class="tbl">&boxv;</span> Count <span class="tbl">&boxv;</span>
+<span class="tbl">&boxvr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxvl;</span>
+<span class="tbl">&boxv;</span> Component      <span class="tbl">&boxv;</span>   <span class="val">892</span> <span class="tbl">&boxv;</span>
+<span class="tbl">&boxv;</span> Concept        <span class="tbl">&boxv;</span>   <span class="val">341</span> <span class="tbl">&boxv;</span>
+<span class="tbl">&boxv;</span> Configuration  <span class="tbl">&boxv;</span>   <span class="val">127</span> <span class="tbl">&boxv;</span>
+<span class="tbl">&boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxuh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;</span>
+Total: <span class="val">1,360</span> nodes, <span class="val">1,247</span> edges
+Graph: <span class="val">kg_k8s_net</span> <span class="dim">(Apache AGE)</span>
+Cost: <span class="check">$0.27</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     HOW IT WORKS
+     ════════════════════════════════════════════════ -->
+<section id="how-it-works">
+  <div class="container">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">Three steps. One command.</h2>
+    <p class="section-subtitle"></p>
+
+    <div class="cards-3">
+      <div class="card">
+        <div class="card-step s1">1</div>
+        <h3>You name a topic</h3>
+        <p>Any subject: kubernetes networking, GDPR compliance, machine learning algorithms. Plain English.</p>
+      </div>
+      <div class="card">
+        <div class="card-step s2">2</div>
+        <h3>Claude builds the graph</h3>
+        <p>Auto-generates an ontology, discovers authoritative sources, crawls, chunks, and parses with GPT-4o-mini.</p>
+      </div>
+      <div class="card">
+        <div class="card-step s3">3</div>
+        <h3>Query your own database</h3>
+        <p>A structured knowledge graph in Apache AGE (PostgreSQL). No vendor lock-in. No hosting fees. Just SQL + Cypher.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     COMPARISON TABLE
+     ════════════════════════════════════════════════ -->
+<section id="comparison">
+  <div class="container">
+    <p class="section-label">Why build-kg</p>
+    <h2 class="section-title">Your graph. Your database. Your rules.</h2>
+    <p class="section-subtitle"></p>
+
+    <div class="table-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>build-kg</th>
+            <th>LangChain / LlamaIndex</th>
+            <th>Neo4j Aura</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Graph hosting</td>
+            <td class="hl">Your own PostgreSQL</td>
+            <td class="dl">Their infrastructure</td>
+            <td class="dl">Neo4j cloud ($$$)</td>
+          </tr>
+          <tr>
+            <td>Vendor lock-in</td>
+            <td class="hl">None &mdash; it&rsquo;s just AGE</td>
+            <td class="dl">Their SDK</td>
+            <td class="dl">Their platform</td>
+          </tr>
+          <tr>
+            <td>Ontology</td>
+            <td class="hl">Auto-generated by Claude</td>
+            <td class="dl">You define it</td>
+            <td class="dl">You define it</td>
+          </tr>
+          <tr>
+            <td>Interface</td>
+            <td class="hl">/build-kg in Claude Code</td>
+            <td class="dl">Python code</td>
+            <td class="dl">Dashboard / API</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td class="hl">LLM API calls only (~$0.30/1k fragments)</td>
+            <td class="dl">LLM + hosting</td>
+            <td class="dl">LLM + hosting + platform</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     TOPICS
+     ════════════════════════════════════════════════ -->
+<section id="topics">
+  <div class="container">
+    <p class="section-label">Topics</p>
+    <h2 class="section-title">From any subject to structured knowledge</h2>
+    <p class="section-subtitle"></p>
+
+    <div class="topics-grid">
+      <div class="topic-col">
+        <h3><span class="dot bl"></span> Generic Topics</h3>
+        <div class="topic-items">
+          <div class="topic-card">
+            <div class="name">Kubernetes Networking</div>
+            <div class="desc">Services, ingress controllers, CNI plugins, network policies, and DNS resolution.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Machine Learning Algorithms</div>
+            <div class="desc">Supervised, unsupervised, and reinforcement learning methods with their trade-offs.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">React Architecture</div>
+            <div class="desc">Components, hooks, state management patterns, rendering lifecycle, and performance.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Blockchain Consensus</div>
+            <div class="desc">Proof of work, proof of stake, BFT variants, and finality guarantees.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">API Design Patterns</div>
+            <div class="desc">REST, GraphQL, gRPC, versioning strategies, and authentication schemes.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Cloud Security</div>
+            <div class="desc">IAM, network segmentation, encryption at rest, zero-trust architecture, and compliance.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-col">
+        <h3><span class="dot or"></span> Regulatory Domains</h3>
+        <div class="topic-items">
+          <div class="topic-card">
+            <div class="name">Food Safety (CFIA, FDA, SFA)</div>
+            <div class="desc">Regulations, HACCP requirements, labelling rules, and import/export controls across jurisdictions.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Anti-Money Laundering (FATF, FinCEN)</div>
+            <div class="desc">KYC/CDD obligations, suspicious transaction reporting, sanctions screening, and risk assessment.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Data Privacy (GDPR, CCPA)</div>
+            <div class="desc">Data subject rights, lawful bases, cross-border transfers, breach notification, and consent management.</div>
+          </div>
+          <div class="topic-card">
+            <div class="name">Singapore F&amp;B Compliance</div>
+            <div class="desc">SFA licensing, food labelling standards, import permits, and environmental health regulations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     WHAT'S INCLUDED
+     ════════════════════════════════════════════════ -->
+<section id="included">
+  <div class="container">
+    <p class="section-label">What&rsquo;s included</p>
+    <h2 class="section-title">Everything you need</h2>
+    <p class="section-subtitle"></p>
+
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--blue)">&gt;_</div>
+        <h3>6 CLI Tools</h3>
+        <p>crawl, chunk, load, parse, setup, verify &mdash; each phase is an independent command you can run solo.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--orange)">&#9881;</div>
+        <h3>4 Domain Profiles</h3>
+        <p>default, food-safety, financial-aml, data-privacy &mdash; pre-configured ontologies for regulated industries.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--purple)">&#9672;</div>
+        <h3>Auto Ontology</h3>
+        <p>Claude generates node types, edges, properties, and JSON schema &mdash; solving the #1 pain point in KG construction.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--green)">&#8644;</div>
+        <h3>Batch API</h3>
+        <p>50% cheaper parsing with OpenAI Batch API. Process thousands of fragments without breaking the budget.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--red)">&#9608;</div>
+        <h3>Apache AGE</h3>
+        <p>Graph stored in PostgreSQL. Query with Cypher + SQL. No separate database to manage or pay for.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="color:var(--heading)">&#9655;</div>
+        <h3>Claude Code Skill</h3>
+        <p>One command runs the entire 6-phase pipeline. From topic to queryable knowledge graph in minutes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     PIPELINE
+     ════════════════════════════════════════════════ -->
+<section id="pipeline">
+  <div class="container">
+    <p class="section-label">Pipeline</p>
+    <h2 class="section-title">Six phases. Fully automated.</h2>
+    <p class="section-subtitle"></p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 0</div>
+          <div class="pipe-label">Init</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 0.5</div>
+          <div class="pipe-label">Ontology</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 1</div>
+          <div class="pipe-label">Discover</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 2</div>
+          <div class="pipe-label">Crawl</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 3</div>
+          <div class="pipe-label">Chunk</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 4</div>
+          <div class="pipe-label">Load</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 5</div>
+          <div class="pipe-label">Parse</div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-step">
+        <div class="pipe-node">
+          <div class="pipe-num">Phase 6</div>
+          <div class="pipe-label">Validate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="name">build-<b>kg</b></span>
+        <span class="license">Apache 2.0 License</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/mergen-ai/build-kg" target="_blank" rel="noopener">GitHub</a>
+        <a href="guide.html">Guide</a>
+        <a href="../docs/index.html">Docs</a>
+        <a href="https://github.com/mergen-ai/build-kg/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 2025 Mergen AI</p>
+  </div>
+</footer>
+
+</body>
+</html>

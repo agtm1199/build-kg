@@ -1,0 +1,56 @@
+{
+  "topic": "Canadian food and beverage regulations",
+  "graph_name": "reg_ca_fb",
+  "created_at": "2026-02-18T00:00:00Z",
+  "sources": [
+    {
+      "source_name": "fdr_parts_a_b",
+      "url": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._870/",
+      "title": "Food and Drug Regulations (Parts A & B)",
+      "authority": "CFIA",
+      "jurisdiction": "CA",
+      "doc_type": "regulation",
+      "priority": "P1",
+      "sub_domains": ["labeling", "nutrition", "additives", "food_safety"],
+      "depth": 3,
+      "max_pages": 100,
+      "delay": 1500
+    },
+    {
+      "source_name": "sfca",
+      "url": "https://laws-lois.justice.gc.ca/eng/acts/S-1.1/",
+      "title": "Safe Food for Canadians Act",
+      "authority": "CFIA",
+      "jurisdiction": "CA",
+      "doc_type": "act",
+      "priority": "P1",
+      "sub_domains": ["import_export", "licensing", "food_safety"],
+      "depth": 2,
+      "max_pages": 30,
+      "delay": 1500
+    },
+    {
+      "source_name": "hc_nutrition_labelling",
+      "url": "https://www.canada.ca/en/health-canada/services/food-nutrition/food-labelling.html",
+      "title": "Health Canada Food Labelling Guidance",
+      "authority": "Health Canada",
+      "jurisdiction": "CA",
+      "doc_type": "guidance",
+      "priority": "P2",
+      "sub_domains": ["labeling", "nutrition", "allergens", "claims"],
+      "depth": 2,
+      "max_pages": 50,
+      "delay": 1500
+    }
+  ],
+  "defaults": {
+    "jurisdiction": "CA",
+    "authority": "CFIA",
+    "doc_type": "regulation"
+  },
+  "coverage": {
+    "covered": ["labeling", "nutrition", "additives", "food_safety", "import_export", "licensing", "allergens", "claims"],
+    "gaps": ["halal_kosher", "organic", "beverages_alcoholic", "packaging", "novel_foods"],
+    "coverage_pct": 40
+  }
+}
