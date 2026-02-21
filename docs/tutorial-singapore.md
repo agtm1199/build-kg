@@ -19,7 +19,7 @@ Complete the [Quickstart Tutorial](tutorial-quickstart.md) first. You should hav
 
 - build-kg installed in a virtual environment
 - Docker running with the PostgreSQL + AGE container
-- `.env` configured with your OpenAI API key
+- `.env` configured with your Anthropic API key (or OpenAI API key)
 
 ## Step 1: Set Up Working Directory
 

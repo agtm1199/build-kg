@@ -47,8 +47,8 @@ build-kg/
 │   ├── crawl.py           # Web crawler (Crawl4AI)
 │   ├── chunk.py           # Document chunker (Unstructured)
 │   ├── load.py            # Database loader
-│   ├── parse.py           # Sync parser (OpenAI)
-│   ├── parse_batch.py     # Batch parser (OpenAI Batch API)
+│   ├── parse.py           # Sync parser (Anthropic or OpenAI)
+│   ├── parse_batch.py     # Batch parser (Batch API)
 │   ├── setup_graph.py     # AGE graph setup
 │   ├── verify.py          # Setup verification
 │   ├── id_extractors.py   # Regex-based ID extraction

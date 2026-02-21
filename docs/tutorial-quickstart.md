@@ -8,7 +8,7 @@ Before you begin, make sure you have:
 
 - **Python 3.10+** (`python3 --version`)
 - **Docker** (`docker --version`)
-- **An OpenAI API key** (get one at [platform.openai.com](https://platform.openai.com))
+- **An Anthropic API key** (get one at [console.anthropic.com](https://console.anthropic.com)) or an OpenAI API key
 
 ## Step 1: Clone and Install
 
@@ -49,10 +49,10 @@ build-kg-db    apache/age   ...   Up 5 seconds (healthy)    0.0.0.0:5432->5432/t
 cp .env.example .env
 ```
 
-Edit `.env` and set your OpenAI API key:
+Edit `.env` and set your Anthropic API key (or OpenAI API key if using OpenAI):
 
 ```
-OPENAI_API_KEY=sk-your-actual-key-here
+ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
 ```
 
 The database credentials in `.env.example` already match the Docker container defaults, so no other changes are needed.
@@ -121,9 +121,9 @@ Setup Verification
 3. Verifying source data...
      Found 0 fragments with excerpts
      Found 0 source documents
-4. Verifying OpenAI API access...
-     OpenAI API connection successful
-     Model: gpt-4o-mini
+4. Verifying LLM API access...
+     Anthropic API connection successful
+     Model: claude-haiku-4-5-20251001
 ======================================================================
   All checks passed! System is ready.
 ======================================================================
@@ -317,7 +317,7 @@ Expected output (abbreviated):
 Knowledge Graph Parser
 ======================================================================
 Graph: reg_ca
-Model: gpt-4o-mini
+Model: claude-haiku-4-5-20251001
 Batch size: 10
 ======================================================================
 
@@ -364,7 +364,7 @@ For **generic topics** with a custom ontology, pass the `--ontology` flag:
 AGE_GRAPH_NAME=kg_k8s_net build-kg-parse --ontology ./ontology.yaml --limit 10
 ```
 
-**Cost: ~$0.003.** GPT-4o-mini charges roughly $0.30 per 1,000 fragments. Ten fragments cost less than a penny.
+**Cost: ~$0.003.** Claude Haiku 3.5 charges roughly $0.30 per 1,000 fragments. Ten fragments cost less than a penny.
 
 ## Step 10: Verify the Graph
 

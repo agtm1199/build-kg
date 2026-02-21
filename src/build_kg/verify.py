@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 Setup Verification Script
-Verifies database connection, AGE installation, and OpenAI API access.
+Verifies database connection, AGE installation, and LLM API access.
 """
 import sys
 
-from build_kg.config import AGE_GRAPH_NAME, DB_CONFIG, OPENAI_API_KEY
+from build_kg.config import AGE_GRAPH_NAME, DB_CONFIG
+from build_kg.llm import create_client, get_provider_config
 
 
 def verify_database():
@@ -97,32 +98,39 @@ def verify_source_data():
         print(f"   ✗ Source data verification failed: {e}")
         return False
 
-def verify_openai():
-    """Verify OpenAI API access."""
-    print("\n4. Verifying OpenAI API access...")
+def verify_llm():
+    """Verify LLM API access for the configured provider."""
+    provider, api_key, model = get_provider_config()
+    print(f"\n4. Verifying LLM API access ({provider})...")
 
-    if not OPENAI_API_KEY or OPENAI_API_KEY == 'your_openai_api_key_here':
-        print("   ✗ OpenAI API key not configured")
-        print("     Set OPENAI_API_KEY in .env file")
+    if not api_key:
+        key_name = 'ANTHROPIC_API_KEY' if provider == 'anthropic' else 'OPENAI_API_KEY'
+        print(f"   ✗ {key_name} not configured")
+        print(f"     Set {key_name} in .env file")
         return False
 
     try:
-        from openai import OpenAI
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        client = create_client(provider, api_key)
 
-        # Test with minimal request
-        client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": "Hello"}],
-            max_tokens=5
-        )
+        if provider == 'anthropic':
+            client.messages.create(
+                model=model,
+                max_tokens=5,
+                messages=[{"role": "user", "content": "Hello"}],
+            )
+        else:
+            client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": "Hello"}],
+                max_tokens=5,
+            )
 
-        print("   ✓ OpenAI API connection successful")
-        print("     Model: gpt-4o-mini")
+        print(f"   ✓ {provider.title()} API connection successful")
+        print(f"     Model: {model}")
         return True
 
     except Exception as e:
-        print(f"   ✗ OpenAI API verification failed: {e}")
+        print(f"   ✗ {provider.title()} API verification failed: {e}")
         print("     Check your API key in .env file")
         return False
 
@@ -136,7 +144,7 @@ def main():
         verify_database(),
         verify_age(),
         verify_source_data(),
-        verify_openai(),
+        verify_llm(),
     ]
 
     print("\n" + "=" * 70)

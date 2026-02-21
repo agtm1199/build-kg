@@ -20,9 +20,11 @@ class TestConfig:
         assert DB_CONFIG["host"] == os.getenv("DB_HOST", "localhost")
         assert isinstance(DB_CONFIG["port"], int)
 
-    def test_openai_config_exists(self):
-        from build_kg.config import OPENAI_MODEL
+    def test_llm_provider_config_exists(self):
+        from build_kg.config import LLM_PROVIDER, ANTHROPIC_MODEL, OPENAI_MODEL
 
+        assert LLM_PROVIDER in ('anthropic', 'openai')
+        assert ANTHROPIC_MODEL  # Should have a default
         assert OPENAI_MODEL  # Should have a default
 
     def test_age_graph_name_exists(self):
@@ -41,9 +43,10 @@ class TestConfig:
         assert RATE_LIMIT_DELAY >= 0
 
     def test_validate_config_raises_without_credentials(self):
-        from build_kg.config import DB_CONFIG, OPENAI_API_KEY, validate_config
+        from build_kg.config import DB_CONFIG, ANTHROPIC_API_KEY, LLM_PROVIDER, OPENAI_API_KEY, validate_config
 
         # Only test if credentials are not set
-        if not DB_CONFIG["password"] or not OPENAI_API_KEY:
+        api_key = ANTHROPIC_API_KEY if LLM_PROVIDER == 'anthropic' else OPENAI_API_KEY
+        if not DB_CONFIG["password"] or not api_key:
             with pytest.raises(ValueError, match="Configuration errors"):
                 validate_config()

@@ -11,7 +11,7 @@ Phase 0       Phase 0.5      Phase 1        Phase 2        Phase 3        Phase 
 INIT          ONTOLOGY       DISCOVER       CRAWL          CHUNK          LOAD           PARSE          VALIDATE
 --------      --------       --------       --------       --------       --------       --------       --------
 Set graph     Auto-gen       WebSearch      crawl.py       chunk.py       load.py        parse.py       Cypher
-name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (GPT-4o-mini)  queries
+name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (Claude Haiku 3.5)  queries
               or load
               from profile
               +----------+   +----------+   +----------+   +----------+   +-----------+  +-----------+
@@ -135,10 +135,10 @@ For generic topics, the `jurisdiction`, `authority`, and `doc_type` fields are n
 
 ### Phase 5: Parse with LLM
 
-The parser reads fragments from `source_fragment`, sends each to GPT-4o-mini with a structured prompt, and loads the result into the Apache AGE graph. Two parser variants are available:
+The parser reads fragments from `source_fragment`, sends each to Claude Haiku 3.5 (or GPT-4o-mini if using OpenAI) with a structured prompt, and loads the result into the Apache AGE graph. Two parser variants are available:
 
-- **Synchronous** (`build-kg-parse`): Calls the OpenAI API in real-time. Fast turnaround, standard pricing.
-- **Batch** (`build-kg-parse-batch`): Uses the OpenAI Batch API. 50% cheaper, but results take 1-24 hours.
+- **Synchronous** (`build-kg-parse`): Calls the LLM API in real-time. Fast turnaround, standard pricing.
+- **Batch** (`build-kg-parse-batch`): Uses the Batch API. 50% cheaper, but results take 1-24 hours.
 
 The parser operates in one of two modes based on the ontology:
 
@@ -430,7 +430,7 @@ The active profile is determined by:
 | **Cost** | ~$0.30 per 1,000 fragments | ~$0.15 per 1,000 fragments (50% cheaper) |
 | **Latency** | Real-time (seconds per fragment) | 1-24 hours for the entire batch |
 | **Use when** | <500 fragments, iterating quickly, debugging | >=500 fragments, cost-sensitive, overnight runs |
-| **Rate limiting** | Controlled by `RATE_LIMIT_DELAY` (default 1s) | Handled by OpenAI |
+| **Rate limiting** | Controlled by `RATE_LIMIT_DELAY` (default 1s) | Handled by the provider |
 | **Error handling** | Immediate feedback per fragment | Errors collected in output file |
 | **Resumability** | Re-run with `--offset` to skip processed fragments | Resubmit failed items |
 
@@ -440,7 +440,7 @@ The active profile is determined by:
 Estimated cost = (number_of_fragments * avg_tokens_per_fragment) / 1,000,000 * price_per_million_tokens
 ```
 
-For GPT-4o-mini with typical text (~500 input tokens + ~300 output tokens per fragment):
+For Claude Haiku 3.5 (or GPT-4o-mini) with typical text (~500 input tokens + ~300 output tokens per fragment):
 - **Sync**: ~$0.00030 per fragment
 - **Batch**: ~$0.00015 per fragment
 

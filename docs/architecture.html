@@ -116,7 +116,7 @@
 INIT          ONTOLOGY       DISCOVER       CRAWL          CHUNK          LOAD           PARSE          VALIDATE
 --------      --------       --------       --------       --------       --------       --------       --------
 Set graph     Auto-gen       WebSearch      crawl.py       chunk.py       load.py        parse.py       Cypher
-name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (GPT-4o-mini)  queries
+name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (Claude Haiku) queries
               or load
               from profile
               +----------+   +----------+   +----------+   +----------+   +-----------+  +-----------+
@@ -311,11 +311,11 @@ json_schema: |
 
 <h3>Phase 5: Parse with LLM</h3>
 
-<p>The parser reads fragments from <code>source_fragment</code>, sends each to GPT-4o-mini with a structured prompt, and loads the result into the Apache AGE graph. Two parser variants are available:</p>
+<p>The parser reads fragments from <code>source_fragment</code>, sends each to Claude Haiku 3.5 (or GPT-4o-mini) with a structured prompt, and loads the result into the Apache AGE graph. Two parser variants are available:</p>
 
 <ul>
-  <li><strong>Synchronous</strong> (<code>build-kg-parse</code>): Calls the OpenAI API in real-time. Fast turnaround, standard pricing.</li>
-  <li><strong>Batch</strong> (<code>build-kg-parse-batch</code>): Uses the OpenAI Batch API. 50% cheaper, but results take 1-24 hours.</li>
+  <li><strong>Synchronous</strong> (<code>build-kg-parse</code>): Calls the Anthropic (or OpenAI) API in real-time. Fast turnaround, standard pricing.</li>
+  <li><strong>Batch</strong> (<code>build-kg-parse-batch</code>): Uses the Batch API. 50% cheaper, but results take 1-24 hours.</li>
 </ul>
 
 <p>The parser operates in one of two modes based on the ontology:</p>
@@ -934,7 +934,7 @@ class OntologyConfig(BaseModel):
     <tr>
       <td><strong>Rate limiting</strong></td>
       <td>Controlled by <code>RATE_LIMIT_DELAY</code> (default 1s)</td>
-      <td>Handled by OpenAI</td>
+      <td>Handled by provider</td>
     </tr>
     <tr>
       <td><strong>Error handling</strong></td>
@@ -953,7 +953,7 @@ class OntologyConfig(BaseModel):
 
 <pre><code>Estimated cost = (number_of_fragments * avg_tokens_per_fragment) / 1,000,000 * price_per_million_tokens</code></pre>
 
-<p>For GPT-4o-mini with typical text (~500 input tokens + ~300 output tokens per fragment):</p>
+<p>For Claude Haiku 3.5 (or GPT-4o-mini) with typical text (~500 input tokens + ~300 output tokens per fragment):</p>
 
 <ul>
   <li><strong>Sync</strong>: ~$0.00030 per fragment</li>

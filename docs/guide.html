@@ -369,7 +369,7 @@
   <ul>
     <li><strong>Python 3.10+</strong></li>
     <li><strong>Docker</strong> (for PostgreSQL + Apache AGE)</li>
-    <li><strong>OpenAI API key</strong> (for text parsing)</li>
+    <li><strong>Anthropic API key</strong> (or OpenAI API key) for text parsing</li>
   </ul>
 
   <h3>Install</h3>
@@ -381,7 +381,9 @@ make setup</code></pre>
 
   <h3>Configure</h3>
   <pre><code>cp .env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-...
+# Edit .env and set your API key:
+# ANTHROPIC_API_KEY=sk-ant-...
+# Or alternatively: OPENAI_API_KEY=sk-...
 
 # Verify everything works
 make verify</code></pre>
@@ -461,7 +463,7 @@ build-kg-parse-batch process &lt;batch_id&gt; --ontology ./ontology.yaml</code><
     <div class="pipeline-step">
       <div class="phase">Phase 5</div>
       <div class="name">Parse</div>
-      <div class="tool">GPT-4o-mini</div>
+      <div class="tool">Claude Haiku 3.5</div>
     </div>
     <div class="pipeline-step">
       <div class="phase">Phase 6</div>
@@ -489,7 +491,7 @@ build-kg-parse-batch process &lt;batch_id&gt; --ontology ./ontology.yaml</code><
   <p>Chunks are loaded into PostgreSQL's <code>source_fragment</code> table with metadata from the crawl manifest. Adjacent chunks are linked via context fields.</p>
 
   <h3>Phase 5: Parse</h3>
-  <p>Each fragment is sent to GPT-4o-mini with a structured prompt derived from the ontology. The LLM's JSON response is loaded into Apache AGE as graph nodes and edges.</p>
+  <p>Each fragment is sent to Claude Haiku 3.5 (or GPT-4o-mini) with a structured prompt derived from the ontology. The LLM's JSON response is loaded into Apache AGE as graph nodes and edges.</p>
 
   <h3>Phase 6: Validate</h3>
   <p>Cypher queries count nodes by label from the ontology and produce a report card of the completed graph.</p>
@@ -671,7 +673,7 @@ discovery:
 
   <div class="cmd-card">
     <h4><span class="cmd-name">build-kg-parse</span></h4>
-    <p>Parse fragments into graph nodes using OpenAI (sync).</p>
+    <p>Parse fragments into graph nodes using Anthropic or OpenAI (sync).</p>
     <table>
       <tr><th>Flag</th><th>Default</th><th>Description</th></tr>
       <tr><td><code>--limit N</code></td><td>all</td><td>Max fragments to process</td></tr>
@@ -685,7 +687,7 @@ discovery:
 
   <div class="cmd-card">
     <h4><span class="cmd-name">build-kg-parse-batch</span></h4>
-    <p>Parse fragments using OpenAI Batch API (50% cheaper).</p>
+    <p>Parse fragments using Batch API (50% cheaper).</p>
     <p>Subcommands: <code>prepare</code>, <code>submit</code>, <code>status</code>, <code>process</code></p>
     <pre><code>build-kg-parse-batch prepare [--ontology PATH] [--jurisdiction CODE]
 build-kg-parse-batch submit &lt;batch_file&gt;
@@ -725,8 +727,11 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
     <tr><td><code>DB_NAME</code></td><td>buildkg</td><td>Database name</td></tr>
     <tr><td><code>DB_USER</code></td><td>buildkg</td><td>Database user</td></tr>
     <tr><td><code>DB_PASSWORD</code></td><td>&mdash;</td><td>Database password <strong>(required)</strong></td></tr>
-    <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key <strong>(required)</strong></td></tr>
-    <tr><td><code>OPENAI_MODEL</code></td><td>gpt-4o-mini</td><td>Model for parsing</td></tr>
+    <tr><td><code>LLM_PROVIDER</code></td><td>anthropic</td><td>LLM provider: <code>anthropic</code> or <code>openai</code></td></tr>
+    <tr><td><code>ANTHROPIC_API_KEY</code></td><td>&mdash;</td><td>Anthropic API key <strong>(required if using Anthropic)</strong></td></tr>
+    <tr><td><code>ANTHROPIC_MODEL</code></td><td>claude-haiku-4-5-20251001</td><td>Anthropic model for parsing</td></tr>
+    <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key (required if using OpenAI)</td></tr>
+    <tr><td><code>OPENAI_MODEL</code></td><td>gpt-4o-mini</td><td>OpenAI model for parsing</td></tr>
     <tr><td><code>AGE_GRAPH_NAME</code></td><td>reg_ca</td><td>Apache AGE graph name</td></tr>
     <tr><td><code>BATCH_SIZE</code></td><td>10</td><td>Fragments per batch</td></tr>
     <tr><td><code>MAX_WORKERS</code></td><td>3</td><td>Concurrent workers</td></tr>
@@ -817,11 +822,11 @@ $$) as (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
     <tr><td>Connection refused on port 5432</td><td>Any</td><td>Run <code>docker compose -f db/docker-compose.yml up -d</code></td></tr>
     <tr><td>relation "source_fragment" does not exist</td><td>Load/Parse</td><td>Run <code>make db-reset</code> or <code>docker exec -i build-kg-db psql -U buildkg -d buildkg &lt; db/init.sql</code></td></tr>
     <tr><td>AGE extension not found</td><td>Setup</td><td>Run <code>build-kg-setup</code> with the Apache AGE Docker image</td></tr>
-    <tr><td>OpenAI API error 401</td><td>Parse</td><td>Check <code>OPENAI_API_KEY</code> in <code>.env</code></td></tr>
+    <tr><td>LLM API error 401</td><td>Parse</td><td>Check <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code>) in <code>.env</code></td></tr>
     <tr><td>Chromium not found</td><td>Crawl</td><td>Run <code>crawl4ai-setup</code></td></tr>
     <tr><td>No fragments found</td><td>Parse</td><td>Verify <code>build-kg-load</code> ran successfully</td></tr>
     <tr><td>Ontology file not found</td><td>Parse/Setup</td><td>Check <code>--ontology</code> path is correct</td></tr>
-    <tr><td>Batch still in "validating"</td><td>Batch</td><td>Wait; OpenAI batches take 1-24 hours</td></tr>
+    <tr><td>Batch still in "validating"</td><td>Batch</td><td>Wait; batches take 1-24 hours</td></tr>
     <tr><td>DB_PASSWORD is required</td><td>Any</td><td>Run <code>cp .env.example .env</code></td></tr>
   </table>
 

@@ -96,7 +96,7 @@ Every constraint is machine-testable: thresholds with operators and units, regex
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - **Docker** (for PostgreSQL + Apache AGE)
-- **OpenAI API key** (for text parsing)
+- **Anthropic API key** (default) or OpenAI API key (for text parsing)
 
 ### Install
 
@@ -109,7 +109,7 @@ make setup
 ```bash
 # Configure
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-...
+# Edit .env and set ANTHROPIC_API_KEY=sk-ant-...
 
 # Verify everything works
 make verify
@@ -159,7 +159,7 @@ Phase 0       Phase 0.5      Phase 1        Phase 2        Phase 3        Phase 
 INIT          ONTOLOGY       DISCOVER       CRAWL          CHUNK          LOAD           PARSE
 --------      --------       --------       --------       --------       --------       --------
 Set graph     Auto-gen       WebSearch      crawl.py       chunk.py       load.py        parse.py
-name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (GPT-4o-mini)
+name, dirs    ontology       WebFetch       (Crawl4AI)     (Unstructured) (PostgreSQL)   (Claude Haiku 3.5)
               or load
               from profile
 ```
@@ -212,8 +212,8 @@ build-kg-domains
 | `build-kg-crawl` | Crawl websites to markdown/HTML/JSON | [reference-crawl.md](docs/reference-crawl.md) |
 | `build-kg-chunk` | Chunk documents into JSON fragments | [reference-chunk.md](docs/reference-chunk.md) |
 | `build-kg-load` | Load chunks into PostgreSQL with manifest | [reference-load.md](docs/reference-load.md) |
-| `build-kg-parse` | Parse fragments with GPT-4o-mini (sync) | [reference-parse.md](docs/reference-parse.md) |
-| `build-kg-parse-batch` | Parse fragments with OpenAI Batch API | [reference-parse.md](docs/reference-parse.md) |
+| `build-kg-parse` | Parse fragments with Claude Haiku 3.5 (sync) | [reference-parse.md](docs/reference-parse.md) |
+| `build-kg-parse-batch` | Parse fragments with Batch API | [reference-parse.md](docs/reference-parse.md) |
 | `build-kg-setup` | Create AGE extension and graph | -- |
 | `build-kg-verify` | Verify database, AGE, and API setup | -- |
 | `build-kg-domains` | List available domain profiles | -- |
@@ -229,8 +229,11 @@ All configuration is via `.env` file or environment variables:
 | `DB_NAME` | `buildkg` | Database name |
 | `DB_USER` | `buildkg` | Database user |
 | `DB_PASSWORD` | -- | Database password (**required**) |
-| `OPENAI_API_KEY` | -- | OpenAI API key (**required**) |
-| `OPENAI_MODEL` | `gpt-4o-mini` | Model for parsing |
+| `LLM_PROVIDER` | `anthropic` | LLM provider (`anthropic` or `openai`) |
+| `ANTHROPIC_API_KEY` | -- | Anthropic API key (**required** if provider is `anthropic`) |
+| `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Anthropic model for parsing |
+| `OPENAI_API_KEY` | -- | OpenAI API key (**required** if provider is `openai`) |
+| `OPENAI_MODEL` | `gpt-4o-mini` | OpenAI model for parsing |
 | `AGE_GRAPH_NAME` | `reg_ca` | Apache AGE graph name |
 | `BATCH_SIZE` | `10` | Fragments per batch |
 | `MAX_WORKERS` | `3` | Concurrent workers |

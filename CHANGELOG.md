@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-20
+
+### Changed
+
+- **Default LLM provider switched from OpenAI to Anthropic**: Claude Haiku 3.5 (`claude-haiku-4-5-20251001`) is now the default parsing model
+- Added `LLM_PROVIDER` configuration variable (default: `anthropic`) to select between Anthropic and OpenAI
+- Added `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` environment variables
+- OpenAI remains fully supported as an alternative provider (`LLM_PROVIDER=openai`)
+- Updated all documentation to reflect Anthropic as the default provider
+- Pipeline diagrams now reference Claude Haiku 3.5 instead of GPT-4o-mini
+- Batch API references are now provider-agnostic
+
 ## [0.3.0] - 2026-02-20
 
 ### Added

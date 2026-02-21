@@ -6,7 +6,7 @@ build-kg provides two parsers for converting text fragments into Apache AGE grap
 
 ## Sync Parser: build-kg-parse
 
-Real-time parsing using the OpenAI Chat Completions API. Each fragment is sent to GPT-4o-mini individually, and the result is loaded into the graph immediately.
+Real-time parsing using the Anthropic Messages API (or OpenAI Chat Completions API). Each fragment is sent to Claude Haiku 3.5 individually, and the result is loaded into the graph immediately.
 
 ### Usage
 
@@ -38,8 +38,11 @@ The parser reads these from `.env` or the environment:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `AGE_GRAPH_NAME` | `reg_ca` | Apache AGE graph to load results into |
-| `OPENAI_API_KEY` | **(required)** | OpenAI API key |
-| `OPENAI_MODEL` | `gpt-4o-mini` | Model to use for parsing |
+| `LLM_PROVIDER` | `anthropic` | LLM provider (`anthropic` or `openai`) |
+| `ANTHROPIC_API_KEY` | **(required)** | Anthropic API key (required if provider is `anthropic`) |
+| `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Anthropic model to use for parsing |
+| `OPENAI_API_KEY` | -- | OpenAI API key (required if provider is `openai`) |
+| `OPENAI_MODEL` | `gpt-4o-mini` | OpenAI model to use for parsing |
 | `BATCH_SIZE` | `10` | Number of fragments per internal batch (for progress reporting) |
 | `MAX_WORKERS` | `3` | Concurrent worker count (currently sequential) |
 | `RATE_LIMIT_DELAY` | `1.0` | Seconds to wait between API calls |
@@ -116,7 +119,7 @@ build-kg-parse --offset 500
 The sync parser includes a two-stage ID extraction pipeline for regulatory domains:
 
 1. **Regex extraction** (free, instant): Tries authority-specific patterns (CFIA B.01.008, US CFR 21 CFR 101.61, Section/Chapter/Article references) against the fragment text and canonical_locator metadata.
-2. **LLM extraction** (paid, via the parsing prompt): The GPT-4o-mini prompt asks for the provision ID as part of the structured output.
+2. **LLM extraction** (paid, via the parsing prompt): The LLM prompt asks for the provision ID as part of the structured output.
 
 The parser chooses the best ID source:
 - Regex with confidence >= 0.70: Use regex result
@@ -130,7 +133,7 @@ In ontology-driven mode, ID extraction is skipped and auto-generated IDs are use
 
 ## Batch Parser: build-kg-parse-batch
 
-Uses the OpenAI Batch API for 50% cheaper processing. Designed for large-scale runs (>=500 fragments). The workflow has four subcommands that are run sequentially.
+Uses the Batch API for 50% cheaper processing. Designed for large-scale runs (>=500 fragments). The workflow has four subcommands that are run sequentially.
 
 ### Usage
 
@@ -148,7 +151,7 @@ python -m build_kg.parse_batch <command> [OPTIONS]
 
 #### `prepare` -- Create a JSONL Batch File
 
-Fetches fragments from the database and writes them as OpenAI Batch API requests in JSONL format.
+Fetches fragments from the database and writes them as Batch API requests in JSONL format.
 
 ```bash
 build-kg-parse-batch prepare [OPTIONS]
@@ -176,10 +179,10 @@ build-kg-parse-batch prepare --ontology ./ontology.yaml --output k8s_batch.jsonl
 ```
 
 Output files:
-- `batch_data/sg_batch.jsonl` -- The JSONL file to submit to OpenAI
+- `batch_data/sg_batch.jsonl` -- The JSONL file to submit to the LLM provider
 - `batch_data/sg_batch.jsonl.metadata.json` -- Fragment metadata for processing results later
 
-#### `submit` -- Submit Batch to OpenAI
+#### `submit` -- Submit Batch to Provider
 
 Uploads the JSONL file and creates a batch job.
 
@@ -211,7 +214,7 @@ build-kg-parse-batch status <batch_id> [OPTIONS]
 
 | Argument/Flag | Description |
 |---------------|-------------|
-| `batch_id` | The OpenAI batch ID from the `submit` step |
+| `batch_id` | The batch ID from the `submit` step |
 | `--watch` | Poll every 60 seconds until the batch completes |
 
 Example (one-shot):
@@ -227,7 +230,7 @@ build-kg-parse-batch status batch_abc123def456 --watch
 ```
 
 Possible statuses:
-- `validating` -- OpenAI is validating the input file
+- `validating` -- The provider is validating the input file
 - `in_progress` -- Requests are being processed
 - `completed` -- All requests finished
 - `failed` -- The batch failed (check errors)
@@ -244,7 +247,7 @@ build-kg-parse-batch process <batch_id> [OPTIONS]
 
 | Argument/Flag | Description |
 |---------------|-------------|
-| `batch_id` | The OpenAI batch ID from the `submit` step |
+| `batch_id` | The batch ID from the `submit` step |
 | `--ontology PATH` | Path to ontology YAML file (must match the one used in `prepare`) |
 
 Example (regulatory):
@@ -322,10 +325,10 @@ batch_data/
 
 | Parser | Pricing Model | Cost per 1,000 Fragments | Best For |
 |--------|--------------|--------------------------|----------|
-| `build-kg-parse` (sync) | Standard OpenAI API | ~$0.30 | Small runs (<500), debugging, interactive use |
-| `build-kg-parse-batch` (batch) | OpenAI Batch API (50% discount) | ~$0.15 | Large runs (>=500), overnight processing |
+| `build-kg-parse` (sync) | Standard API | ~$0.30 | Small runs (<500), debugging, interactive use |
+| `build-kg-parse-batch` (batch) | Batch API (50% discount) | ~$0.15 | Large runs (>=500), overnight processing |
 
-Cost estimates assume GPT-4o-mini with an average of ~500 input tokens and ~300 output tokens per fragment.
+Cost estimates assume Claude Haiku 3.5 (or GPT-4o-mini) with an average of ~500 input tokens and ~300 output tokens per fragment.
 
 ### Cost Examples
 
@@ -369,10 +372,10 @@ Fragments are skipped (not loaded to graph) when:
 
 | Problem | Solution |
 |---------|----------|
-| "OpenAI API error 401" | Check `OPENAI_API_KEY` in `.env` |
+| "API error 401" | Check `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) in `.env` |
 | "No fragments found" | Verify that `build-kg-load` ran successfully; check `source_fragment` table |
 | "Graph loading failed" | Check that the graph exists: `build-kg-setup` |
-| Batch still in "validating" status | Wait -- OpenAI batches take 1-24 hours |
+| Batch still in "validating" status | Wait -- batches take 1-24 hours |
 | Batch status "failed" | Check the error output; common cause is malformed JSONL |
 | Batch status "expired" | The 24-hour window elapsed; resubmit the batch |
 | "Metadata file not found" during process | Ensure you run `process` from the same directory where you ran `prepare` |

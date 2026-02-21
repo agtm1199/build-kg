@@ -105,7 +105,7 @@
     <ul>
       <li><strong>Python 3.10+</strong> (<code>python3 --version</code>)</li>
       <li><strong>Docker</strong> (<code>docker --version</code>)</li>
-      <li><strong>An OpenAI API key</strong> (get one at <a href="https://platform.openai.com">platform.openai.com</a>)</li>
+      <li><strong>An Anthropic API key</strong> (get one at <a href="https://console.anthropic.com">console.anthropic.com</a>) or an OpenAI API key</li>
     </ul>
   </section>
 
@@ -134,8 +134,13 @@ build-kg-db    apache/age   ...   Up 5 seconds (healthy)    0.0.0.0:5432-&gt;543
   <section id="step-3">
     <h2>Step 3: Configure Environment</h2>
 <pre><code>cp .env.example .env</code></pre>
-    <p>Edit <code>.env</code> and set your OpenAI API key:</p>
-<pre><code>OPENAI_API_KEY=sk-your-actual-key-here</code></pre>
+    <p>Edit <code>.env</code> and set your API key:</p>
+<pre><code># Anthropic (default provider):
+ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+
+# Or if using OpenAI:
+# OPENAI_API_KEY=sk-your-actual-key-here
+# LLM_PROVIDER=openai</code></pre>
     <p>The database credentials in <code>.env.example</code> already match the Docker container defaults, so no other changes are needed.</p>
   </section>
 
@@ -190,9 +195,9 @@ Setup Verification
 3. Verifying source data...
      Found 0 fragments with excerpts
      Found 0 source documents
-4. Verifying OpenAI API access...
-     OpenAI API connection successful
-     Model: gpt-4o-mini
+4. Verifying LLM API access...
+     Anthropic API connection successful
+     Model: claude-haiku-4-5-20251001
 ======================================================================
   All checks passed! System is ready.
 ======================================================================</code></pre>
@@ -357,7 +362,7 @@ Processing: ingredient-list_depth1_20260218_143028 (7 chunks)
 Knowledge Graph Parser
 ======================================================================
 Graph: reg_ca
-Model: gpt-4o-mini
+Model: claude-haiku-4-5-20251001
 Batch size: 10
 ======================================================================
 
@@ -398,7 +403,7 @@ Avg per fragment: 1.52 seconds
 ======================================================================</code></pre>
     <p>For <strong>generic topics</strong> with a custom ontology, pass the <code>--ontology</code> flag:</p>
 <pre><code>AGE_GRAPH_NAME=kg_k8s_net build-kg-parse --ontology ./ontology.yaml --limit 10</code></pre>
-    <p><strong>Cost: ~$0.003.</strong> GPT-4o-mini charges roughly $0.30 per 1,000 fragments. Ten fragments cost less than a penny.</p>
+    <p><strong>Cost: ~$0.003.</strong> Claude Haiku 3.5 charges roughly $0.30 per 1,000 fragments. Ten fragments cost less than a penny.</p>
   </section>
 
   <!-- Step 10 -->

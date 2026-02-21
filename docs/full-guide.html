@@ -606,7 +606,7 @@
   <ul>
     <li><strong>Python 3.10+</strong></li>
     <li><strong>Docker</strong> &mdash; for PostgreSQL + Apache AGE</li>
-    <li><strong>OpenAI API key</strong> &mdash; for LLM-based text parsing</li>
+    <li><strong>Anthropic API key</strong> (or OpenAI API key) &mdash; for LLM-based text parsing</li>
   </ul>
 
   <h3>Install</h3>
@@ -618,7 +618,9 @@ make setup</code></pre>
 
   <h3>Configure your environment</h3>
 <pre><code>cp .env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-...
+# Edit .env and set your API key:
+# ANTHROPIC_API_KEY=sk-ant-...
+# Or alternatively: OPENAI_API_KEY=sk-...
 
 # Verify everything works
 make verify</code></pre>
@@ -626,7 +628,7 @@ make verify</code></pre>
   <div class="callout tip">
     <span class="callout-title">Tip</span>
     The default <code>.env.example</code> has database credentials that match the Docker container.
-    You only need to add your <code>OPENAI_API_KEY</code>.
+    You only need to add your <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code> if using OpenAI).
   </div>
 </section>
 
@@ -711,7 +713,7 @@ build-kg-parse-batch process &lt;batch_id&gt; --ontology ./ontology.yaml</code><
     <div class="pipeline-step">
       <div class="phase">Phase 5</div>
       <div class="name">Parse</div>
-      <div class="tool">GPT-4o-mini</div>
+      <div class="tool">Claude Haiku 3.5</div>
     </div>
     <div class="pipeline-step">
       <div class="phase">Phase 6</div>
@@ -791,7 +793,7 @@ build-kg-parse-batch process &lt;batch_id&gt; --ontology ./ontology.yaml</code><
 
   <h3>Phase 5: Parse</h3>
   <p>
-    Each fragment is sent to GPT-4o-mini with a structured prompt derived from the ontology.
+    Each fragment is sent to Claude Haiku 3.5 (or GPT-4o-mini) with a structured prompt derived from the ontology.
     The LLM returns entities and relationships in JSON, which are loaded into Apache AGE as graph
     vertices and edges. Two parser variants exist:
   </p>
@@ -1121,7 +1123,7 @@ build-kg-load ./chunks/ --manifest ./crawl_manifest.json --dry-run</code></pre>
 
   <div class="cmd-card">
     <h4><span class="cmd-name">build-kg-parse</span> <span style="color: var(--text-muted); font-size: 0.85rem;">(synchronous)</span></h4>
-    <p>Parse fragments into graph nodes and edges using OpenAI in real-time.</p>
+    <p>Parse fragments into graph nodes and edges using Anthropic (or OpenAI) in real-time.</p>
 
     <h4>Usage</h4>
 <pre><code>build-kg-parse [options]</code></pre>
@@ -1140,13 +1142,13 @@ build-kg-load ./chunks/ --manifest ./crawl_manifest.json --dry-run</code></pre>
 
   <div class="cmd-card">
     <h4><span class="cmd-name">build-kg-parse-batch</span> <span style="color: var(--text-muted); font-size: 0.85rem;">(batch &mdash; 50% cheaper)</span></h4>
-    <p>Parse fragments using the OpenAI Batch API. Four subcommands handle the batch lifecycle.</p>
+    <p>Parse fragments using the Batch API. Four subcommands handle the batch lifecycle.</p>
 
     <h4>Usage</h4>
 <pre><code># 1. Prepare: generate the JSONL request file
 build-kg-parse-batch prepare [--ontology PATH] [--jurisdiction CODE]
 
-# 2. Submit: upload the JSONL to OpenAI
+# 2. Submit: upload the JSONL to the LLM provider
 build-kg-parse-batch submit &lt;batch_file&gt;
 
 # 3. Status: monitor progress (optionally auto-refresh)
@@ -1169,7 +1171,7 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
     <tr><td>Cost</td><td>~$0.30 per 1,000 fragments</td><td>~$0.15 per 1,000 fragments</td></tr>
     <tr><td>Latency</td><td>Seconds per fragment</td><td>1&ndash;24 hours for entire batch</td></tr>
     <tr><td>Best for</td><td>&lt;500 fragments, debugging</td><td>&gt;=500 fragments, overnight runs</td></tr>
-    <tr><td>Rate limiting</td><td><code>RATE_LIMIT_DELAY</code> (default 1s)</td><td>Handled by OpenAI</td></tr>
+    <tr><td>Rate limiting</td><td><code>RATE_LIMIT_DELAY</code> (default 1s)</td><td>Handled by provider</td></tr>
     <tr><td>Error handling</td><td>Immediate per fragment</td><td>Collected in output file</td></tr>
     <tr><td>Resumability</td><td><code>--offset</code> to skip processed</td><td>Resubmit failed items</td></tr>
   </table>
@@ -1196,8 +1198,11 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
     <tr><td><code>DB_NAME</code></td><td><code>buildkg</code></td><td>Database name</td></tr>
     <tr><td><code>DB_USER</code></td><td><code>buildkg</code></td><td>Database user</td></tr>
     <tr><td><code>DB_PASSWORD</code></td><td>&mdash;</td><td>Database password <strong>(required)</strong></td></tr>
-    <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key <strong>(required)</strong></td></tr>
-    <tr><td><code>OPENAI_MODEL</code></td><td><code>gpt-4o-mini</code></td><td>Model used for parsing</td></tr>
+    <tr><td><code>LLM_PROVIDER</code></td><td><code>anthropic</code></td><td>LLM provider: <code>anthropic</code> or <code>openai</code></td></tr>
+    <tr><td><code>ANTHROPIC_API_KEY</code></td><td>&mdash;</td><td>Anthropic API key <strong>(required if using Anthropic)</strong></td></tr>
+    <tr><td><code>ANTHROPIC_MODEL</code></td><td><code>claude-haiku-4-5-20251001</code></td><td>Anthropic model for parsing</td></tr>
+    <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key (required if using OpenAI)</td></tr>
+    <tr><td><code>OPENAI_MODEL</code></td><td><code>gpt-4o-mini</code></td><td>OpenAI model for parsing (when using OpenAI)</td></tr>
     <tr><td><code>AGE_GRAPH_NAME</code></td><td><code>reg_ca</code></td><td>Apache AGE graph name</td></tr>
     <tr><td><code>BATCH_SIZE</code></td><td><code>10</code></td><td>Fragments per processing batch</td></tr>
     <tr><td><code>MAX_WORKERS</code></td><td><code>3</code></td><td>Concurrent worker threads</td></tr>
@@ -1207,7 +1212,7 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
 
   <div class="callout warn">
     <span class="callout-title">Important</span>
-    <code>DB_PASSWORD</code> and <code>OPENAI_API_KEY</code> are required. All other variables
+    <code>DB_PASSWORD</code> and an LLM API key (<code>ANTHROPIC_API_KEY</code> or <code>OPENAI_API_KEY</code>) are required. All other variables
     have sensible defaults. Run <code>build-kg-verify</code> to check your configuration.
   </div>
 </section>
@@ -1216,7 +1221,7 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
 <section id="batch-api">
   <h2>Batch API</h2>
   <p>
-    The OpenAI Batch API provides a 50% cost reduction for non-time-sensitive workloads.
+    The Batch API provides a 50% cost reduction for non-time-sensitive workloads.
     build-kg wraps the Batch API with a four-step workflow: <code>prepare</code>,
     <code>submit</code>, <code>status</code>, <code>process</code>.
   </p>
@@ -1232,7 +1237,7 @@ build-kg-parse-batch process &lt;batch_id&gt; [--ontology PATH]</code></pre>
   <h3>Cost Estimate Formula</h3>
 <pre><code>estimated_cost = (fragments * avg_tokens_per_fragment) / 1,000,000 * price_per_million_tokens
 
-# GPT-4o-mini typical (~500 input + ~300 output tokens per fragment):
+# Claude Haiku 3.5 typical (~500 input + ~300 output tokens per fragment):
 #   Sync:  ~$0.00030 per fragment
 #   Batch: ~$0.00015 per fragment</code></pre>
 
@@ -1391,9 +1396,9 @@ $$) as (id agtype, authority agtype, text agtype);</code></pre>
       <td>Ensure you are using the Apache AGE Docker image, then run <code>build-kg-setup</code></td>
     </tr>
     <tr>
-      <td>OpenAI API error 401</td>
+      <td>LLM API error 401</td>
       <td>Parse</td>
-      <td>Check <code>OPENAI_API_KEY</code> in <code>.env</code>. Verify with <code>build-kg-verify</code></td>
+      <td>Check <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code>) in <code>.env</code>. Verify with <code>build-kg-verify</code></td>
     </tr>
     <tr>
       <td>Chromium not found</td>
@@ -1413,7 +1418,7 @@ $$) as (id agtype, authority agtype, text agtype);</code></pre>
     <tr>
       <td>Batch still in "validating"</td>
       <td>Batch</td>
-      <td>Wait; OpenAI batches can take 1&ndash;24 hours</td>
+      <td>Wait; batches can take 1&ndash;24 hours</td>
     </tr>
     <tr>
       <td>DB_PASSWORD is required</td>
@@ -1504,8 +1509,9 @@ docker exec -i build-kg-db psql -U buildkg -d buildkg &lt; db/init.sql</code></p
   <div class="faq-item">
     <div class="faq-q">What LLM does it use?</div>
     <div class="faq-a">
-      GPT-4o-mini by default. Configurable via the <code>OPENAI_MODEL</code> environment variable
-      in your <code>.env</code> file.
+      Claude Haiku 3.5 by default (via Anthropic). Configurable via the <code>LLM_PROVIDER</code>
+      and <code>ANTHROPIC_MODEL</code> environment variables in your <code>.env</code> file.
+      OpenAI models (e.g., GPT-4o-mini) are also supported by setting <code>LLM_PROVIDER=openai</code>.
     </div>
   </div>
 

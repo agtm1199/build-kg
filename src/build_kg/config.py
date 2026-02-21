@@ -26,7 +26,14 @@ DB_CONFIG = {
     'password': os.getenv('DB_PASSWORD', ''),
 }
 
-# OpenAI Configuration
+# LLM Provider Configuration
+LLM_PROVIDER = os.getenv('LLM_PROVIDER', 'anthropic')  # 'anthropic' or 'openai'
+
+# Anthropic Configuration (default)
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
+ANTHROPIC_MODEL = os.getenv('ANTHROPIC_MODEL', 'claude-haiku-4-5-20251001')
+
+# OpenAI Configuration (alternative)
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
 
@@ -48,8 +55,14 @@ def validate_config():
     if not DB_CONFIG['password']:
         errors.append("DB_PASSWORD is required")
 
-    if not OPENAI_API_KEY:
-        errors.append("OPENAI_API_KEY is required")
+    if LLM_PROVIDER == 'anthropic':
+        if not ANTHROPIC_API_KEY:
+            errors.append("ANTHROPIC_API_KEY is required (LLM_PROVIDER=anthropic)")
+    elif LLM_PROVIDER == 'openai':
+        if not OPENAI_API_KEY:
+            errors.append("OPENAI_API_KEY is required (LLM_PROVIDER=openai)")
+    else:
+        errors.append(f"Unknown LLM_PROVIDER: {LLM_PROVIDER} (use 'anthropic' or 'openai')")
 
     if errors:
         raise ValueError(f"Configuration errors: {', '.join(errors)}")

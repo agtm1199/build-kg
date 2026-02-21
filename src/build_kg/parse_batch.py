@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Knowledge Graph Parser - OpenAI Batch API Version
+Knowledge Graph Parser - Batch API Version
 Step 1: Prepare batch requests from source_fragment table
-Step 2: Submit batch to OpenAI
+Step 2: Submit batch to LLM provider
 Step 3: Monitor batch status
 Step 4: Process results and load into AGE graph
 
@@ -17,12 +17,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-from openai import OpenAI
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.extras import RealDictCursor
 
-from build_kg.config import AGE_GRAPH_NAME, DB_CONFIG, OPENAI_API_KEY, OPENAI_MODEL, validate_config
+from build_kg.config import AGE_GRAPH_NAME, DB_CONFIG, validate_config
 from build_kg.domain import OntologyConfig, build_prompt, load_ontology, load_profile, set_profile
+from build_kg.llm import build_batch_request, create_client, extract_batch_response_text, get_provider_config
 
 
 class BatchPreparation:
@@ -31,6 +31,7 @@ class BatchPreparation:
     def __init__(self):
         """Initialize batch preparation."""
         validate_config()
+        self.provider, _, self.model = get_provider_config()
         self.db_conn = None
         self.output_dir = Path.cwd() / "batch_data"
         self.output_dir.mkdir(exist_ok=True)
@@ -92,7 +93,7 @@ class BatchPreparation:
 
     def prepare_batch_file(self, fragments: List[Dict[str, Any]], output_file: str) -> str:
         """
-        Create JSONL batch file for OpenAI.
+        Create JSONL batch file for the configured LLM provider.
 
         Args:
             fragments: List of fragment dictionaries
@@ -104,32 +105,17 @@ class BatchPreparation:
         output_path = self.output_dir / output_file
 
         print(f"Creating batch file: {output_path}")
+        print(f"Provider: {self.provider}, Model: {self.model}")
         print(f"Processing {len(fragments)} fragments...")
 
         with open(output_path, 'w') as f:
             for fragment in fragments:
                 system_message, user_prompt = self.create_prompt(fragment)
-                # Create batch request
-                batch_request = {
-                    "custom_id": str(fragment['fragment_id']),
-                    "method": "POST",
-                    "url": "/v1/chat/completions",
-                    "body": {
-                        "model": OPENAI_MODEL,
-                        "messages": [
-                            {
-                                "role": "system",
-                                "content": system_message
-                            },
-                            {
-                                "role": "user",
-                                "content": user_prompt
-                            }
-                        ],
-                        "response_format": {"type": "json_object"},
-                        "temperature": 0.1,
-                    }
-                }
+                batch_request = build_batch_request(
+                    self.provider, self.model,
+                    str(fragment['fragment_id']),
+                    system_message, user_prompt,
+                )
 
                 # Write as JSONL (one JSON per line)
                 f.write(json.dumps(batch_request) + '\n')
@@ -199,17 +185,18 @@ class BatchPreparation:
 
 
 class BatchSubmission:
-    """Submit batch to OpenAI."""
+    """Submit batch to LLM provider."""
 
     def __init__(self):
         """Initialize batch submission."""
         validate_config()
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.provider, api_key, self.model = get_provider_config()
+        self.client = create_client(self.provider, api_key)
         self.output_dir = Path.cwd() / "batch_data"
 
     def submit_batch(self, batch_file: str) -> str:
         """
-        Submit batch file to OpenAI.
+        Submit batch file to LLM provider.
 
         Args:
             batch_file: Path to JSONL batch file
@@ -219,8 +206,56 @@ class BatchSubmission:
         """
         print("=" * 70)
         print("Batch Submission - Step 2")
+        print(f"Provider: {self.provider}")
         print("=" * 70)
-        print(f"\nUploading file: {batch_file}")
+        print(f"\nProcessing file: {batch_file}")
+
+        if self.provider == 'anthropic':
+            return self._submit_anthropic(batch_file)
+        else:
+            return self._submit_openai(batch_file)
+
+    def _submit_anthropic(self, batch_file: str) -> str:
+        """Submit batch via Anthropic Message Batches API."""
+        requests = []
+        with open(batch_file, 'r') as f:
+            for line in f:
+                requests.append(json.loads(line))
+
+        print(f"Submitting {len(requests)} requests...")
+
+        batch = self.client.messages.batches.create(requests=requests)
+
+        print(f"✓ Batch created: {batch.id}")
+        print(f"  Status: {batch.processing_status}")
+
+        # Save batch info
+        batch_info = {
+            "batch_id": batch.id,
+            "provider": self.provider,
+            "status": batch.processing_status,
+            "created_at": datetime.now().isoformat(),
+            "batch_file": batch_file,
+            "request_count": len(requests),
+        }
+
+        info_path = self.output_dir / f"batch_{batch.id}.info.json"
+        with open(info_path, 'w') as f:
+            json.dump(batch_info, f, indent=2)
+
+        print(f"✓ Batch info saved: {info_path}")
+
+        print("\n" + "=" * 70)
+        print("✓ Batch submitted successfully!")
+        print(f"Batch ID: {batch.id}")
+        print(f"\nMonitor progress: build-kg-parse-batch status {batch.id}")
+        print("=" * 70)
+
+        return batch.id
+
+    def _submit_openai(self, batch_file: str) -> str:
+        """Submit batch via OpenAI Batch API."""
+        print(f"Uploading file: {batch_file}")
 
         # Upload file
         with open(batch_file, 'rb') as f:
@@ -249,6 +284,7 @@ class BatchSubmission:
         # Save batch info
         batch_info = {
             "batch_id": batch.id,
+            "provider": self.provider,
             "input_file_id": batch_input_file.id,
             "status": batch.status,
             "created_at": datetime.now().isoformat(),
@@ -276,20 +312,58 @@ class BatchMonitor:
     def __init__(self):
         """Initialize batch monitor."""
         validate_config()
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.provider, api_key, _ = get_provider_config()
+        self.client = create_client(self.provider, api_key)
 
     def check_status(self, batch_id: str, watch: bool = False):
         """
         Check batch status.
 
         Args:
-            batch_id: OpenAI batch ID
+            batch_id: Batch ID
             watch: If True, poll until complete
         """
         print("=" * 70)
         print("Batch Status - Step 3")
+        print(f"Provider: {self.provider}")
         print("=" * 70)
 
+        if self.provider == 'anthropic':
+            self._check_anthropic(batch_id, watch)
+        else:
+            self._check_openai(batch_id, watch)
+
+        print("=" * 70)
+
+    def _check_anthropic(self, batch_id: str, watch: bool):
+        """Check batch status via Anthropic API."""
+        while True:
+            batch = self.client.messages.batches.retrieve(batch_id)
+
+            print(f"\nBatch ID: {batch.id}")
+            print(f"Status: {batch.processing_status}")
+
+            if batch.request_counts:
+                print("\nRequest Counts:")
+                print(f"  Processing: {batch.request_counts.processing}")
+                print(f"  Succeeded: {batch.request_counts.succeeded}")
+                print(f"  Errored: {batch.request_counts.errored}")
+                print(f"  Canceled: {batch.request_counts.canceled}")
+                print(f"  Expired: {batch.request_counts.expired}")
+
+            if batch.processing_status == "ended":
+                print("\n✓ Batch completed!")
+                print(f"\nNext step: build-kg-parse-batch process {batch_id}")
+                break
+
+            elif watch:
+                print("\nStill processing... (will check again in 60 seconds)")
+                time.sleep(60)
+            else:
+                break
+
+    def _check_openai(self, batch_id: str, watch: bool):
+        """Check batch status via OpenAI API."""
         while True:
             batch = self.client.batches.retrieve(batch_id)
 
@@ -328,8 +402,6 @@ class BatchMonitor:
             else:
                 break
 
-        print("=" * 70)
-
 
 class BatchProcessor:
     """Process batch results and load into AGE graph."""
@@ -337,7 +409,8 @@ class BatchProcessor:
     def __init__(self, ontology: Optional[OntologyConfig] = None):
         """Initialize batch processor."""
         validate_config()
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.provider, api_key, self.model = get_provider_config()
+        self.client = create_client(self.provider, api_key)
         self.db_conn = None
         self.graph_name = AGE_GRAPH_NAME
         self.output_dir = Path.cwd() / "batch_data"
@@ -363,6 +436,30 @@ class BatchProcessor:
         """Download batch results."""
         print(f"Downloading results for batch {batch_id}...")
 
+        if self.provider == 'anthropic':
+            return self._download_anthropic(batch_id)
+        else:
+            return self._download_openai(batch_id)
+
+    def _download_anthropic(self, batch_id: str) -> str:
+        """Download results from Anthropic batch."""
+        batch = self.client.messages.batches.retrieve(batch_id)
+
+        if batch.processing_status != "ended":
+            print(f"✗ Batch not completed yet (status: {batch.processing_status})")
+            return None
+
+        output_path = self.output_dir / f"batch_{batch_id}_results.jsonl"
+
+        with open(output_path, 'w') as f:
+            for result in self.client.messages.batches.results(batch_id):
+                f.write(json.dumps(result.model_dump()) + '\n')
+
+        print(f"✓ Results downloaded: {output_path}")
+        return str(output_path)
+
+    def _download_openai(self, batch_id: str) -> str:
+        """Download results from OpenAI batch."""
         batch = self.client.batches.retrieve(batch_id)
 
         if batch.status != "completed":
@@ -645,22 +742,26 @@ class BatchProcessor:
                 custom_id = result['custom_id']
                 fragment_id = custom_id
 
-                if result.get('error'):
-                    print(f"  ✗ Error for {fragment_id}: {result['error']}")
-                    stats['failed'] += 1
-                    continue
+                # Check for errors (provider-specific)
+                if self.provider == 'anthropic':
+                    result_type = result.get('result', {}).get('type', '')
+                    if result_type != 'succeeded':
+                        print(f"  ✗ Error for {fragment_id}: {result_type}")
+                        stats['failed'] += 1
+                        continue
+                else:
+                    if result.get('error'):
+                        print(f"  ✗ Error for {fragment_id}: {result['error']}")
+                        stats['failed'] += 1
+                        continue
 
-                # Extract parsed data
-                response = result['response']
-                body = response['body']
-                choices = body['choices']
-
-                if not choices:
-                    print(f"  ⊘ No response for {fragment_id}")
+                # Extract response text
+                try:
+                    content = extract_batch_response_text(self.provider, result)
+                except (KeyError, IndexError, TypeError) as e:
+                    print(f"  ⊘ No response for {fragment_id}: {e}")
                     stats['skipped'] += 1
                     continue
-
-                content = choices[0]['message']['content']
 
                 # Try to parse JSON, skip if malformed
                 try:
@@ -715,7 +816,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Parse data into knowledge graph using OpenAI Batch API',
+        description='Parse data into knowledge graph using Batch API',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -747,17 +848,17 @@ Examples:
     prepare_parser.add_argument('--domain', type=str, help='Domain profile name or path')
 
     # Submit command
-    submit_parser = subparsers.add_parser('submit', help='Submit batch to OpenAI')
+    submit_parser = subparsers.add_parser('submit', help='Submit batch to LLM provider')
     submit_parser.add_argument('batch_file', help='Path to batch JSONL file')
 
     # Status command
     status_parser = subparsers.add_parser('status', help='Check batch status')
-    status_parser.add_argument('batch_id', help='OpenAI batch ID')
+    status_parser.add_argument('batch_id', help='Batch ID')
     status_parser.add_argument('--watch', action='store_true', help='Watch until complete')
 
     # Process command
     process_parser = subparsers.add_parser('process', help='Process batch results')
-    process_parser.add_argument('batch_id', help='OpenAI batch ID')
+    process_parser.add_argument('batch_id', help='Batch ID')
     process_parser.add_argument('--ontology', type=str, help='Path to ontology YAML file for generic mode')
 
     args = parser.parse_args()

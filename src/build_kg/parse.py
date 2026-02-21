@@ -2,7 +2,7 @@
 """
 Knowledge Graph Parser
 Reads text from PostgreSQL source_fragment table,
-uses OpenAI to extract structured ontology,
+uses LLM (Anthropic or OpenAI) to extract structured ontology,
 and loads into Apache AGE graph database.
 
 Supports both:
@@ -16,7 +16,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-from openai import OpenAI
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.extras import RealDictCursor
 
@@ -24,11 +23,10 @@ from build_kg.config import (
     AGE_GRAPH_NAME,
     BATCH_SIZE,
     DB_CONFIG,
-    OPENAI_API_KEY,
-    OPENAI_MODEL,
     RATE_LIMIT_DELAY,
     validate_config,
 )
+from build_kg.llm import chat_parse, create_client, get_provider_config
 from build_kg.domain import (
     OntologyConfig,
     build_prompt,
@@ -62,7 +60,8 @@ class KGParser:
             ontology: If provided, use ontology-driven mode. Otherwise, use domain-specific mode.
         """
         validate_config()
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.provider, api_key, self.model = get_provider_config()
+        self.client = create_client(self.provider, api_key)
         self.db_conn = None
         self.graph_name = AGE_GRAPH_NAME
         self.ontology = ontology
@@ -148,7 +147,7 @@ class KGParser:
 
     def parse_with_llm(self, fragment: Dict[str, Any]) -> Optional[ParsedProvision]:
         """
-        Use OpenAI to parse source text into structured data.
+        Use LLM to parse source text into structured data.
 
         First tries regex-based ID extraction before calling LLM (domain-specific mode).
 
@@ -185,17 +184,8 @@ class KGParser:
         )
 
         try:
-            response = self.client.chat.completions.create(
-                model=OPENAI_MODEL,
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.1,
-            )
-
-            result = json.loads(response.choices[0].message.content)
+            response_text = chat_parse(self.client, self.provider, self.model, system_message, prompt)
+            result = json.loads(response_text)
 
             # Use regex-extracted ID if available and confident
             llm_provision_id = result.get('provision_id', 'UNKNOWN')
@@ -233,7 +223,7 @@ class KGParser:
 
     def parse_generic(self, fragment: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
-        Use OpenAI to extract entities/relationships using ontology-driven prompt.
+        Use LLM to extract entities/relationships using ontology-driven prompt.
 
         Args:
             fragment: Fragment data from database
@@ -252,17 +242,8 @@ class KGParser:
         )
 
         try:
-            response = self.client.chat.completions.create(
-                model=OPENAI_MODEL,
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.1,
-            )
-
-            result = json.loads(response.choices[0].message.content)
+            response_text = chat_parse(self.client, self.provider, self.model, system_message, prompt)
+            result = json.loads(response_text)
             result['_fragment_id'] = str(fragment['fragment_id'])
             result['_doc_id'] = str(fragment['doc_id'])
             return result
@@ -591,7 +572,8 @@ class KGParser:
         print(f"Knowledge Graph Parser ({mode} mode)")
         print("=" * 70)
         print(f"Graph: {self.graph_name}")
-        print(f"Model: {OPENAI_MODEL}")
+        print(f"Provider: {self.provider}")
+        print(f"Model: {self.model}")
         print(f"Batch size: {BATCH_SIZE}")
         if jurisdiction:
             print(f"Jurisdiction: {jurisdiction}")

@@ -9,7 +9,7 @@ Common errors and their solutions when running the build-kg pipeline.
 | Connection refused on port 5432 | Any DB operation | Start the database container |
 | relation "source_fragment" does not exist | Load / Parse | Run the init SQL or recreate the container |
 | AGE extension not found | Setup / Parse | Run `build-kg-setup` |
-| OpenAI API error 401 | Parse | Check `OPENAI_API_KEY` in `.env` |
+| API authentication error 401 | Parse | Check `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) in `.env` |
 | Chromium not found | Crawl | Run `crawl4ai-setup` |
 | No fragments found | Parse | Verify the database load succeeded |
 | Batch still in "validating" | Batch Parse | Wait; batches take 1-24 hours |
@@ -116,27 +116,41 @@ The `apache/age` Docker image includes the AGE extension pre-installed. If you a
 
 ---
 
-### OpenAI API error 401
+### API Authentication Error 401
 
-**Symptom:**
+**Symptom (Anthropic):**
+
+```
+anthropic.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API key', 'type': 'authentication_error'}}
+```
+
+**Symptom (OpenAI):**
 
 ```
 openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-...', 'type': 'invalid_request_error'}}
 ```
 
-**Cause:** The OpenAI API key is missing, incorrect, or expired.
+**Cause:** The API key is missing, incorrect, or expired.
 
 **Fix:**
 
-1. Check your `.env` file:
+1. Check your `.env` file for the correct provider key:
 
 ```bash
+# If using Anthropic (default)
+grep ANTHROPIC_API_KEY .env
+
+# If using OpenAI
 grep OPENAI_API_KEY .env
 ```
 
-2. Make sure the key starts with `sk-` and is not the placeholder value:
+2. Make sure the key is set and is not the placeholder value:
 
 ```
+# Anthropic (default)
+ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+
+# OpenAI (alternative)
 OPENAI_API_KEY=sk-your-actual-key-here
 ```
 
@@ -146,7 +160,7 @@ OPENAI_API_KEY=sk-your-actual-key-here
 build-kg-verify
 ```
 
-4. If the key is correct but still fails, check your OpenAI account for billing issues or key revocation at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+4. If the key is correct but still fails, check your account for billing issues or key revocation at [console.anthropic.com](https://console.anthropic.com) (Anthropic) or [platform.openai.com/api-keys](https://platform.openai.com/api-keys) (OpenAI).
 
 ---
 
@@ -241,9 +255,9 @@ Batch ID: batch_abc123def456
 Status: validating
 ```
 
-**Cause:** OpenAI is still validating the batch input file. This is normal behavior.
+**Cause:** The provider is still validating the batch input file. This is normal behavior.
 
-**Fix:** Wait. OpenAI batches can take 1-24 hours to complete. Validation itself usually takes a few minutes but can be longer during high-demand periods.
+**Fix:** Wait. Batches can take 1-24 hours to complete. Validation itself usually takes a few minutes but can be longer during high-demand periods.
 
 Monitor with:
 
@@ -253,7 +267,7 @@ build-kg-parse-batch status batch_abc123def456 --watch
 
 If the batch stays in "validating" for more than 1 hour, check:
 - The JSONL file for formatting errors (each line must be valid JSON)
-- Your OpenAI account for any rate limit or quota issues
+- Your provider account for any rate limit or quota issues
 
 ---
 
