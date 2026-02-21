@@ -62,7 +62,10 @@ build-kg/
 ├── docs/                  # Documentation
 ├── examples/              # Example manifests and data
 ├── tests/                 # Test suite
-└── .claude/commands/      # Claude Code skill
+├── AGENTS.md              # Codex agent instructions
+└── .claude/skills/        # Claude Code skills
+    └── build-kg/
+        └── SKILL.md       # /build-kg skill definition
 ```
 
 ## Code Style
@@ -132,7 +135,7 @@ This is one of the highest-impact contributions you can make. Each new profile u
 
 4. Add tests to `tests/test_domain.py` to verify the profile loads correctly
 5. Update the profile table in `README.md`
-6. Test with `build-kg-parse --domain your-domain --test`
+6. Test with `/build-kg <your topic>` using your new domain profile (set `DOMAIN=your-domain` in `.env`)
 
 **Example profile ideas:**
 - `pharma` -- FDA drug regulations, clinical trial requirements, GMP
@@ -147,7 +150,7 @@ This is one of the highest-impact contributions you can make. Each new profile u
 The `jurisdiction` field is a freeform TEXT column in the database, so no schema changes are needed to support a new country. To add support for a new jurisdiction:
 
 1. Add authority-specific regex patterns to `src/build_kg/id_extractors.py` if the jurisdiction uses a unique ID format
-2. Update the jurisdiction list in `.claude/commands/build-kg.md`
+2. Update the jurisdiction list in `.claude/skills/build-kg/SKILL.md`
 
 ## Adding ID Extraction Patterns
 

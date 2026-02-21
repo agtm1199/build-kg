@@ -6,9 +6,9 @@ help:  ## Show this help
 
 setup: install db-up db-init verify  ## Full setup (install + database + verify)
 	@echo ""
-	@echo "Setup complete! Copy .env.example to .env and add your OpenAI API key:"
+	@echo "Setup complete! Copy .env.example to .env and add your API key:"
 	@echo "  cp .env.example .env"
-	@echo "  # Edit .env and set OPENAI_API_KEY=sk-..."
+	@echo "  # Edit .env and set ANTHROPIC_API_KEY=sk-ant-..."
 
 install:  ## Install Python dependencies
 	python3 -m venv venv
@@ -31,7 +31,7 @@ db-reset:  ## Reset database (destroys all data)
 db-init:  ## Create AGE graph (run after db-up)
 	. venv/bin/activate && python -m build_kg.setup_graph
 
-verify:  ## Verify setup (database, AGE, OpenAI)
+verify:  ## Verify setup (database, AGE, LLM)
 	. venv/bin/activate && python -m build_kg.verify
 
 test:  ## Run tests

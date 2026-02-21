@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutorial - build-kg</title>
+<meta name="description" content="Step-by-step tutorial for build-kg: from installation to querying your first knowledge graph.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --heading: #f0f6fc;
+    --link: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --serif: 'Libre Baskerville', Georgia, serif;
+    --mono: 'Source Code Pro', 'SFMono-Regular', Consolas, monospace;
+    --nav-h: 56px;
+    --radius: 4px;
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; -webkit-font-smoothing: antialiased; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* -- NAV -- */
+  .nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(13,17,23,.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; padding: 0 24px; }
+  .nav-inner { max-width: 960px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--heading); letter-spacing: -0.02em; }
+  .nav-logo b { color: var(--link); }
+  .nav-links { display: flex; gap: 24px; align-items: center; }
+  .nav-links a { color: var(--muted); font-family: var(--mono); font-size: 13px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--heading); text-decoration: none; }
+  .nav-links a.active { color: var(--heading); }
+  .nav-links a.gh { display: flex; align-items: center; gap: 6px; }
+  .nav-links a.gh svg { fill: var(--muted); transition: fill .15s; }
+  .nav-links a.gh:hover svg { fill: var(--heading); }
+
+  /* -- CONTENT -- */
+  .content { max-width: 760px; margin: 0 auto; padding: calc(var(--nav-h) + 48px) 24px 64px; }
+
+  /* -- PAGE HEADER -- */
+  .page-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .page-header h1 { font-family: var(--serif); font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--heading); letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 12px; }
+  .page-header p { color: var(--muted); font-size: 15px; max-width: 560px; }
+
+  /* -- TABLE OF CONTENTS -- */
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 48px; }
+  .toc-title { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 16px; }
+  .toc ol { list-style: none; counter-reset: toc-section; }
+  .toc > ol > li { counter-increment: toc-section; margin-bottom: 6px; }
+  .toc > ol > li::before { content: counter(toc-section) "."; display: inline-block; width: 24px; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .toc a { color: var(--link); font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* -- SECTIONS -- */
+  .tutorial-section { margin-bottom: 56px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+  .tutorial-section:last-of-type { border-bottom: none; }
+
+  h2 { font-family: var(--serif); font-size: clamp(22px, 3vw, 28px); font-weight: 700; color: var(--heading); letter-spacing: -0.02em; margin-bottom: 16px; padding-top: 8px; }
+  h3 { font-family: var(--serif); font-size: clamp(17px, 2vw, 20px); font-weight: 700; color: var(--heading); letter-spacing: -0.02em; margin: 28px 0 12px; }
+
+  p { margin-bottom: 14px; }
+  ul, ol { margin-bottom: 14px; padding-left: 24px; }
+  li { margin-bottom: 4px; }
+
+  /* -- STEP LABELS -- */
+  .step-label { font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--link); margin-bottom: 8px; display: block; }
+
+  /* -- CODE BLOCKS -- */
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; overflow-x: auto; margin: 14px 0 18px; font-size: 13px; line-height: 1.6; }
+  code { font-family: var(--mono); font-size: 0.875em; }
+  :not(pre) > code { background: var(--surface); padding: 2px 6px; border-radius: var(--radius); font-size: 0.85em; border: 1px solid var(--border); }
+
+  /* -- CALLOUT BOXES -- */
+  .callout { border-left: 4px solid var(--link); background: var(--surface); padding: 14px 18px; border-radius: 0 var(--radius) var(--radius) 0; margin: 16px 0; }
+  .callout.tip { border-left-color: var(--green); }
+  .callout.warn { border-left-color: var(--orange); }
+  .callout.info { border-left-color: var(--purple); }
+  .callout strong { display: block; margin-bottom: 4px; color: var(--heading); font-size: 13px; }
+  .callout p { margin-bottom: 0; font-size: 13px; }
+  .callout p + p { margin-top: 8px; }
+
+  /* -- TABLES -- */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 12px; border: 1px solid var(--border); }
+  th { background: var(--surface); color: var(--heading); font-weight: 600; }
+  tr:nth-child(even) { background: rgba(22, 27, 34, 0.5); }
+
+  /* -- OUTPUT BLOCKS -- */
+  .output-label { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; display: block; }
+
+  /* -- FOOTER -- */
+  .site-footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
+  .footer-badge { display: inline-block; padding: 4px 12px; border-radius: var(--radius); font-size: 12px; color: var(--green); border: 1px solid rgba(63,185,80,.2); background: rgba(63,185,80,.06); margin-bottom: 12px; }
+  .footer-text { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .footer-links { display: flex; gap: 20px; justify-content: center; }
+  .footer-links a { color: var(--muted); font-size: 13px; }
+  .footer-links a:hover { color: var(--heading); }
+
+  /* -- RESPONSIVE -- */
+  @media (max-width: 600px) {
+    .content { padding-left: 16px; padding-right: 16px; }
+    pre { padding: 12px 14px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">build-<b>kg</b></a>
+    <div class="nav-links">
+      <a href="docs.html">Docs</a>
+      <a href="tutorial.html" class="active">Tutorial</a>
+      <a href="https://github.com/agtm1199/build-kg" class="gh" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="content">
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <h1>Tutorial</h1>
+    <p>From zero to a working knowledge graph. Covers setup, your first build, querying, and advanced multi-source projects.</p>
+  </header>
+
+  <!-- TABLE OF CONTENTS -->
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#first-graph">Your First Knowledge Graph</a></li>
+      <li><a href="#exploring">Exploring the Graph</a></li>
+      <li><a href="#next-steps">Next Steps</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- 1. PREREQUISITES -->
+  <!-- ============================================================ -->
+  <section id="prerequisites" class="tutorial-section">
+    <span class="step-label">Section 1</span>
+    <h2>Prerequisites</h2>
+
+    <p>Before you begin, make sure you have the following installed and working:</p>
+
+    <ul>
+      <li><strong>Docker</strong> installed and running (<code>docker --version</code>)</li>
+      <li><strong>A coding agent</strong> that supports skills &mdash; <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>, <a href="https://openai.com/index/codex/">OpenAI Codex</a>, or compatible platforms</li>
+      <li><strong>An API key</strong> from either:
+        <ul>
+          <li>Anthropic (<a href="https://console.anthropic.com">console.anthropic.com</a>) &mdash; default provider</li>
+          <li>OpenAI (<a href="https://platform.openai.com/api-keys">platform.openai.com</a>) &mdash; alternative</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>Verify Docker is running:</p>
+
+<pre><code>docker info --format '{{.ServerVersion}}'</code></pre>
+
+    <div class="callout tip">
+      <strong>Tip</strong>
+      <p>Python 3.10+ is required, but <code>make setup</code> in the next section will create a virtual environment for you automatically.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. SETUP -->
+  <!-- ============================================================ -->
+  <section id="setup" class="tutorial-section">
+    <span class="step-label">Section 2</span>
+    <h2>Setup</h2>
+
+    <h3>Clone and install</h3>
+
+<pre><code>git clone https://github.com/agtm1199/build-kg.git &amp;&amp; cd build-kg</code></pre>
+
+    <p>Run the full setup. This creates a virtual environment, installs dependencies, starts the PostgreSQL + Apache AGE container, and initializes the graph schema:</p>
+
+<pre><code>make setup</code></pre>
+
+    <h3>Configure environment variables</h3>
+
+    <p>The setup creates a <code>.env</code> file from the example template. Open it and set your API key:</p>
+
+<pre><code># .env
+
+# Anthropic (default provider):
+ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+
+# Or if using OpenAI instead:
+# OPENAI_API_KEY=sk-your-actual-key-here
+# LLM_PROVIDER=openai
+
+# Database password (matches Docker container defaults):
+DB_PASSWORD=build_kg_pass</code></pre>
+
+    <div class="callout info">
+      <strong>Note</strong>
+      <p>The database credentials in <code>.env.example</code> already match the Docker container defaults. You only need to add your API key.</p>
+    </div>
+
+    <h3>Verify everything works</h3>
+
+<pre><code>make verify</code></pre>
+
+    <h3>Activate the skill</h3>
+
+    <p>The <code>/build-kg</code> skill is included in the repository and activates automatically:</p>
+
+    <ul>
+      <li><strong>Claude Code</strong> &mdash; reads <code>.claude/skills/build-kg/SKILL.md</code> automatically. Type <code>/build-kg</code> to use.</li>
+      <li><strong>OpenAI Codex</strong> &mdash; reads <code>AGENTS.md</code> automatically. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</li>
+      <li><strong>Other agents</strong> &mdash; point your agent at either file as its instruction file.</li>
+    </ul>
+
+    <div class="callout tip">
+      <strong>Tip</strong>
+      <p>No extra installation is needed. The skill files ship with the repo &mdash; cloning is all it takes.</p>
+    </div>
+
+    <span class="output-label">Expected output</span>
+<pre><code>======================================================================
+Setup Verification
+======================================================================
+1. Verifying database connection...
+     Connected to PostgreSQL
+     Version: PostgreSQL 16.x
+2. Verifying Apache AGE extension...
+     AGE extension installed (version 1.5.0)
+     Graph 'reg_ca' exists
+3. Verifying source data...
+     Found 0 fragments with excerpts
+     Found 0 source documents
+4. Verifying LLM API access...
+     Anthropic API connection successful
+     Model: claude-haiku-4-5-20251001
+======================================================================
+  All checks passed! System is ready.
+======================================================================</code></pre>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. YOUR FIRST KNOWLEDGE GRAPH -->
+  <!-- ============================================================ -->
+  <section id="first-graph" class="tutorial-section">
+    <span class="step-label">Section 3</span>
+    <h2>Your First Knowledge Graph</h2>
+
+    <p>The fastest way to build a graph is the <code>/build-kg</code> skill command in your coding agent. It runs the entire pipeline automatically: generates an ontology, discovers sources, crawls, chunks, loads, and parses.</p>
+
+    <p>In your coding agent, run:</p>
+
+<pre><code>/build-kg kubernetes networking</code></pre>
+
+    <p>Your coding agent will execute six phases in sequence. Here is what each phase does:</p>
+
+    <table>
+      <tr><th>Phase</th><th>What happens</th><th>Cost</th></tr>
+      <tr><td><strong>Ontology</strong></td><td>Generates node types, edge types, and properties for your topic. Saves to <code>ontology.yaml</code>.</td><td>~$0.01</td></tr>
+      <tr><td><strong>Discover</strong></td><td>Searches for authoritative sources across multiple rounds, producing a crawl manifest.</td><td>~$0.02</td></tr>
+      <tr><td><strong>Crawl</strong></td><td>Downloads pages from discovered sources as markdown files into <code>crawl_output/</code>.</td><td>Free</td></tr>
+      <tr><td><strong>Chunk</strong></td><td>Splits documents into semantically meaningful fragments saved to <code>chunk_output/</code>.</td><td>Free</td></tr>
+      <tr><td><strong>Load</strong></td><td>Inserts documents and fragments into PostgreSQL with metadata from the manifest.</td><td>Free</td></tr>
+      <tr><td><strong>Parse</strong></td><td>LLM extracts structured entities and relationships from each fragment into the Apache AGE graph.</td><td>~$0.25</td></tr>
+    </table>
+
+    <span class="output-label">Sample output</span>
+<pre><code>Ontology  &#10003; 3 node types &middot; 3 edge types &middot; saved ontology.yaml
+Discover  &#10003; 14 sources found across 5 rounds
+Crawl     &#10003; 247 pages &rarr; crawl_output/
+Chunk     &#10003; 1,832 fragments &rarr; chunk_output/
+Load      &#10003; 14 docs &middot; 1,832 fragments &rarr; PostgreSQL
+Parse     &#10003; 892 Components &middot; 341 Concepts &middot; 127 Configs
+
+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+  1,360 nodes &middot; 1,247 edges
+  Graph: kg_k8s_net (Apache AGE)
+  Cost:  $0.27</code></pre>
+
+    <div class="callout tip">
+      <strong>Tip</strong>
+      <p>You can use any topic: <code>/build-kg React architecture patterns</code>, <code>/build-kg machine learning algorithms</code>, <code>/build-kg python async programming</code>. Your coding agent will generate a suitable ontology for each.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. EXPLORING THE GRAPH -->
+  <!-- ============================================================ -->
+  <section id="exploring" class="tutorial-section">
+    <span class="step-label">Section 4</span>
+    <h2>Exploring the Graph</h2>
+
+    <p>Your knowledge graph is stored in Apache AGE, a PostgreSQL extension that adds Cypher graph queries. Connect with <code>psql</code> or any PostgreSQL client.</p>
+
+    <h3>Connect to the database</h3>
+
+<pre><code>psql -h localhost -U build_kg_user -d build_kg</code></pre>
+
+    <p>Load the AGE extension and set the search path:</p>
+
+<pre><code>LOAD 'age';
+SET search_path = ag_catalog, '$user', public;</code></pre>
+
+    <h3>Count nodes by type</h3>
+
+<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (n)
+    RETURN label(n), count(n)
+    ORDER BY count(n) DESC
+$$) as (node_type agtype, count agtype);</code></pre>
+
+    <span class="output-label">Sample result</span>
+<pre><code> node_type    | count
+--------------+-------
+ "Component"  | 892
+ "Concept"    | 341
+ "Config"     | 127</code></pre>
+
+    <h3>List all node types</h3>
+
+<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (n)
+    RETURN DISTINCT label(n)
+$$) as (node_type agtype);</code></pre>
+
+    <h3>Traverse relationships</h3>
+
+<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (a)-[r]-&gt;(b)
+    RETURN label(a), type(r), label(b), count(*)
+    ORDER BY count(*) DESC
+    LIMIT 10
+$$) as (from_type agtype, rel_type agtype, to_type agtype, count agtype);</code></pre>
+
+    <h3>Find specific entities</h3>
+
+<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (n)
+    WHERE n.name CONTAINS 'Service'
+    RETURN n.name, label(n), n.description
+    LIMIT 5
+$$) as (name agtype, type agtype, description agtype);</code></pre>
+
+    <h3>Walk a path</h3>
+
+<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH path = (a)-[*1..2]-&gt;(b)
+    WHERE a.name = 'kube-proxy'
+    RETURN a.name, b.name, length(path)
+    LIMIT 10
+$$) as (from_name agtype, to_name agtype, path_len agtype);</code></pre>
+
+    <div class="callout info">
+      <strong>Note</strong>
+      <p>Replace <code>kg_k8s_net</code> with the graph name shown in your build output.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- 5. NEXT STEPS -->
+  <!-- ============================================================ -->
+  <section id="next-steps" class="tutorial-section">
+    <span class="step-label">Section 5</span>
+    <h2>Next Steps</h2>
+
+    <ul>
+      <li><a href="docs.html">Docs</a> &mdash; Architecture, configuration, domain profiles, and more.</li>
+      <li><a href="docs.html#domain-profiles">Domain profiles</a> &mdash; Pre-configured ontologies for specialized domains, or create your own.</li>
+      <li><a href="https://github.com/agtm1199/build-kg">GitHub repository</a> &mdash; Source code, issues, and contributing guidelines.</li>
+      <li>Create a custom domain profile &mdash; write your own ontology YAML and set <code>DOMAIN=/path/to/your-profile.yaml</code> in <code>.env</code>.</li>
+      <li>Try more topics &mdash; <code>/build-kg React architecture patterns</code>, <code>/build-kg machine learning algorithms</code>, <code>/build-kg python async programming</code>.</li>
+    </ul>
+
+    <div class="callout info">
+      <strong>Need help?</strong>
+      <p>Check the <a href="docs.html#troubleshooting">troubleshooting guide</a> or <a href="https://github.com/agtm1199/build-kg/issues">open an issue</a> on GitHub.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-badge">Apache 2.0</div>
+    <p class="footer-text">Your database, your data, your code.</p>
+    <div class="footer-links">
+      <a href="docs.html">Docs</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="https://github.com/agtm1199/build-kg">GitHub</a>
+      <a href="https://github.com/agtm1199/build-kg/issues">Issues</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

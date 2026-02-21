@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation - build-kg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --heading: #f0f6fc;
+    --link: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --nav-height: 56px;
+    --sidebar-width: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--nav-height) + 24px);
+  }
+
+  body {
+    font-family: 'Source Code Pro', 'SFMono-Regular', Consolas, monospace;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    letter-spacing: -0.02em;
+    color: var(--heading);
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  h4 {
+    font-family: 'Source Code Pro', 'SFMono-Regular', Consolas, monospace;
+    font-size: 1rem;
+    color: var(--heading);
+    margin: 1.25rem 0 0.5rem;
+    font-weight: 600;
+  }
+
+  p { margin-bottom: 1rem; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  ul, ol {
+    margin: 0.75rem 0 1rem 1.5rem;
+  }
+
+  li { margin-bottom: 0.35rem; }
+  strong { color: var(--heading); }
+
+  .lead {
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  /* ── Navigation Bar ── */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: rgba(22, 27, 34, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+  }
+
+  .nav-inner {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+  }
+
+  .nav-logo {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .nav-logo b {
+    color: var(--heading);
+    font-weight: 700;
+  }
+
+  .nav-logo:hover { text-decoration: none; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-links a {
+    font-family: 'Source Code Pro', monospace;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links a.active {
+    color: var(--heading);
+  }
+
+  .nav-links .gh {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .nav-links .gh svg {
+    fill: currentColor;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1.25rem 0;
+    z-index: 900;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 5px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-group { margin-bottom: 1.25rem; }
+
+  .sidebar-group-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 1.25rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .sidebar-group ul { list-style: none; margin: 0; padding: 0; }
+
+  .sidebar-group li a {
+    display: block;
+    padding: 0.3rem 1.25rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+
+  .sidebar-group li a:hover {
+    color: var(--text);
+    background: rgba(88, 166, 255, 0.04);
+    text-decoration: none;
+  }
+
+  .sidebar-group li a.active {
+    color: var(--link);
+    border-left-color: var(--link);
+    background: rgba(88, 166, 255, 0.06);
+  }
+
+  /* ── Main Content ── */
+  .main {
+    margin-left: var(--sidebar-width);
+    margin-top: var(--nav-height);
+    padding: 2rem 2.5rem 4rem;
+    max-width: calc(760px + var(--sidebar-width) + 5rem);
+  }
+
+  .main > section {
+    max-width: 760px;
+  }
+
+  /* ── Code ── */
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  code {
+    font-family: 'Source Code Pro', 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.875em;
+  }
+
+  :not(pre) > code {
+    background: #1c2128;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.86rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--surface);
+    color: var(--heading);
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+
+  tr:nth-child(even) { background: rgba(22, 27, 34, 0.5); }
+
+  /* ── Callouts ── */
+  .callout {
+    border-left: 4px solid var(--link);
+    background: var(--surface);
+    padding: 0.9rem 1.15rem;
+    border-radius: 0 4px 4px 0;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+
+  .callout.info { border-left-color: var(--link); }
+  .callout.warning { border-left-color: var(--orange); }
+  .callout.tip { border-left-color: var(--green); }
+
+  .callout-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--heading);
+    font-size: 0.85rem;
+  }
+
+  .callout.info .callout-title { color: var(--link); }
+  .callout.warning .callout-title { color: var(--orange); }
+  .callout.tip .callout-title { color: var(--green); }
+
+  /* ── Pipeline Diagram ── */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    gap: 0.5rem;
+    margin: 1.25rem 0;
+  }
+
+  .pipeline-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.65rem 0.5rem;
+    text-align: center;
+    font-size: 0.78rem;
+  }
+
+  .pipeline-step .phase {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .pipeline-step .name {
+    font-weight: 600;
+    color: var(--heading);
+    margin: 0.2rem 0;
+    font-size: 0.82rem;
+  }
+
+  .pipeline-step .tool {
+    font-size: 0.68rem;
+    color: var(--purple);
+  }
+
+  /* ── Command Cards ── */
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.15rem 1.25rem;
+    margin: 0.75rem 0;
+  }
+
+  .cmd-card h4 { margin-top: 0; margin-bottom: 0.5rem; }
+
+  .cmd-name {
+    font-family: 'Source Code Pro', Consolas, monospace;
+    color: var(--green);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  /* ── FAQ ── */
+  .faq-item { margin-bottom: 1.25rem; }
+
+  .faq-q {
+    font-weight: 600;
+    color: var(--heading);
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .faq-a {
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+
+  /* ── Section anchors ── */
+  section { padding-top: 0.5rem; margin-bottom: 1.5rem; }
+
+  .compare-highlight { color: var(--green); font-weight: 600; }
+
+  /* ── Footer ── */
+  .site-footer {
+    margin-left: var(--sidebar-width);
+    border-top: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .site-footer .container {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .footer-badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--green);
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-text {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover { color: var(--text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 1.5rem 1.25rem 3rem; }
+    .site-footer { margin-left: 0; }
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.3rem; }
+    .pipeline { grid-template-columns: repeat(4, 1fr); }
+    table { font-size: 0.8rem; }
+    th, td { padding: 0.4rem 0.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .pipeline { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- Navigation Bar                                                    -->
+<!-- ================================================================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">build-<b>kg</b></a>
+    <div class="nav-links">
+      <a href="docs.html" class="active">Docs</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="https://github.com/agtm1199/build-kg" class="gh" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- Sidebar                                                           -->
+<!-- ================================================================ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Getting Started</div>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#quick-start">Quick Start</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Architecture</div>
+    <ul>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#ontology-system">Ontology System</a></li>
+      <li><a href="#domain-profiles">Domain Profiles</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Advanced</div>
+    <ul>
+      <li><a href="#configuration">Configuration</a></li>
+      <li><a href="#manifest-format">Manifest Format</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Reference</div>
+    <ul>
+      <li><a href="#examples">Examples</a></li>
+      <li><a href="#cost">Cost</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Help</div>
+    <ul>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+
+</aside>
+
+<!-- ================================================================ -->
+<!-- Main Content                                                      -->
+<!-- ================================================================ -->
+<div class="main">
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- GETTING STARTED > OVERVIEW                                        -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="overview">
+  <h1>Documentation</h1>
+  <p class="lead">
+    build-kg is a skill for coding agents that turns any topic into a structured knowledge graph stored in
+    <a href="https://age.apache.org/" target="_blank" rel="noopener">Apache AGE</a> (PostgreSQL).
+    No vendor lock-in. No hosting fees. Just your own database.
+  </p>
+  <p>
+    Give build-kg a topic and your coding agent autonomously generates an ontology, discovers authoritative sources,
+    crawls documentation, chunks and loads documents, parses every fragment with an LLM, and produces
+    a queryable graph you can explore with standard Cypher queries.
+  </p>
+
+  <h3>Key Capabilities</h3>
+  <ul>
+    <li><strong>Auto-generated ontology</strong> &mdash; Your coding agent analyzes your topic and creates a tailored graph schema (node types, edge types, properties, JSON schema) automatically. No manual schema design required.</li>
+    <li><strong>Self-hosted</strong> &mdash; everything runs on your machine. The graph lives in your own PostgreSQL database with Apache AGE. No cloud vendor, no platform fees.</li>
+    <li><strong>Any topic</strong> &mdash; from Kubernetes networking to machine learning algorithms to React architecture patterns. The ontology is auto-generated for your topic.</li>
+  </ul>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- GETTING STARTED > INSTALLATION                                    -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="installation">
+  <h2>Installation</h2>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li><strong>Python 3.10+</strong></li>
+    <li><strong>Docker</strong> &mdash; for PostgreSQL + Apache AGE</li>
+    <li><strong>Anthropic API key</strong> (or OpenAI API key) &mdash; for LLM-based text parsing</li>
+  </ul>
+
+  <h3>Install</h3>
+<pre><code>git clone https://github.com/agtm1199/build-kg.git
+cd build-kg
+
+# Full setup: creates venv, installs dependencies, starts DB, initializes graph
+make setup</code></pre>
+
+  <h3>Configure your environment</h3>
+<pre><code>cp .env.example .env
+# Edit .env and set your API key:
+# ANTHROPIC_API_KEY=sk-ant-...
+# Or alternatively: OPENAI_API_KEY=sk-...
+
+# Verify everything works
+make verify</code></pre>
+
+  <div class="callout tip">
+    <span class="callout-title">Tip</span>
+    The default <code>.env.example</code> has database credentials that match the Docker container.
+    You only need to add your <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code> if using OpenAI).
+  </div>
+
+  <h3>Activate the skill</h3>
+  <p>The <code>/build-kg</code> skill is included in the repository. It activates automatically based on your coding agent:</p>
+
+  <table>
+    <tr><th>Agent</th><th>Skill file</th><th>How it works</th></tr>
+    <tr>
+      <td><strong>Claude Code</strong></td>
+      <td><code>.claude/skills/build-kg/SKILL.md</code></td>
+      <td>Auto-detected when you open the project in Claude Code. Type <code>/build-kg</code> to use.</td>
+    </tr>
+    <tr>
+      <td><strong>OpenAI Codex</strong></td>
+      <td><code>AGENTS.md</code></td>
+      <td>Auto-detected when you open the project in Codex. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
+    </tr>
+    <tr>
+      <td><strong>Other agents</strong></td>
+      <td>Either file</td>
+      <td>Point your agent at <code>.claude/skills/build-kg/SKILL.md</code> or <code>AGENTS.md</code> as its instruction file.</td>
+    </tr>
+  </table>
+
+  <div class="callout info">
+    <span class="callout-title">Note</span>
+    No extra installation step is needed. The skill files ship with the repo &mdash; cloning is all it takes.
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- GETTING STARTED > QUICK START                                     -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="quick-start">
+  <h2>Quick Start</h2>
+
+  <p>
+    Use the <code>/build-kg</code> skill in your coding agent (<a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>, <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>, etc.) to build a knowledge graph:
+  </p>
+<pre><code>/build-kg kubernetes networking</code></pre>
+  <p>This runs all phases autonomously &mdash; ontology generation, source discovery, crawling, chunking, loading, parsing, and validation. Expected output: a queryable knowledge graph with Component, Concept, and Configuration nodes connected by USES, CONFIGURES, and DEPENDS_ON edges.</p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- ARCHITECTURE > PIPELINE                                           -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="pipeline">
+  <h2>Pipeline</h2>
+  <p>
+    build-kg transforms any topic into a knowledge graph through an 8-phase pipeline.
+    Each phase produces an artifact that feeds the next.
+  </p>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="phase">Phase 0</div>
+      <div class="name">Init</div>
+      <div class="tool">graph name, dirs</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 0.5</div>
+      <div class="name">Ontology</div>
+      <div class="tool">auto-gen or profile</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 1</div>
+      <div class="name">Discover</div>
+      <div class="tool">WebSearch</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 2</div>
+      <div class="name">Crawl</div>
+      <div class="tool">Crawl4AI</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 3</div>
+      <div class="name">Chunk</div>
+      <div class="tool">Unstructured</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 4</div>
+      <div class="name">Load</div>
+      <div class="tool">PostgreSQL</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 5</div>
+      <div class="name">Parse</div>
+      <div class="tool">Claude Haiku 3.5</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="phase">Phase 6</div>
+      <div class="name">Validate</div>
+      <div class="tool">Cypher queries</div>
+    </div>
+  </div>
+
+  <h3>Phase 0: Initialize</h3>
+  <p>
+    Create a working directory and choose a graph name. Naming conventions:
+  </p>
+  <ul>
+    <li><code>kg_&lt;topic&gt;</code> (e.g., <code>kg_k8s_net</code> for Kubernetes networking)</li>
+  </ul>
+  <p>The skill handles directory creation automatically.</p>
+
+  <h3>Phase 0.5: Ontology Generation</h3>
+  <p>
+    The key differentiator of build-kg. For generic topics, your coding agent analyzes your subject and
+    auto-generates an ontology &mdash; node types, edge types, properties, and a JSON schema.
+    The generated ontology typically includes 3&ndash;7 node types and is saved to
+    <code>ontology.yaml</code> in the working directory.
+  </p>
+  <p>Your coding agent auto-generates an ontology. The generated ontology includes:</p>
+  <ul>
+    <li><strong>Node types</strong> with labels, descriptions, and properties (3-7 types recommended)</li>
+    <li><strong>Edge types</strong> with source/target node labels and descriptions</li>
+    <li><strong>Root node</strong> &mdash; the primary node type that maps 1:1 to source fragments</li>
+    <li><strong>JSON schema</strong> &mdash; the expected LLM output format</li>
+  </ul>
+
+  <h3>Phase 1: Source Discovery</h3>
+  <p>
+    A 5-round methodology identifies authoritative sources for the topic.
+    Each round progressively deepens coverage:
+  </p>
+  <table>
+    <tr><th>Round</th><th>Name</th><th>Method</th><th>Purpose</th></tr>
+    <tr><td>1</td><td>Landscape Mapping</td><td>8&ndash;15 parallel web searches</td><td>Identify authoritative sources</td></tr>
+    <tr><td>2</td><td>Deep Source Discovery</td><td>Fetch main pages</td><td>Find documents, standards, specs</td></tr>
+    <tr><td>3</td><td>Coverage Verification</td><td>Cross-reference checklist</td><td>Identify gaps in topic coverage</td></tr>
+    <tr><td>4</td><td>Gap Filling</td><td>Targeted searches</td><td>Fill gaps; aim for 90%+ coverage</td></tr>
+    <tr><td>5</td><td>Secondary Sources</td><td>Supporting material</td><td>Add context and references</td></tr>
+  </table>
+  <p>
+    The output is a <strong>crawl manifest</strong> (<code>crawl_manifest.json</code>) listing every URL with
+    metadata and priority tiers.
+  </p>
+
+  <h3>Phase 2: Crawl</h3>
+  <p>
+    Breadth-first web crawling using <a href="https://github.com/unclecode/crawl4ai" target="_blank" rel="noopener">Crawl4AI</a>
+    with headless Chromium. Supports JavaScript-rendered pages. Pages are saved as markdown.
+    Priority tiers control depth, page limits, and delay:
+  </p>
+  <table>
+    <tr><th>Tier</th><th>Description</th><th>Depth</th><th>Max Pages</th><th>Delay</th></tr>
+    <tr><td>P1</td><td>Primary authoritative</td><td>3</td><td>100</td><td>1500 ms</td></tr>
+    <tr><td>P2</td><td>Secondary documentation</td><td>2</td><td>50</td><td>1500 ms</td></tr>
+    <tr><td>P3</td><td>Supporting guides</td><td>1</td><td>25</td><td>2000 ms</td></tr>
+    <tr><td>P4</td><td>Reference material</td><td>1</td><td>15</td><td>2000 ms</td></tr>
+  </table>
+
+  <h3>Phase 3: Chunk</h3>
+  <p>
+    Documents are split into semantically coherent fragments using the
+    <a href="https://github.com/Unstructured-IO/unstructured" target="_blank" rel="noopener">Unstructured</a> library.
+    Two strategies are available:
+  </p>
+  <ul>
+    <li><strong><code>by_title</code></strong> (recommended) &mdash; respects headings and section boundaries</li>
+    <li><strong><code>basic</code></strong> &mdash; fills chunks uniformly to the character limit</li>
+  </ul>
+  <p>Each chunk is saved as JSON with metadata: source path, index, SHA-256 fingerprint, and position.</p>
+
+  <h3>Phase 4: Load</h3>
+  <p>
+    Chunks are loaded into PostgreSQL tables (<code>source_document</code> and <code>source_fragment</code>)
+    with metadata from the crawl manifest. Adjacent chunks are linked via <code>context_before</code>
+    and <code>context_after</code> fields.
+  </p>
+
+  <h4>Database Schema</h4>
+
+  <p><strong>source_document</strong> &mdash; one row per crawled source document (webpage):</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+    <tr><td><code>doc_id</code></td><td>UUID (PK)</td><td>no</td><td>Auto-generated primary key</td></tr>
+    <tr><td><code>jurisdiction</code></td><td>TEXT</td><td>yes</td><td>Jurisdiction code (null for generic topics)</td></tr>
+    <tr><td><code>authority</code></td><td>TEXT</td><td>yes</td><td>Source organization name (null for generic topics)</td></tr>
+    <tr><td><code>publisher</code></td><td>TEXT</td><td>yes</td><td>Publishing organization</td></tr>
+    <tr><td><code>doc_type</code></td><td>TEXT</td><td>yes</td><td>Document type (null for generic topics)</td></tr>
+    <tr><td><code>title</code></td><td>TEXT</td><td>no</td><td>Document title</td></tr>
+    <tr><td><code>url</code></td><td>TEXT</td><td>no</td><td>Source URL</td></tr>
+    <tr><td><code>filepath</code></td><td>TEXT (UNIQUE)</td><td>no</td><td>Local file path, used for upsert deduplication</td></tr>
+    <tr><td><code>metadata</code></td><td>JSONB</td><td>yes</td><td>Arbitrary key-value metadata</td></tr>
+    <tr><td><code>retrieved_at</code></td><td>TIMESTAMPTZ</td><td>no</td><td>When the document was crawled</td></tr>
+  </table>
+
+  <p><strong>source_fragment</strong> &mdash; one row per chunk of a source document:</p>
+  <table>
+    <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Description</th></tr>
+    <tr><td><code>fragment_id</code></td><td>UUID (PK)</td><td>no</td><td>Auto-generated primary key</td></tr>
+    <tr><td><code>doc_id</code></td><td>UUID (FK)</td><td>no</td><td>Reference to parent source_document</td></tr>
+    <tr><td><code>excerpt</code></td><td>TEXT</td><td>no</td><td>The actual text content of the chunk</td></tr>
+    <tr><td><code>context_before</code></td><td>TEXT</td><td>yes</td><td>Last 200 characters of the preceding chunk</td></tr>
+    <tr><td><code>context_after</code></td><td>TEXT</td><td>yes</td><td>First 200 characters of the following chunk</td></tr>
+    <tr><td><code>source_url</code></td><td>TEXT</td><td>yes</td><td>URL of the original source</td></tr>
+    <tr><td><code>jurisdiction</code></td><td>TEXT</td><td>yes</td><td>Inherited from source_document</td></tr>
+    <tr><td><code>authority</code></td><td>TEXT</td><td>yes</td><td>Inherited from source_document</td></tr>
+    <tr><td><code>metadata</code></td><td>JSONB</td><td>yes</td><td>Arbitrary key-value metadata</td></tr>
+  </table>
+
+  <h3>Phase 5: Parse</h3>
+  <p>
+    Each fragment is sent to Claude Haiku 3.5 (or GPT-4o-mini) with a structured prompt derived from the ontology.
+    The LLM returns entities and relationships in JSON, which are loaded into Apache AGE as graph
+    vertices and edges. The skill supports both synchronous parsing (real-time, standard pricing) and batch parsing (50% cheaper, results in 1&ndash;24 hours).
+  </p>
+
+  <h3>Phase 6: Validate</h3>
+  <p>
+    Cypher queries count nodes by label from the ontology and produce a report card of the
+    completed graph.
+  </p>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- ARCHITECTURE > ONTOLOGY SYSTEM                                    -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="ontology-system">
+  <h2>Ontology System</h2>
+  <p>
+    The ontology defines <em>what</em> your knowledge graph looks like &mdash; the types of
+    nodes, their properties, and how they connect via edges.
+  </p>
+
+  <h3>Auto-Generated Ontology</h3>
+  <p>
+    For generic topics (using the <code>default</code> profile or no profile), your coding agent auto-generates
+    an ontology tailored to the subject. Example for <strong>"kubernetes networking"</strong>:
+  </p>
+<pre><code>nodes:
+  - label: Component
+    description: "A Kubernetes networking component"
+    properties:
+      name: string
+      type: string
+      description: string
+      layer: string
+  - label: Concept
+    description: "A networking concept or protocol"
+    properties:
+      name: string
+      description: string
+      category: string
+  - label: Configuration
+    description: "A configuration option or setting"
+    properties:
+      name: string
+      description: string
+      default_value: string
+edges:
+  - label: USES
+    source: Component
+    target: Concept
+    description: "Component uses this concept"
+  - label: CONFIGURES
+    source: Configuration
+    target: Component
+    description: "Configuration applies to component"
+  - label: DEPENDS_ON
+    source: Component
+    target: Component
+    description: "Component depends on another"
+root_node: Component
+json_schema: |
+  {
+    "entities": [
+      {"_label": "Component|Concept|Configuration", "name": "...", ...}
+    ],
+    "relationships": [
+      {"_label": "USES|CONFIGURES|DEPENDS_ON", "_from_index": 0, "_to_index": 1}
+    ]
+  }</code></pre>
+
+  <h3>OntologyConfig Data Model</h3>
+  <table>
+    <tr><th>Model</th><th>Fields</th><th>Description</th></tr>
+    <tr>
+      <td><code>NodeDef</code></td>
+      <td><code>label</code>, <code>description</code>, <code>properties</code></td>
+      <td>A node type in the graph. Properties map name to type (<code>string</code>, <code>number</code>, <code>boolean</code>, <code>list</code>).</td>
+    </tr>
+    <tr>
+      <td><code>EdgeDef</code></td>
+      <td><code>label</code>, <code>source</code>, <code>target</code>, <code>description</code></td>
+      <td>An edge type connecting two node types.</td>
+    </tr>
+    <tr>
+      <td><code>OntologyConfig</code></td>
+      <td><code>nodes</code>, <code>edges</code>, <code>root_node</code>, <code>json_schema</code></td>
+      <td>Complete ontology definition. <code>root_node</code> is the primary type that maps 1:1 to source fragments.</td>
+    </tr>
+  </table>
+
+  <h3>Pydantic Models</h3>
+<pre><code>class NodeDef(BaseModel):
+    label: str              # Vertex label (e.g., "Component", "Concept")
+    description: str = ""   # Used in LLM prompt for guidance
+    properties: Dict[str, str] = {}  # name -> type (string, number, boolean, list)
+
+class EdgeDef(BaseModel):
+    label: str              # Edge label (e.g., "USES", "DERIVED_FROM")
+    source: str             # Source node label
+    target: str             # Target node label
+    description: str = ""   # Used in LLM prompt for guidance
+
+class OntologyConfig(BaseModel):
+    description: str = ""
+    nodes: List[NodeDef] = []
+    edges: List[EdgeDef] = []
+    root_node: str = ""     # Primary node that maps 1:1 to source fragments
+    json_schema: Optional[str] = None  # Expected LLM output JSON format</code></pre>
+
+  <div class="callout tip">
+    <span class="callout-title">Tip</span>
+    The ontology is the most important part of your knowledge graph. When auto-generated, review
+    it carefully before proceeding. You can edit the <code>ontology.yaml</code> file to adjust
+    node types, properties, and edge definitions.
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- ARCHITECTURE > DOMAIN PROFILES                                    -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="domain-profiles">
+  <h2>Domain Profiles</h2>
+  <p>
+    Domain profiles are YAML files that parameterize the entire pipeline: ontology, LLM prompt,
+    ID extraction patterns, and source discovery templates.
+  </p>
+
+  <h3>Built-in Profiles</h3>
+  <table>
+    <tr><th>Profile</th><th>Ontology</th><th>Domain</th></tr>
+    <tr><td><code>default</code></td><td>None (auto-generated)</td><td>Any topic</td></tr>
+  </table>
+
+  <h3>Selecting a Profile</h3>
+  <p>Set the <code>DOMAIN</code> environment variable in your <code>.env</code> file before running the skill:</p>
+<pre><code># In .env:
+DOMAIN=financial-aml
+
+# Or use a custom profile file:
+DOMAIN=/path/to/my-domain.yaml</code></pre>
+
+  <h3>Profile Inheritance</h3>
+  <p>
+    Profiles can inherit from a base using <code>extends: default</code>. Child fields override
+    parent fields via deep merge. This avoids repeating universal configuration in every profile.
+  </p>
+  <p>When loading a profile by name:</p>
+  <ol>
+    <li>If the name is a file path (ends in <code>.yaml</code>/<code>.yml</code>), load directly</li>
+    <li>Otherwise, look for <code>{name}.yaml</code> in <code>src/build_kg/domains/</code></li>
+  </ol>
+
+  <h3>Creating Custom Profiles</h3>
+  <p>A profile controls three pipeline aspects: <strong>Ontology</strong> (node/edge types), <strong>Parsing</strong> (system message and extraction rules), and <strong>Discovery</strong> (search templates, sub-domains).</p>
+
+  <h3>Profile YAML Structure</h3>
+<pre><code>name: "My Domain"
+description: "Custom domain profile"
+version: "1.0"
+extends: default
+
+ontology:
+  root_node: MyEntity
+  nodes:
+    - label: MyEntity
+      description: "Primary entity type"
+      properties: {name: string, type: string}
+  edges:
+    - label: RELATES_TO
+      source: MyEntity
+      target: MyEntity
+  json_schema: |
+    {"entities": [...], "relationships": [...]}
+
+parsing:
+  system_message: "You are an expert in..."
+  requirement_types: [...]
+
+id_patterns:
+  patterns: {}
+
+discovery:
+  search_templates:
+    - "&lt;topic&gt; official documentation"
+  sub_domains:
+    - name: "Sub-area 1"
+      description: "..."</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- ADVANCED > CONFIGURATION                                          -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="configuration">
+  <h2>Configuration</h2>
+  <p>All configuration is via <code>.env</code> file or environment variables.</p>
+
+  <table>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>DB_HOST</code></td><td><code>localhost</code></td><td>PostgreSQL host</td></tr>
+    <tr><td><code>DB_PORT</code></td><td><code>5432</code></td><td>PostgreSQL port</td></tr>
+    <tr><td><code>DB_NAME</code></td><td><code>buildkg</code></td><td>Database name</td></tr>
+    <tr><td><code>DB_USER</code></td><td><code>buildkg</code></td><td>Database user</td></tr>
+    <tr><td><code>DB_PASSWORD</code></td><td>&mdash;</td><td>Database password <strong>(required)</strong></td></tr>
+    <tr><td><code>LLM_PROVIDER</code></td><td><code>anthropic</code></td><td>LLM provider: <code>anthropic</code> or <code>openai</code></td></tr>
+    <tr><td><code>ANTHROPIC_API_KEY</code></td><td>&mdash;</td><td>Anthropic API key <strong>(required if using Anthropic)</strong></td></tr>
+    <tr><td><code>ANTHROPIC_MODEL</code></td><td><code>claude-haiku-4-5-20251001</code></td><td>Anthropic model for parsing</td></tr>
+    <tr><td><code>OPENAI_API_KEY</code></td><td>&mdash;</td><td>OpenAI API key (required if using OpenAI)</td></tr>
+    <tr><td><code>OPENAI_MODEL</code></td><td><code>gpt-4o-mini</code></td><td>OpenAI model for parsing (when using OpenAI)</td></tr>
+    <tr><td><code>AGE_GRAPH_NAME</code></td><td><code>reg_ca</code></td><td>Apache AGE graph name</td></tr>
+    <tr><td><code>BATCH_SIZE</code></td><td><code>10</code></td><td>Fragments per processing batch</td></tr>
+    <tr><td><code>MAX_WORKERS</code></td><td><code>3</code></td><td>Concurrent worker threads</td></tr>
+    <tr><td><code>DOMAIN</code></td><td><code>food-safety</code></td><td>Domain profile name or file path</td></tr>
+    <tr><td><code>RATE_LIMIT_DELAY</code></td><td><code>1.0</code></td><td>Seconds between API calls (sync parser)</td></tr>
+  </table>
+
+  <h3>.env File Format</h3>
+<pre><code># Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=buildkg
+DB_USER=buildkg
+DB_PASSWORD=buildkg_dev
+
+# LLM
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Graph
+AGE_GRAPH_NAME=kg_k8s_net
+
+# Domain
+DOMAIN=default</code></pre>
+
+  <div class="callout warning">
+    <span class="callout-title">Important</span>
+    <code>DB_PASSWORD</code> and an LLM API key (<code>ANTHROPIC_API_KEY</code> or <code>OPENAI_API_KEY</code>) are required. All other variables
+    have sensible defaults. Run <code>make verify</code> to check your configuration.
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- ADVANCED > MANIFEST FORMAT                                        -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="manifest-format">
+  <h2>Manifest Format</h2>
+  <p>
+    The crawl manifest (<code>crawl_manifest.json</code>) is the central configuration file for a build-kg pipeline run.
+    It lists every source to crawl, provides metadata for each source, defines defaults, and tracks coverage.
+  </p>
+
+  <h3>JSON Schema</h3>
+<pre><code>{
+  "topic": "string",
+  "graph_name": "string",
+  "created_at": "ISO 8601 string",
+  "sources": [ ... ],
+  "defaults": { ... },
+  "coverage": { ... },
+  "metadata": { ... }
+}</code></pre>
+
+  <h3>Top-Level Fields</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>topic</code></td><td>string</td><td>yes</td><td>Human-readable topic description</td></tr>
+    <tr><td><code>graph_name</code></td><td>string</td><td>yes</td><td>Apache AGE graph name (<code>reg_&lt;country&gt;_&lt;domain&gt;</code> or <code>kg_&lt;topic&gt;</code>)</td></tr>
+    <tr><td><code>created_at</code></td><td>string</td><td>yes</td><td>ISO 8601 timestamp</td></tr>
+    <tr><td><code>sources</code></td><td>array</td><td>yes</td><td>List of source objects</td></tr>
+    <tr><td><code>defaults</code></td><td>object</td><td>no</td><td>Default metadata for unmatched chunks</td></tr>
+    <tr><td><code>coverage</code></td><td>object</td><td>no</td><td>Tracks sub-domain coverage</td></tr>
+    <tr><td><code>metadata</code></td><td>object</td><td>no</td><td>Arbitrary key-value metadata</td></tr>
+  </table>
+
+  <h3>Source Object Fields</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>source_name</code></td><td>string</td><td>yes</td><td>Short identifier used as crawl output directory name. Must be unique. Used by loader for source matching.</td></tr>
+    <tr><td><code>url</code></td><td>string</td><td>yes</td><td>Starting URL for the crawl</td></tr>
+    <tr><td><code>title</code></td><td>string</td><td>yes</td><td>Descriptive title</td></tr>
+    <tr><td><code>authority</code></td><td>string</td><td>no</td><td>Issuing organization (nullable for generic topics)</td></tr>
+    <tr><td><code>jurisdiction</code></td><td>string</td><td>no</td><td>Jurisdiction code (nullable for generic topics)</td></tr>
+    <tr><td><code>doc_type</code></td><td>string</td><td>no</td><td>Document type (nullable for generic topics)</td></tr>
+    <tr><td><code>priority</code></td><td>string</td><td>no</td><td>Priority tier: <code>P1</code>, <code>P2</code>, <code>P3</code>, or <code>P4</code></td></tr>
+    <tr><td><code>sub_domains</code></td><td>array</td><td>no</td><td>List of sub-domain strings this source covers</td></tr>
+    <tr><td><code>depth</code></td><td>integer</td><td>no</td><td>Crawl depth override</td></tr>
+    <tr><td><code>max_pages</code></td><td>integer</td><td>no</td><td>Maximum pages override</td></tr>
+    <tr><td><code>delay</code></td><td>integer</td><td>no</td><td>Crawl delay in ms override</td></tr>
+  </table>
+
+  <h3>Example: Generic Manifest</h3>
+<pre><code>{
+  "topic": "Kubernetes networking",
+  "graph_name": "kg_k8s_net",
+  "created_at": "2026-02-20T10:00:00Z",
+  "sources": [
+    {
+      "source_name": "k8s_networking_docs",
+      "url": "https://kubernetes.io/docs/concepts/services-networking/",
+      "title": "Kubernetes Networking Concepts",
+      "priority": "P1",
+      "depth": 3,
+      "max_pages": 80,
+      "delay": 1500
+    },
+    {
+      "source_name": "cilium_docs",
+      "url": "https://docs.cilium.io/en/stable/",
+      "title": "Cilium CNI Documentation",
+      "priority": "P2",
+      "depth": 2,
+      "max_pages": 50,
+      "delay": 1500
+    }
+  ],
+  "defaults": {}
+}</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- REFERENCE > EXAMPLES                                              -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="examples">
+  <h2>Examples</h2>
+
+  <h3>Kubernetes Networking</h3>
+<pre><code>/build-kg kubernetes networking
+
+# Your agent generates ontology: Component, Concept, Configuration
+# Discovers sources: kubernetes.io, cilium.io, calico docs
+# Crawls ~200 pages, chunks, loads, parses
+# Result: queryable KG with Component-USES-Concept relationships</code></pre>
+  <p>Sample queries:</p>
+<pre><code>-- Count nodes by type
+SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (n:Component) RETURN count(n)
+$$) as (cnt agtype);
+
+-- Find relationships
+SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (c:Component)-[:USES]-&gt;(concept:Concept)
+    RETURN c.name, concept.name, concept.category
+    LIMIT 10
+$$) as (component agtype, concept agtype, category agtype);
+
+-- Traverse the graph (multi-hop)
+SELECT * FROM cypher('kg_k8s_net', $$
+    MATCH (a:Component)-[:DEPENDS_ON]-&gt;(b:Component)-[:USES]-&gt;(c:Concept)
+    RETURN a.name, b.name, c.name
+    LIMIT 10
+$$) as (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
+
+  <h3>Machine Learning Algorithms</h3>
+<pre><code>/build-kg machine learning optimization algorithms
+
+# Your agent generates ontology: Algorithm, Technique, Application, Paper
+# Discovers: arxiv papers, textbook sites, framework docs
+# Result: KG connecting algorithms to techniques and applications</code></pre>
+  <p>Sample queries:</p>
+<pre><code>-- Find all algorithms of a specific type
+SELECT * FROM cypher('kg_ml_opt', $$
+    MATCH (a:Algorithm)
+    WHERE a.type = 'gradient-based'
+    RETURN a.name, a.description
+    LIMIT 20
+$$) as (name agtype, description agtype);
+
+-- Find algorithms used in applications
+SELECT * FROM cypher('kg_ml_opt', $$
+    MATCH (a:Algorithm)-[:APPLIED_TO]-&gt;(app:Application)
+    RETURN a.name, app.name
+    LIMIT 10
+$$) as (algorithm agtype, application agtype);</code></pre>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- REFERENCE > COST                                                  -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="cost">
+  <h2>Cost</h2>
+  <p>
+    The only cost is LLM API calls during the parse phase. Everything else &mdash; crawling,
+    chunking, loading, database, queries &mdash; runs locally for free.
+  </p>
+
+  <table>
+    <tr><th>Fragments</th><th>Sync Parser</th><th>Batch Parser (50% off)</th></tr>
+    <tr><td>100</td><td>~$0.03</td><td>~$0.015</td></tr>
+    <tr><td>1,000</td><td>~$0.30</td><td>~$0.15</td></tr>
+    <tr><td>5,000</td><td>~$1.50</td><td>~$0.75</td></tr>
+    <tr><td>10,000</td><td>~$3.00</td><td>~$1.50</td></tr>
+  </table>
+
+  <h3>What's Free</h3>
+  <ul>
+    <li><strong>Crawling</strong> &mdash; uses open-source Crawl4AI with local Chromium</li>
+    <li><strong>Chunking</strong> &mdash; uses open-source Unstructured library locally</li>
+    <li><strong>Loading</strong> &mdash; direct PostgreSQL inserts</li>
+    <li><strong>Database</strong> &mdash; Docker container on your machine</li>
+    <li><strong>Queries</strong> &mdash; standard Cypher via Apache AGE</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="callout-title">Tip</span>
+    The skill automatically handles test runs and cost optimization.
+    before committing to a full run.
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- HELP > TROUBLESHOOTING                                            -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="troubleshooting">
+  <h2>Troubleshooting</h2>
+
+  <h3>Quick Reference</h3>
+  <table>
+    <tr><th>Error</th><th>Phase</th><th>Solution</th></tr>
+    <tr><td>Connection refused on port 5432</td><td>Any DB operation</td><td>Start the database container</td></tr>
+    <tr><td>relation "source_fragment" does not exist</td><td>Load / Parse</td><td>Run the init SQL or recreate the container</td></tr>
+    <tr><td>AGE extension not found</td><td>Setup / Parse</td><td>Run <code>make db-init</code></td></tr>
+    <tr><td>LLM API error 401</td><td>Parse</td><td>Check <code>ANTHROPIC_API_KEY</code> (or <code>OPENAI_API_KEY</code>) in <code>.env</code></td></tr>
+    <tr><td>Chromium not found</td><td>Crawl</td><td>Run <code>crawl4ai-setup</code></td></tr>
+    <tr><td>No fragments found</td><td>Parse</td><td>Verify the database load succeeded</td></tr>
+    <tr><td>Batch still in "validating"</td><td>Batch Parse</td><td>Wait; batches take 1&ndash;24 hours</td></tr>
+    <tr><td>Ontology file not found</td><td>Parse / Setup</td><td>Check <code>--ontology</code> path is correct</td></tr>
+    <tr><td>Empty entities in LLM output</td><td>Parse (ontology)</td><td>Check text quality and ontology fit</td></tr>
+    <tr><td>PDF support not installed</td><td>Chunk</td><td>Run <code>make setup</code></td></tr>
+    <tr><td>DB_PASSWORD is required</td><td>Any</td><td>Run <code>cp .env.example .env</code></td></tr>
+  </table>
+
+  <h3>Connection refused on port 5432</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>psycopg2.OperationalError: could not connect to server: Connection refused
+    Is the server running on host "localhost" and accepting TCP/IP connections on port 5432?</code></pre>
+  <p><strong>Fix:</strong></p>
+<pre><code># Start the database
+docker compose -f db/docker-compose.yml up -d
+
+# Check it is running and healthy
+docker compose -f db/docker-compose.yml ps
+
+# If the container exists but is stopped
+docker compose -f db/docker-compose.yml start</code></pre>
+  <p>If the container is running but you still cannot connect, check if another PostgreSQL instance is using port 5432 (change <code>DB_PORT</code> in <code>.env</code>), or if you are running inside a VM or container (use the correct host IP instead of <code>localhost</code>).</p>
+
+  <h3>relation "source_fragment" does not exist</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>psycopg2.errors.UndefinedTable: relation "source_fragment" does not exist</code></pre>
+  <p><strong>Fix:</strong></p>
+<pre><code># Option 1: Reset the database (destroys all data)
+make db-reset
+
+# Option 2: Run init.sql manually
+docker exec -i build-kg-db psql -U buildkg -d buildkg &lt; db/init.sql
+
+# Verify tables exist
+docker exec build-kg-db psql -U buildkg -d buildkg -c "\dt"</code></pre>
+
+  <h3>AGE extension not found</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>ERROR: extension "age" is not available</code></pre>
+  <p><strong>Fix:</strong> Make sure you are using the Apache AGE Docker image, then run:</p>
+<pre><code>docker compose -f db/docker-compose.yml up -d
+make db-init</code></pre>
+
+  <h3>LLM API error 401</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>AuthenticationError: Error code: 401 - Incorrect API key provided</code></pre>
+  <p><strong>Fix:</strong></p>
+  <ol>
+    <li>Check your <code>.env</code> file: <code>grep ANTHROPIC_API_KEY .env</code></li>
+    <li>Verify the key format: <code>ANTHROPIC_API_KEY=sk-ant-...</code></li>
+    <li>Run <code>make verify</code> to test all connections</li>
+    <li>Check your account for billing issues at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a></li>
+  </ol>
+
+  <h3>Chromium not found</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>crawl4ai: Browser not found. Please run crawl4ai-setup first.</code></pre>
+  <p><strong>Fix:</strong></p>
+<pre><code># Make sure the virtual environment is active
+source venv/bin/activate
+
+# Install Chromium
+crawl4ai-setup</code></pre>
+  <p>If <code>crawl4ai-setup</code> fails, check disk space (~400MB required) and install missing libraries on Linux: <code>sudo apt install libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2</code></p>
+
+  <h3>No fragments found</h3>
+  <p><strong>Symptom:</strong></p>
+<pre><code>Found 0 fragments to process
+No fragments to process!</code></pre>
+  <p><strong>Fix:</strong></p>
+  <ol>
+    <li>Check the fragment count by querying <code>SELECT COUNT(*) FROM source_fragment;</code></li>
+    <li>If zero, re-run the skill or check that the load phase completed successfully</li>
+    <li>If you filtered results, verify the data exists in the database.</li>
+  </ol>
+
+  <h3>Batch still in "validating"</h3>
+  <p>This is normal. Batches can take 1&ndash;24 hours. Monitor with:</p>
+<p>The skill monitors batch progress automatically. Batches typically complete within 1&ndash;24 hours.</p>
+  <p>If stuck for more than 1 hour, check the JSONL file for formatting errors and your provider account for rate limit or quota issues.</p>
+
+  <h3>DB_PASSWORD is required</h3>
+  <p><strong>Fix:</strong></p>
+<pre><code>cp .env.example .env
+# The default password matches the Docker container: DB_PASSWORD=buildkg_dev</code></pre>
+
+  <h3>Empty entities in LLM output (ontology mode)</h3>
+  <p>The parser reports many fragments as "skipped" with 0 entities extracted. This happens when the text is too short/generic, the ontology node types do not match the content, or chunks are too small.</p>
+  <p><strong>Fix:</strong></p>
+  <ol>
+    <li>Check that your ontology node types are appropriate for the source content</li>
+    <li>Try increasing <code>--max-chars</code> during chunking for larger, more informative fragments</li>
+    <li>Review the auto-generated ontology and adjust definitions if needed</li>
+  </ol>
+
+  <h3>Getting More Help</h3>
+  <p>If your issue is not listed here:</p>
+  <ol>
+    <li>Run <code>make verify</code> to check overall system health</li>
+    <li>Check Docker container logs: <code>docker compose -f db/docker-compose.yml logs</code></li>
+    <li>Open an issue at <a href="https://github.com/agtm1199/build-kg/issues" target="_blank" rel="noopener">github.com/agtm1199/build-kg/issues</a> with the exact error message, the command you ran, your Python version, and your OS</li>
+  </ol>
+</section>
+
+<!-- ────────────────────────────────────────────────────────────────── -->
+<!-- HELP > FAQ                                                        -->
+<!-- ────────────────────────────────────────────────────────────────── -->
+<section id="faq">
+  <h2>FAQ</h2>
+
+  <div class="faq-item">
+    <div class="faq-q">What topics can I use?</div>
+    <div class="faq-a">
+      Any topic. The ontology is auto-generated and tailored to your subject (e.g., "kubernetes networking", "machine learning").
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How much does it cost?</div>
+    <div class="faq-a">
+      Only LLM API costs for the parse phase. Everything else is free and local.
+      Approximately <strong>~$0.30 per 1,000 fragments</strong> with the sync parser, or
+      <strong>~$0.15 per 1,000 fragments</strong> using the Batch API (50% cheaper).
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Can I use my own ontology?</div>
+    <div class="faq-a">
+      Yes. Create a YAML file defining your node types, edge types, and JSON schema, then
+      set the <code>DOMAIN</code> environment variable to point to your profile. You can also create a full domain profile
+      with custom parsing instructions and discovery templates.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Do I need a coding agent?</div>
+    <div class="faq-a">
+      Yes. The <code>/build-kg</code> skill works with any coding agent that supports skill files, including <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a> and <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">What LLM does it use?</div>
+    <div class="faq-a">
+      Claude Haiku 3.5 by default (via Anthropic). Configurable via the <code>LLM_PROVIDER</code>
+      and <code>ANTHROPIC_MODEL</code> environment variables in your <code>.env</code> file.
+      OpenAI models (e.g., GPT-4o-mini) are also supported by setting <code>LLM_PROVIDER=openai</code>.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Can I export the graph?</div>
+    <div class="faq-a">
+      Yes. It is standard PostgreSQL with the Apache AGE extension. Use <code>pg_dump</code>,
+      Cypher queries, or any PostgreSQL client to export data. You can also query the graph
+      directly from any application that connects to PostgreSQL.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">What database does it use?</div>
+    <div class="faq-a">
+      PostgreSQL with the <a href="https://age.apache.org/" target="_blank" rel="noopener">Apache AGE</a> extension.
+      AGE adds Cypher query support to PostgreSQL, allowing you to store and query graph data alongside
+      relational data in the same database. It runs in a Docker container on your machine.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How do I query the graph after building it?</div>
+    <div class="faq-a">
+      Use standard Cypher queries wrapped in the <code>cypher()</code> function via any PostgreSQL client.
+      Example: <code>SELECT * FROM cypher('kg_k8s_net', $$ MATCH (n) RETURN n LIMIT 10 $$) as (n agtype);</code>
+      You can use <code>psql</code>, DBeaver, pgAdmin, or connect programmatically from any language with a PostgreSQL driver.
+    </div>
+  </div>
+</section>
+
+</div><!-- /.main -->
+
+<!-- ================================================================ -->
+<!-- Footer                                                            -->
+<!-- ================================================================ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-badge">Apache 2.0</div>
+    <p class="footer-text">Your database, your data, your code.</p>
+    <div class="footer-links">
+      <a href="docs.html">Docs</a>
+      <a href="tutorial.html">Tutorial</a>
+      <a href="https://github.com/agtm1199/build-kg">GitHub</a>
+      <a href="https://github.com/agtm1199/build-kg/issues">Issues</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================================ -->
+<!-- Scroll Spy JavaScript                                             -->
+<!-- ================================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  // ── Intersection Observer: highlight active sidebar section ──
+  var sections = document.querySelectorAll('section[id]');
+  var navLinks = document.querySelectorAll('.sidebar-group li a');
+
+  // Build a map from section id to sidebar link
+  var linkMap = {};
+  navLinks.forEach(function (link) {
+    var href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      linkMap[href.substring(1)] = link;
+    }
+  });
+
+  var observerOptions = {
+    root: null,
+    rootMargin: '-80px 0px -60% 0px',
+    threshold: 0
+  };
+
+  var currentActive = null;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.getAttribute('id');
+        if (linkMap[id]) {
+          if (currentActive) {
+            currentActive.classList.remove('active');
+          }
+          linkMap[id].classList.add('active');
+          currentActive = linkMap[id];
+
+          // Scroll the sidebar to keep active link visible
+          var sidebar = document.getElementById('sidebar');
+          var linkRect = linkMap[id].getBoundingClientRect();
+          var sidebarRect = sidebar.getBoundingClientRect();
+          if (linkRect.top < sidebarRect.top || linkRect.bottom > sidebarRect.bottom) {
+            linkMap[id].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(function (section) {
+    observer.observe(section);
+  });
+
+  // ── Smooth scroll with offset for fixed nav ──
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      var targetId = this.getAttribute('href').substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        e.preventDefault();
+        var navHeight = 56;
+        var offset = 24;
+        var y = target.getBoundingClientRect().top + window.pageYOffset - navHeight - offset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+
+        // Update URL hash without jumping
+        if (history.pushState) {
+          history.pushState(null, null, '#' + targetId);
+        }
+      }
+    });
+  });
+
+  // ── Set initial active state based on hash ──
+  if (window.location.hash) {
+    var initialId = window.location.hash.substring(1);
+    if (linkMap[initialId]) {
+      linkMap[initialId].classList.add('active');
+      currentActive = linkMap[initialId];
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
