@@ -2,10 +2,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-0.2.0-green.svg)](release-notes/v0.2.0.md)
+[![Version](https://img.shields.io/badge/version-0.3.0-green.svg)](release-notes/v0.3.0.md)
 [![CI](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml)
 
 **One command. Any topic. Knowledge graph in your own PostgreSQL.**
+
+[Docs](https://agtm1199.github.io/build-kg/docs.html) | [Tutorial](https://agtm1199.github.io/build-kg/tutorial.html)
 
 build-kg is a skill for coding agents that turns any topic into a structured knowledge graph stored in Apache AGE (PostgreSQL). Works with [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/index/codex/), and other agent platforms that support skill files.
 
@@ -170,7 +172,7 @@ The only cost is LLM API calls during parsing. Everything else runs locally.
 |-----|-------------|
 | [Documentation](docs/docs.html) | Complete reference: architecture, configuration, troubleshooting |
 | [Tutorial](docs/tutorial.html) | Hands-on guide from setup to querying your first knowledge graph |
-| [Release Notes](release-notes/v0.2.0.md) | What's new in v0.2.0 |
+| [Release Notes](release-notes/v0.3.0.md) | What's new in v0.3.0 |
 
 ## Contributing
 
