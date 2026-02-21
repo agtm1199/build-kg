@@ -101,6 +101,45 @@
   /* -- OUTPUT BLOCKS -- */
   .output-label { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; display: block; }
 
+  /* -- TERMINAL COMPONENT -- */
+  .terminal { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); margin: 14px 0 18px; overflow: hidden; }
+  .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal-dot.r { background: var(--red); }
+  .terminal-dot.y { background: var(--orange); }
+  .terminal-dot.g { background: var(--green); }
+  .terminal-title { font-size: 11px; color: var(--muted); margin-left: 8px; }
+  .terminal-body { padding: 14px 18px; font-family: var(--mono); font-size: 13px; line-height: 1.65; overflow-x: auto; white-space: pre; }
+  .terminal-body .prompt { color: var(--green); font-weight: 600; }
+  .terminal-body .cmd { color: var(--heading); font-weight: 600; }
+  .terminal-body .flag { color: var(--orange); }
+  .terminal-body .str { color: var(--green); }
+  .terminal-body .comment { color: var(--muted); font-style: italic; }
+  .terminal-body .val { color: var(--orange); }
+  .terminal-body .check { color: var(--green); }
+  .terminal-body .err { color: var(--red); }
+  .terminal-body .dim { color: var(--muted); }
+  .terminal-body .phase { color: var(--link); font-weight: 600; }
+  .terminal-body .kw { color: var(--purple); font-weight: 600; }
+  .terminal-body .key { color: var(--link); }
+
+  /* -- SYNTAX HIGHLIGHTED CODE -- */
+  pre.code-yaml .yk { color: var(--link); }
+  pre.code-yaml .yv { color: var(--green); }
+  pre.code-yaml .yc { color: var(--muted); font-style: italic; }
+  pre.code-sql .sk { color: var(--purple); font-weight: 600; }
+  pre.code-sql .sf { color: var(--link); }
+  pre.code-sql .ss { color: var(--green); }
+  pre.code-sql .sc { color: var(--muted); font-style: italic; }
+  pre.code-py .pk { color: var(--purple); font-weight: 600; }
+  pre.code-py .pc { color: var(--link); }
+  pre.code-py .ps { color: var(--green); }
+  pre.code-py .pt { color: var(--orange); }
+  pre.code-py .pm { color: var(--muted); font-style: italic; }
+  pre.code-json .jk { color: var(--link); }
+  pre.code-json .jv { color: var(--green); }
+  pre.code-json .jn { color: var(--orange); }
+
   /* -- FOOTER -- */
   .site-footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
   .footer-badge { display: inline-block; padding: 4px 12px; border-radius: var(--radius); font-size: 12px; color: var(--green); border: 1px solid rgba(63,185,80,.2); background: rgba(63,185,80,.06); margin-bottom: 12px; }
@@ -175,7 +214,16 @@
 
     <p>Verify Docker is running:</p>
 
-<pre><code>docker info --format '{{.ServerVersion}}'</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">docker info</span> <span class="flag">--format</span> <span class="str">'{{.ServerVersion}}'</span></div>
+</div>
 
     <div class="callout tip">
       <strong>Tip</strong>
@@ -192,27 +240,54 @@
 
     <h3>Clone and install</h3>
 
-<pre><code>git clone https://github.com/agtm1199/build-kg.git &amp;&amp; cd build-kg</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">git clone</span> <span class="str">https://github.com/agtm1199/build-kg.git</span> &amp;&amp; <span class="cmd">cd</span> <span class="str">build-kg</span></div>
+</div>
 
     <p>Run the full setup. This creates a virtual environment, installs dependencies, starts the PostgreSQL + Apache AGE container, and initializes the graph schema:</p>
 
-<pre><code>make setup</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">make setup</span></div>
+</div>
 
     <h3>Configure environment variables</h3>
 
     <p>The setup creates a <code>.env</code> file from the example template. Open it and set your API key:</p>
 
-<pre><code># .env
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">.env</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># .env</span>
 
-# Anthropic (default provider):
-ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+<span class="comment"># Anthropic (default provider):</span>
+<span class="key">ANTHROPIC_API_KEY</span>=<span class="str">sk-ant-your-actual-key-here</span>
 
-# Or if using OpenAI instead:
-# OPENAI_API_KEY=sk-your-actual-key-here
-# LLM_PROVIDER=openai
+<span class="comment"># Or if using OpenAI instead:</span>
+<span class="comment"># OPENAI_API_KEY=sk-your-actual-key-here</span>
+<span class="comment"># LLM_PROVIDER=openai</span>
 
-# Database password (matches Docker container defaults):
-DB_PASSWORD=build_kg_pass</code></pre>
+<span class="comment"># Database password (matches Docker container defaults):</span>
+<span class="key">DB_PASSWORD</span>=<span class="str">build_kg_pass</span></div>
+</div>
 
     <div class="callout info">
       <strong>Note</strong>
@@ -221,7 +296,16 @@ DB_PASSWORD=build_kg_pass</code></pre>
 
     <h3>Verify everything works</h3>
 
-<pre><code>make verify</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">make verify</span></div>
+</div>
 
     <h3>Activate the skill</h3>
 
@@ -239,24 +323,33 @@ DB_PASSWORD=build_kg_pass</code></pre>
     </div>
 
     <span class="output-label">Expected output</span>
-<pre><code>======================================================================
-Setup Verification
-======================================================================
-1. Verifying database connection...
-     Connected to PostgreSQL
-     Version: PostgreSQL 16.x
-2. Verifying Apache AGE extension...
-     AGE extension installed (version 1.5.0)
-     Graph 'knowledge_graph' exists
-3. Verifying source data...
-     Found 0 fragments with excerpts
-     Found 0 source documents
-4. Verifying LLM API access...
-     Anthropic API connection successful
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Output</span>
+  </div>
+  <div class="terminal-body">
+<span class="dim">======================================================================</span>
+<span class="dim">Setup Verification</span>
+<span class="dim">======================================================================</span>
+<span class="val">1.</span> Verifying database connection...
+     <span class="check">Connected to PostgreSQL</span>
+     Version: PostgreSQL <span class="val">16.x</span>
+<span class="val">2.</span> Verifying Apache AGE extension...
+     <span class="check">AGE extension installed</span> (version <span class="val">1.5.0</span>)
+     <span class="check">Graph 'knowledge_graph' exists</span>
+<span class="val">3.</span> Verifying source data...
+     Found <span class="val">0</span> fragments with excerpts
+     Found <span class="val">0</span> source documents
+<span class="val">4.</span> Verifying LLM API access...
+     <span class="check">Anthropic API connection successful</span>
      Model: claude-haiku-4-5-20251001
-======================================================================
-  All checks passed! System is ready.
-======================================================================</code></pre>
+<span class="dim">======================================================================</span>
+  <span class="check">All checks passed! System is ready.</span>
+<span class="dim">======================================================================</span></div>
+</div>
   </section>
 
   <!-- ============================================================ -->
@@ -270,7 +363,16 @@ Setup Verification
 
     <p>In your coding agent, run:</p>
 
-<pre><code>/build-kg kubernetes networking</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">/build-kg</span> <span class="str">kubernetes networking</span></div>
+</div>
 
     <p>Your coding agent will execute six phases in sequence. Here is what each phase does:</p>
 
@@ -285,17 +387,26 @@ Setup Verification
     </table>
 
     <span class="output-label">Sample output</span>
-<pre><code>Ontology  &#10003; 3 node types &middot; 3 edge types &middot; saved ontology.yaml
-Discover  &#10003; 14 sources found across 5 rounds
-Crawl     &#10003; 247 pages &rarr; crawl_output/
-Chunk     &#10003; 1,832 fragments &rarr; chunk_output/
-Load      &#10003; 14 docs &middot; 1,832 fragments &rarr; PostgreSQL
-Parse     &#10003; 892 Components &middot; 341 Concepts &middot; 127 Configs
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Output</span>
+  </div>
+  <div class="terminal-body">
+<span class="phase">Ontology</span>  <span class="check">&#10003;</span> <span class="val">3</span> node types &middot; <span class="val">3</span> edge types &middot; saved ontology.yaml
+<span class="phase">Discover</span>  <span class="check">&#10003;</span> <span class="val">14</span> sources found across <span class="val">5</span> rounds
+<span class="phase">Crawl</span>     <span class="check">&#10003;</span> <span class="val">247</span> pages &rarr; <span class="dim">crawl_output/</span>
+<span class="phase">Chunk</span>     <span class="check">&#10003;</span> <span class="val">1,832</span> fragments &rarr; <span class="dim">chunk_output/</span>
+<span class="phase">Load</span>      <span class="check">&#10003;</span> <span class="val">14</span> docs &middot; <span class="val">1,832</span> fragments &rarr; PostgreSQL
+<span class="phase">Parse</span>     <span class="check">&#10003;</span> <span class="val">892</span> Components &middot; <span class="val">341</span> Concepts &middot; <span class="val">127</span> Configs
 
-&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
-  1,360 nodes &middot; 1,247 edges
-  Graph: kg_k8s_net (Apache AGE)
-  Cost:  $0.27</code></pre>
+<span class="dim">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</span>
+  <span class="val">1,360</span> nodes &middot; <span class="val">1,247</span> edges
+  Graph: <span class="str">kg_k8s_net</span> (Apache AGE)
+  Cost:  <span class="val">$0.27</span></div>
+</div>
 
     <div class="callout tip">
       <strong>Tip</strong>
@@ -314,61 +425,79 @@ Parse     &#10003; 892 Components &middot; 341 Concepts &middot; 127 Configs
 
     <h3>Connect to the database</h3>
 
-<pre><code>psql -h localhost -U build_kg_user -d build_kg</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">psql</span> <span class="flag">-h</span> <span class="str">localhost</span> <span class="flag">-U</span> <span class="str">build_kg_user</span> <span class="flag">-d</span> <span class="str">build_kg</span></div>
+</div>
 
     <p>Load the AGE extension and set the search path:</p>
 
-<pre><code>LOAD 'age';
-SET search_path = ag_catalog, '$user', public;</code></pre>
+<pre class="code-sql"><code><span class="sk">LOAD</span> <span class="ss">'age'</span>;
+<span class="sk">SET</span> search_path = ag_catalog, <span class="ss">'$user'</span>, public;</code></pre>
 
     <h3>Count nodes by type</h3>
 
-<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (n)
-    RETURN label(n), count(n)
-    ORDER BY count(n) DESC
-$$) as (node_type agtype, count agtype);</code></pre>
+<pre class="code-sql"><code><span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (n)
+    <span class="sk">RETURN</span> <span class="sf">label</span>(n), <span class="sf">count</span>(n)
+    <span class="sk">ORDER</span> <span class="sk">BY</span> <span class="sf">count</span>(n) <span class="sk">DESC</span>
+$$) <span class="sk">AS</span> (node_type agtype, count agtype);</code></pre>
 
     <span class="output-label">Sample result</span>
-<pre><code> node_type    | count
---------------+-------
- "Component"  | 892
- "Concept"    | 341
- "Config"     | 127</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Output</span>
+  </div>
+  <div class="terminal-body">
+<span class="dim"> node_type    | count</span>
+<span class="dim">--------------+-------</span>
+ "Component"  | <span class="val">892</span>
+ "Concept"    | <span class="val">341</span>
+ "Config"     | <span class="val">127</span></div>
+</div>
 
     <h3>List all node types</h3>
 
-<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (n)
-    RETURN DISTINCT label(n)
-$$) as (node_type agtype);</code></pre>
+<pre class="code-sql"><code><span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (n)
+    <span class="sk">RETURN</span> <span class="sk">DISTINCT</span> <span class="sf">label</span>(n)
+$$) <span class="sk">AS</span> (node_type agtype);</code></pre>
 
     <h3>Traverse relationships</h3>
 
-<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (a)-[r]-&gt;(b)
-    RETURN label(a), type(r), label(b), count(*)
-    ORDER BY count(*) DESC
-    LIMIT 10
-$$) as (from_type agtype, rel_type agtype, to_type agtype, count agtype);</code></pre>
+<pre class="code-sql"><code><span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (a)-[r]-&gt;(b)
+    <span class="sk">RETURN</span> <span class="sf">label</span>(a), <span class="sf">type</span>(r), <span class="sf">label</span>(b), <span class="sf">count</span>(*)
+    <span class="sk">ORDER</span> <span class="sk">BY</span> <span class="sf">count</span>(*) <span class="sk">DESC</span>
+    <span class="sk">LIMIT</span> 10
+$$) <span class="sk">AS</span> (from_type agtype, rel_type agtype, to_type agtype, count agtype);</code></pre>
 
     <h3>Find specific entities</h3>
 
-<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (n)
-    WHERE n.name CONTAINS 'Service'
-    RETURN n.name, label(n), n.description
-    LIMIT 5
-$$) as (name agtype, type agtype, description agtype);</code></pre>
+<pre class="code-sql"><code><span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (n)
+    <span class="sk">WHERE</span> n.name CONTAINS <span class="ss">'Service'</span>
+    <span class="sk">RETURN</span> n.name, <span class="sf">label</span>(n), n.description
+    <span class="sk">LIMIT</span> 5
+$$) <span class="sk">AS</span> (name agtype, type agtype, description agtype);</code></pre>
 
     <h3>Walk a path</h3>
 
-<pre><code>SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH path = (a)-[*1..2]-&gt;(b)
-    WHERE a.name = 'kube-proxy'
-    RETURN a.name, b.name, length(path)
-    LIMIT 10
-$$) as (from_name agtype, to_name agtype, path_len agtype);</code></pre>
+<pre class="code-sql"><code><span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> path = (a)-[*1..2]-&gt;(b)
+    <span class="sk">WHERE</span> a.name = <span class="ss">'kube-proxy'</span>
+    <span class="sk">RETURN</span> a.name, b.name, <span class="sf">length</span>(path)
+    <span class="sk">LIMIT</span> 10
+$$) <span class="sk">AS</span> (from_name agtype, to_name agtype, path_len agtype);</code></pre>
 
     <div class="callout info">
       <strong>Note</strong>

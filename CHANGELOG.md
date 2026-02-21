@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-02-21
+
+### Added
+
+- **GitHub Actions CI** (`.github/workflows/ci.yml`): lint with ruff + test with pytest on Python 3.10, 3.11, 3.12
+- **Terminal-styled documentation**: all code blocks in `docs.html` (25 blocks) and `tutorial.html` (16 blocks) converted to styled terminal components with bash-style syntax coloring
+
+### Changed
+
+- **`--ontology` is now required** on `build-kg-parse` and `build-kg-parse-batch` — no more regulatory fallback
+- **`build_prompt()` requires an ontology** — raises `ValueError` when none is provided
+- **Default graph name**: `AGE_GRAPH_NAME` default changed from `reg_ca` to `knowledge_graph`
+- `parse_generic()` renamed to `parse_fragment()`
+- `load_to_graph_generic()` renamed to `load_to_graph()` (both sync and batch)
+- `setup_graph.py` skips label creation when no ontology is provided (so `make setup` still works)
+- Updated all documentation and examples to use `knowledge_graph` instead of `reg_ca`
+
+### Removed
+
+- **Regulatory code path fully removed** from core pipeline (-456 net lines):
+  - `ParsedProvision` dataclass
+  - `parse_with_llm()` — regulatory LLM parsing
+  - `load_to_graph()` — Provision/Requirement/Constraint Cypher queries (sync and batch)
+  - `_build_regulatory_prompt()` — legacy prompt builder
+  - `RegulatoryParser` backward-compatibility alias
+  - `ProvisionIDExtractor` import from core pipeline
+  - Hardcoded `RegulatorySource`/`Provision`/`Requirement`/`Constraint` vertex labels
+
 ## [0.2.0] - 2026-02-20
 
 ### Added

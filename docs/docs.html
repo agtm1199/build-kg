@@ -303,6 +303,45 @@
   .callout.warning .callout-title { color: var(--orange); }
   .callout.tip .callout-title { color: var(--green); }
 
+  /* ── Terminal Component ── */
+  .terminal { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; margin: 1rem 0; overflow: hidden; }
+  .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal-dot.r { background: var(--red); }
+  .terminal-dot.y { background: var(--orange); }
+  .terminal-dot.g { background: var(--green); }
+  .terminal-title { font-size: 11px; color: var(--muted); margin-left: 8px; }
+  .terminal-body { padding: 1rem 1.25rem; font-family: 'Source Code Pro', monospace; font-size: 0.84rem; line-height: 1.65; overflow-x: auto; white-space: pre; }
+  .terminal-body .prompt { color: var(--green); font-weight: 600; }
+  .terminal-body .cmd { color: var(--heading); font-weight: 600; }
+  .terminal-body .flag { color: var(--orange); }
+  .terminal-body .str { color: var(--green); }
+  .terminal-body .comment { color: var(--muted); font-style: italic; }
+  .terminal-body .val { color: var(--orange); }
+  .terminal-body .check { color: var(--green); }
+  .terminal-body .err { color: var(--red); }
+  .terminal-body .dim { color: var(--muted); }
+  .terminal-body .phase { color: var(--link); font-weight: 600; }
+  .terminal-body .out { color: var(--text); }
+  .terminal-body .key { color: var(--link); }
+
+  /* ── Syntax Highlighted Code ── */
+  pre.code-yaml .yk { color: var(--link); }
+  pre.code-yaml .yv { color: var(--green); }
+  pre.code-yaml .yc { color: var(--muted); font-style: italic; }
+  pre.code-sql .sk { color: var(--purple); font-weight: 600; }
+  pre.code-sql .sf { color: var(--link); }
+  pre.code-sql .ss { color: var(--green); }
+  pre.code-sql .sc { color: var(--muted); font-style: italic; }
+  pre.code-py .pk { color: var(--purple); font-weight: 600; }
+  pre.code-py .pc { color: var(--link); }
+  pre.code-py .ps { color: var(--green); }
+  pre.code-py .pt { color: var(--orange); }
+  pre.code-py .pm { color: var(--muted); font-style: italic; }
+  pre.code-json .jk { color: var(--link); }
+  pre.code-json .jv { color: var(--green); }
+  pre.code-json .jn { color: var(--orange); }
+
   /* ── Pipeline Diagram ── */
   .pipeline {
     display: grid;
@@ -549,20 +588,40 @@
   </ul>
 
   <h3>Install</h3>
-<pre><code>git clone https://github.com/agtm1199/build-kg.git
-cd build-kg
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">git clone https://github.com/agtm1199/build-kg.git</span>
+<span class="prompt">$</span> <span class="cmd">cd build-kg</span>
 
-# Full setup: creates venv, installs dependencies, starts DB, initializes graph
-make setup</code></pre>
+<span class="comment"># Full setup: creates venv, installs dependencies, starts DB, initializes graph</span>
+<span class="prompt">$</span> <span class="cmd">make setup</span>
+  </div>
+</div>
 
   <h3>Configure your environment</h3>
-<pre><code>cp .env.example .env
-# Edit .env and set your API key:
-# ANTHROPIC_API_KEY=sk-ant-...
-# Or alternatively: OPENAI_API_KEY=sk-...
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">cp .env.example .env</span>
+<span class="comment"># Edit .env and set your API key:</span>
+<span class="comment"># ANTHROPIC_API_KEY=sk-ant-...</span>
+<span class="comment"># Or alternatively: OPENAI_API_KEY=sk-...</span>
 
-# Verify everything works
-make verify</code></pre>
+<span class="comment"># Verify everything works</span>
+<span class="prompt">$</span> <span class="cmd">make verify</span>
+  </div>
+</div>
 
   <div class="callout tip">
     <span class="callout-title">Tip</span>
@@ -607,7 +666,17 @@ make verify</code></pre>
   <p>
     Use the <code>/build-kg</code> skill in your coding agent (<a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>, <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>, etc.) to build a knowledge graph:
   </p>
-<pre><code>/build-kg kubernetes networking</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">/build-kg kubernetes networking</span>
+  </div>
+</div>
   <p>This runs all phases autonomously &mdash; ontology generation, source discovery, crawling, chunking, loading, parsing, and validation. Expected output: a queryable knowledge graph with Component, Concept, and Configuration nodes connected by USES, CONFIGURES, and DEPENDS_ON edges.</p>
 </section>
 
@@ -799,47 +868,47 @@ make verify</code></pre>
     For generic topics (using the <code>default</code> profile or no profile), your coding agent auto-generates
     an ontology tailored to the subject. Example for <strong>"kubernetes networking"</strong>:
   </p>
-<pre><code>nodes:
-  - label: Component
-    description: "A Kubernetes networking component"
-    properties:
-      name: string
-      type: string
-      description: string
-      layer: string
-  - label: Concept
-    description: "A networking concept or protocol"
-    properties:
-      name: string
-      description: string
-      category: string
-  - label: Configuration
-    description: "A configuration option or setting"
-    properties:
-      name: string
-      description: string
-      default_value: string
-edges:
-  - label: USES
-    source: Component
-    target: Concept
-    description: "Component uses this concept"
-  - label: CONFIGURES
-    source: Configuration
-    target: Component
-    description: "Configuration applies to component"
-  - label: DEPENDS_ON
-    source: Component
-    target: Component
-    description: "Component depends on another"
-root_node: Component
-json_schema: |
+<pre class="code-yaml"><code><span class="yk">nodes:</span>
+  - <span class="yk">label:</span> Component
+    <span class="yk">description:</span> <span class="yv">"A Kubernetes networking component"</span>
+    <span class="yk">properties:</span>
+      <span class="yk">name:</span> string
+      <span class="yk">type:</span> string
+      <span class="yk">description:</span> string
+      <span class="yk">layer:</span> string
+  - <span class="yk">label:</span> Concept
+    <span class="yk">description:</span> <span class="yv">"A networking concept or protocol"</span>
+    <span class="yk">properties:</span>
+      <span class="yk">name:</span> string
+      <span class="yk">description:</span> string
+      <span class="yk">category:</span> string
+  - <span class="yk">label:</span> Configuration
+    <span class="yk">description:</span> <span class="yv">"A configuration option or setting"</span>
+    <span class="yk">properties:</span>
+      <span class="yk">name:</span> string
+      <span class="yk">description:</span> string
+      <span class="yk">default_value:</span> string
+<span class="yk">edges:</span>
+  - <span class="yk">label:</span> USES
+    <span class="yk">source:</span> Component
+    <span class="yk">target:</span> Concept
+    <span class="yk">description:</span> <span class="yv">"Component uses this concept"</span>
+  - <span class="yk">label:</span> CONFIGURES
+    <span class="yk">source:</span> Configuration
+    <span class="yk">target:</span> Component
+    <span class="yk">description:</span> <span class="yv">"Configuration applies to component"</span>
+  - <span class="yk">label:</span> DEPENDS_ON
+    <span class="yk">source:</span> Component
+    <span class="yk">target:</span> Component
+    <span class="yk">description:</span> <span class="yv">"Component depends on another"</span>
+<span class="yk">root_node:</span> Component
+<span class="yk">json_schema:</span> |
   {
-    "entities": [
-      {"_label": "Component|Concept|Configuration", "name": "...", ...}
+    <span class="yv">"entities"</span>: [
+      {<span class="yv">"_label"</span>: <span class="yv">"Component|Concept|Configuration"</span>, <span class="yv">"name"</span>: <span class="yv">"..."</span>, ...}
     ],
-    "relationships": [
-      {"_label": "USES|CONFIGURES|DEPENDS_ON", "_from_index": 0, "_to_index": 1}
+    <span class="yv">"relationships"</span>: [
+      {<span class="yv">"_label"</span>: <span class="yv">"USES|CONFIGURES|DEPENDS_ON"</span>, <span class="yv">"_from_index"</span>: 0, <span class="yv">"_to_index"</span>: 1}
     ]
   }</code></pre>
 
@@ -864,23 +933,23 @@ json_schema: |
   </table>
 
   <h3>Pydantic Models</h3>
-<pre><code>class NodeDef(BaseModel):
-    label: str              # Vertex label (e.g., "Component", "Concept")
-    description: str = ""   # Used in LLM prompt for guidance
-    properties: Dict[str, str] = {}  # name -> type (string, number, boolean, list)
+<pre class="code-py"><code><span class="pk">class</span> <span class="pc">NodeDef</span>(<span class="pc">BaseModel</span>):
+    label: <span class="pt">str</span>              <span class="pm"># Vertex label (e.g., "Component", "Concept")</span>
+    description: <span class="pt">str</span> = <span class="ps">""</span>   <span class="pm"># Used in LLM prompt for guidance</span>
+    properties: <span class="pt">Dict</span>[<span class="pt">str</span>, <span class="pt">str</span>] = {}  <span class="pm"># name -&gt; type (string, number, boolean, list)</span>
 
-class EdgeDef(BaseModel):
-    label: str              # Edge label (e.g., "USES", "DERIVED_FROM")
-    source: str             # Source node label
-    target: str             # Target node label
-    description: str = ""   # Used in LLM prompt for guidance
+<span class="pk">class</span> <span class="pc">EdgeDef</span>(<span class="pc">BaseModel</span>):
+    label: <span class="pt">str</span>              <span class="pm"># Edge label (e.g., "USES", "DERIVED_FROM")</span>
+    source: <span class="pt">str</span>             <span class="pm"># Source node label</span>
+    target: <span class="pt">str</span>             <span class="pm"># Target node label</span>
+    description: <span class="pt">str</span> = <span class="ps">""</span>   <span class="pm"># Used in LLM prompt for guidance</span>
 
-class OntologyConfig(BaseModel):
-    description: str = ""
-    nodes: List[NodeDef] = []
-    edges: List[EdgeDef] = []
-    root_node: str = ""     # Primary node that maps 1:1 to source fragments
-    json_schema: Optional[str] = None  # Expected LLM output JSON format</code></pre>
+<span class="pk">class</span> <span class="pc">OntologyConfig</span>(<span class="pc">BaseModel</span>):
+    description: <span class="pt">str</span> = <span class="ps">""</span>
+    nodes: <span class="pt">List</span>[<span class="pc">NodeDef</span>] = []
+    edges: <span class="pt">List</span>[<span class="pc">EdgeDef</span>] = []
+    root_node: <span class="pt">str</span> = <span class="ps">""</span>     <span class="pm"># Primary node that maps 1:1 to source fragments</span>
+    json_schema: <span class="pt">Optional</span>[<span class="pt">str</span>] = None  <span class="pm"># Expected LLM output JSON format</span></code></pre>
 
   <div class="callout tip">
     <span class="callout-title">Tip</span>
@@ -908,11 +977,21 @@ class OntologyConfig(BaseModel):
 
   <h3>Selecting a Profile</h3>
   <p>Set the <code>DOMAIN</code> environment variable in your <code>.env</code> file before running the skill:</p>
-<pre><code># In .env:
-DOMAIN=financial-aml
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">.env</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># In .env:</span>
+<span class="key">DOMAIN</span>=<span class="str">financial-aml</span>
 
-# Or use a custom profile file:
-DOMAIN=/path/to/my-domain.yaml</code></pre>
+<span class="comment"># Or use a custom profile file:</span>
+<span class="key">DOMAIN</span>=<span class="str">/path/to/my-domain.yaml</span>
+  </div>
+</div>
 
   <h3>Profile Inheritance</h3>
   <p>
@@ -929,37 +1008,37 @@ DOMAIN=/path/to/my-domain.yaml</code></pre>
   <p>A profile controls three pipeline aspects: <strong>Ontology</strong> (node/edge types), <strong>Parsing</strong> (system message and extraction rules), and <strong>Discovery</strong> (search templates, sub-domains).</p>
 
   <h3>Profile YAML Structure</h3>
-<pre><code>name: "My Domain"
-description: "Custom domain profile"
-version: "1.0"
-extends: default
+<pre class="code-yaml"><code><span class="yk">name:</span> <span class="yv">"My Domain"</span>
+<span class="yk">description:</span> <span class="yv">"Custom domain profile"</span>
+<span class="yk">version:</span> <span class="yv">"1.0"</span>
+<span class="yk">extends:</span> default
 
-ontology:
-  root_node: MyEntity
-  nodes:
-    - label: MyEntity
-      description: "Primary entity type"
-      properties: {name: string, type: string}
-  edges:
-    - label: RELATES_TO
-      source: MyEntity
-      target: MyEntity
-  json_schema: |
-    {"entities": [...], "relationships": [...]}
+<span class="yk">ontology:</span>
+  <span class="yk">root_node:</span> MyEntity
+  <span class="yk">nodes:</span>
+    - <span class="yk">label:</span> MyEntity
+      <span class="yk">description:</span> <span class="yv">"Primary entity type"</span>
+      <span class="yk">properties:</span> {<span class="yk">name:</span> string, <span class="yk">type:</span> string}
+  <span class="yk">edges:</span>
+    - <span class="yk">label:</span> RELATES_TO
+      <span class="yk">source:</span> MyEntity
+      <span class="yk">target:</span> MyEntity
+  <span class="yk">json_schema:</span> |
+    {<span class="yv">"entities"</span>: [...], <span class="yv">"relationships"</span>: [...]}
 
-parsing:
-  system_message: "You are an expert in..."
-  requirement_types: [...]
+<span class="yk">parsing:</span>
+  <span class="yk">system_message:</span> <span class="yv">"You are an expert in..."</span>
+  <span class="yk">requirement_types:</span> [...]
 
-id_patterns:
-  patterns: {}
+<span class="yk">id_patterns:</span>
+  <span class="yk">patterns:</span> {}
 
-discovery:
-  search_templates:
-    - "&lt;topic&gt; official documentation"
-  sub_domains:
-    - name: "Sub-area 1"
-      description: "..."</code></pre>
+<span class="yk">discovery:</span>
+  <span class="yk">search_templates:</span>
+    - <span class="yv">"&lt;topic&gt; official documentation"</span>
+  <span class="yk">sub_domains:</span>
+    - <span class="yk">name:</span> <span class="yv">"Sub-area 1"</span>
+      <span class="yk">description:</span> <span class="yv">"..."</span></code></pre>
 </section>
 
 <!-- ────────────────────────────────────────────────────────────────── -->
@@ -989,22 +1068,32 @@ discovery:
   </table>
 
   <h3>.env File Format</h3>
-<pre><code># Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=buildkg
-DB_USER=buildkg
-DB_PASSWORD=buildkg_dev
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">.env</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># Database</span>
+<span class="key">DB_HOST</span>=<span class="str">localhost</span>
+<span class="key">DB_PORT</span>=<span class="str">5432</span>
+<span class="key">DB_NAME</span>=<span class="str">buildkg</span>
+<span class="key">DB_USER</span>=<span class="str">buildkg</span>
+<span class="key">DB_PASSWORD</span>=<span class="str">buildkg_dev</span>
 
-# LLM
-LLM_PROVIDER=anthropic
-ANTHROPIC_API_KEY=sk-ant-...
+<span class="comment"># LLM</span>
+<span class="key">LLM_PROVIDER</span>=<span class="str">anthropic</span>
+<span class="key">ANTHROPIC_API_KEY</span>=<span class="str">sk-ant-...</span>
 
-# Graph
-AGE_GRAPH_NAME=kg_k8s_net
+<span class="comment"># Graph</span>
+<span class="key">AGE_GRAPH_NAME</span>=<span class="str">kg_k8s_net</span>
 
-# Domain
-DOMAIN=default</code></pre>
+<span class="comment"># Domain</span>
+<span class="key">DOMAIN</span>=<span class="str">default</span>
+  </div>
+</div>
 
   <div class="callout warning">
     <span class="callout-title">Important</span>
@@ -1024,14 +1113,14 @@ DOMAIN=default</code></pre>
   </p>
 
   <h3>JSON Schema</h3>
-<pre><code>{
-  "topic": "string",
-  "graph_name": "string",
-  "created_at": "ISO 8601 string",
-  "sources": [ ... ],
-  "defaults": { ... },
-  "coverage": { ... },
-  "metadata": { ... }
+<pre class="code-json"><code>{
+  <span class="jk">"topic"</span>: <span class="jv">"string"</span>,
+  <span class="jk">"graph_name"</span>: <span class="jv">"string"</span>,
+  <span class="jk">"created_at"</span>: <span class="jv">"ISO 8601 string"</span>,
+  <span class="jk">"sources"</span>: [ ... ],
+  <span class="jk">"defaults"</span>: { ... },
+  <span class="jk">"coverage"</span>: { ... },
+  <span class="jk">"metadata"</span>: { ... }
 }</code></pre>
 
   <h3>Top-Level Fields</h3>
@@ -1063,31 +1152,31 @@ DOMAIN=default</code></pre>
   </table>
 
   <h3>Example: Generic Manifest</h3>
-<pre><code>{
-  "topic": "Kubernetes networking",
-  "graph_name": "kg_k8s_net",
-  "created_at": "2026-02-20T10:00:00Z",
-  "sources": [
+<pre class="code-json"><code>{
+  <span class="jk">"topic"</span>: <span class="jv">"Kubernetes networking"</span>,
+  <span class="jk">"graph_name"</span>: <span class="jv">"kg_k8s_net"</span>,
+  <span class="jk">"created_at"</span>: <span class="jv">"2026-02-20T10:00:00Z"</span>,
+  <span class="jk">"sources"</span>: [
     {
-      "source_name": "k8s_networking_docs",
-      "url": "https://kubernetes.io/docs/concepts/services-networking/",
-      "title": "Kubernetes Networking Concepts",
-      "priority": "P1",
-      "depth": 3,
-      "max_pages": 80,
-      "delay": 1500
+      <span class="jk">"source_name"</span>: <span class="jv">"k8s_networking_docs"</span>,
+      <span class="jk">"url"</span>: <span class="jv">"https://kubernetes.io/docs/concepts/services-networking/"</span>,
+      <span class="jk">"title"</span>: <span class="jv">"Kubernetes Networking Concepts"</span>,
+      <span class="jk">"priority"</span>: <span class="jv">"P1"</span>,
+      <span class="jk">"depth"</span>: <span class="jn">3</span>,
+      <span class="jk">"max_pages"</span>: <span class="jn">80</span>,
+      <span class="jk">"delay"</span>: <span class="jn">1500</span>
     },
     {
-      "source_name": "cilium_docs",
-      "url": "https://docs.cilium.io/en/stable/",
-      "title": "Cilium CNI Documentation",
-      "priority": "P2",
-      "depth": 2,
-      "max_pages": 50,
-      "delay": 1500
+      <span class="jk">"source_name"</span>: <span class="jv">"cilium_docs"</span>,
+      <span class="jk">"url"</span>: <span class="jv">"https://docs.cilium.io/en/stable/"</span>,
+      <span class="jk">"title"</span>: <span class="jv">"Cilium CNI Documentation"</span>,
+      <span class="jk">"priority"</span>: <span class="jv">"P2"</span>,
+      <span class="jk">"depth"</span>: <span class="jn">2</span>,
+      <span class="jk">"max_pages"</span>: <span class="jn">50</span>,
+      <span class="jk">"delay"</span>: <span class="jn">1500</span>
     }
   ],
-  "defaults": {}
+  <span class="jk">"defaults"</span>: {}
 }</code></pre>
 </section>
 
@@ -1098,53 +1187,73 @@ DOMAIN=default</code></pre>
   <h2>Examples</h2>
 
   <h3>Kubernetes Networking</h3>
-<pre><code>/build-kg kubernetes networking
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">/build-kg kubernetes networking</span>
 
-# Your agent generates ontology: Component, Concept, Configuration
-# Discovers sources: kubernetes.io, cilium.io, calico docs
-# Crawls ~200 pages, chunks, loads, parses
-# Result: queryable KG with Component-USES-Concept relationships</code></pre>
+<span class="comment"># Your agent generates ontology: Component, Concept, Configuration</span>
+<span class="comment"># Discovers sources: kubernetes.io, cilium.io, calico docs</span>
+<span class="comment"># Crawls ~200 pages, chunks, loads, parses</span>
+<span class="comment"># Result: queryable KG with Component-USES-Concept relationships</span>
+  </div>
+</div>
   <p>Sample queries:</p>
-<pre><code>-- Count nodes by type
-SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (n:Component) RETURN count(n)
-$$) as (cnt agtype);
+<pre class="code-sql"><code><span class="sc">-- Count nodes by type</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (n:Component) <span class="sk">RETURN</span> <span class="sf">count</span>(n)
+$$) <span class="sk">AS</span> (cnt agtype);
 
--- Find relationships
-SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (c:Component)-[:USES]-&gt;(concept:Concept)
-    RETURN c.name, concept.name, concept.category
-    LIMIT 10
-$$) as (component agtype, concept agtype, category agtype);
+<span class="sc">-- Find relationships</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (c:Component)-[:USES]-&gt;(concept:Concept)
+    <span class="sk">RETURN</span> c.name, concept.name, concept.category
+    <span class="sk">LIMIT</span> 10
+$$) <span class="sk">AS</span> (component agtype, concept agtype, category agtype);
 
--- Traverse the graph (multi-hop)
-SELECT * FROM cypher('kg_k8s_net', $$
-    MATCH (a:Component)-[:DEPENDS_ON]-&gt;(b:Component)-[:USES]-&gt;(c:Concept)
-    RETURN a.name, b.name, c.name
-    LIMIT 10
-$$) as (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
+<span class="sc">-- Traverse the graph (multi-hop)</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_k8s_net'</span>, $$
+    <span class="sk">MATCH</span> (a:Component)-[:DEPENDS_ON]-&gt;(b:Component)-[:USES]-&gt;(c:Concept)
+    <span class="sk">RETURN</span> a.name, b.name, c.name
+    <span class="sk">LIMIT</span> 10
+$$) <span class="sk">AS</span> (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
 
   <h3>Machine Learning Algorithms</h3>
-<pre><code>/build-kg machine learning optimization algorithms
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">/build-kg machine learning optimization algorithms</span>
 
-# Your agent generates ontology: Algorithm, Technique, Application, Paper
-# Discovers: arxiv papers, textbook sites, framework docs
-# Result: KG connecting algorithms to techniques and applications</code></pre>
+<span class="comment"># Your agent generates ontology: Algorithm, Technique, Application, Paper</span>
+<span class="comment"># Discovers: arxiv papers, textbook sites, framework docs</span>
+<span class="comment"># Result: KG connecting algorithms to techniques and applications</span>
+  </div>
+</div>
   <p>Sample queries:</p>
-<pre><code>-- Find all algorithms of a specific type
-SELECT * FROM cypher('kg_ml_opt', $$
-    MATCH (a:Algorithm)
-    WHERE a.type = 'gradient-based'
-    RETURN a.name, a.description
-    LIMIT 20
-$$) as (name agtype, description agtype);
+<pre class="code-sql"><code><span class="sc">-- Find all algorithms of a specific type</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_ml_opt'</span>, $$
+    <span class="sk">MATCH</span> (a:Algorithm)
+    <span class="sk">WHERE</span> a.type = <span class="ss">'gradient-based'</span>
+    <span class="sk">RETURN</span> a.name, a.description
+    <span class="sk">LIMIT</span> 20
+$$) <span class="sk">AS</span> (name agtype, description agtype);
 
--- Find algorithms used in applications
-SELECT * FROM cypher('kg_ml_opt', $$
-    MATCH (a:Algorithm)-[:APPLIED_TO]-&gt;(app:Application)
-    RETURN a.name, app.name
-    LIMIT 10
-$$) as (algorithm agtype, application agtype);</code></pre>
+<span class="sc">-- Find algorithms used in applications</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sf">cypher</span>(<span class="ss">'kg_ml_opt'</span>, $$
+    <span class="sk">MATCH</span> (a:Algorithm)-[:APPLIED_TO]-&gt;(app:Application)
+    <span class="sk">RETURN</span> a.name, app.name
+    <span class="sk">LIMIT</span> 10
+$$) <span class="sk">AS</span> (algorithm agtype, application agtype);</code></pre>
 </section>
 
 <!-- ────────────────────────────────────────────────────────────────── -->
@@ -1205,42 +1314,112 @@ $$) as (algorithm agtype, application agtype);</code></pre>
 
   <h3>Connection refused on port 5432</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>psycopg2.OperationalError: could not connect to server: Connection refused
-    Is the server running on host "localhost" and accepting TCP/IP connections on port 5432?</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Error</span>
+  </div>
+  <div class="terminal-body">
+<span class="err">psycopg2.OperationalError: could not connect to server: Connection refused</span>
+<span class="err">    Is the server running on host "localhost" and accepting TCP/IP connections on port 5432?</span>
+  </div>
+</div>
   <p><strong>Fix:</strong></p>
-<pre><code># Start the database
-docker compose -f db/docker-compose.yml up -d
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># Start the database</span>
+<span class="prompt">$</span> <span class="cmd">docker compose <span class="flag">-f</span> db/docker-compose.yml up <span class="flag">-d</span></span>
 
-# Check it is running and healthy
-docker compose -f db/docker-compose.yml ps
+<span class="comment"># Check it is running and healthy</span>
+<span class="prompt">$</span> <span class="cmd">docker compose <span class="flag">-f</span> db/docker-compose.yml ps</span>
 
-# If the container exists but is stopped
-docker compose -f db/docker-compose.yml start</code></pre>
+<span class="comment"># If the container exists but is stopped</span>
+<span class="prompt">$</span> <span class="cmd">docker compose <span class="flag">-f</span> db/docker-compose.yml start</span>
+  </div>
+</div>
   <p>If the container is running but you still cannot connect, check if another PostgreSQL instance is using port 5432 (change <code>DB_PORT</code> in <code>.env</code>), or if you are running inside a VM or container (use the correct host IP instead of <code>localhost</code>).</p>
 
   <h3>relation "source_fragment" does not exist</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>psycopg2.errors.UndefinedTable: relation "source_fragment" does not exist</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Error</span>
+  </div>
+  <div class="terminal-body">
+<span class="err">psycopg2.errors.UndefinedTable: relation "source_fragment" does not exist</span>
+  </div>
+</div>
   <p><strong>Fix:</strong></p>
-<pre><code># Option 1: Reset the database (destroys all data)
-make db-reset
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># Option 1: Reset the database (destroys all data)</span>
+<span class="prompt">$</span> <span class="cmd">make db-reset</span>
 
-# Option 2: Run init.sql manually
-docker exec -i build-kg-db psql -U buildkg -d buildkg &lt; db/init.sql
+<span class="comment"># Option 2: Run init.sql manually</span>
+<span class="prompt">$</span> <span class="cmd">docker exec <span class="flag">-i</span> build-kg-db psql <span class="flag">-U</span> buildkg <span class="flag">-d</span> buildkg &lt; db/init.sql</span>
 
-# Verify tables exist
-docker exec build-kg-db psql -U buildkg -d buildkg -c "\dt"</code></pre>
+<span class="comment"># Verify tables exist</span>
+<span class="prompt">$</span> <span class="cmd">docker exec build-kg-db psql <span class="flag">-U</span> buildkg <span class="flag">-d</span> buildkg <span class="flag">-c</span> "\dt"</span>
+  </div>
+</div>
 
   <h3>AGE extension not found</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>ERROR: extension "age" is not available</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Error</span>
+  </div>
+  <div class="terminal-body">
+<span class="err">ERROR: extension "age" is not available</span>
+  </div>
+</div>
   <p><strong>Fix:</strong> Make sure you are using the Apache AGE Docker image, then run:</p>
-<pre><code>docker compose -f db/docker-compose.yml up -d
-make db-init</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">docker compose <span class="flag">-f</span> db/docker-compose.yml up <span class="flag">-d</span></span>
+<span class="prompt">$</span> <span class="cmd">make db-init</span>
+  </div>
+</div>
 
   <h3>LLM API error 401</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>AuthenticationError: Error code: 401 - Incorrect API key provided</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Error</span>
+  </div>
+  <div class="terminal-body">
+<span class="err">AuthenticationError: Error code: 401 - Incorrect API key provided</span>
+  </div>
+</div>
   <p><strong>Fix:</strong></p>
   <ol>
     <li>Check your <code>.env</code> file: <code>grep ANTHROPIC_API_KEY .env</code></li>
@@ -1251,19 +1430,49 @@ make db-init</code></pre>
 
   <h3>Chromium not found</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>crawl4ai: Browser not found. Please run crawl4ai-setup first.</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Error</span>
+  </div>
+  <div class="terminal-body">
+<span class="err">crawl4ai: Browser not found. Please run crawl4ai-setup first.</span>
+  </div>
+</div>
   <p><strong>Fix:</strong></p>
-<pre><code># Make sure the virtual environment is active
-source venv/bin/activate
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># Make sure the virtual environment is active</span>
+<span class="prompt">$</span> <span class="cmd">source venv/bin/activate</span>
 
-# Install Chromium
-crawl4ai-setup</code></pre>
+<span class="comment"># Install Chromium</span>
+<span class="prompt">$</span> <span class="cmd">crawl4ai-setup</span>
+  </div>
+</div>
   <p>If <code>crawl4ai-setup</code> fails, check disk space (~400MB required) and install missing libraries on Linux: <code>sudo apt install libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2</code></p>
 
   <h3>No fragments found</h3>
   <p><strong>Symptom:</strong></p>
-<pre><code>Found 0 fragments to process
-No fragments to process!</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Output</span>
+  </div>
+  <div class="terminal-body">
+<span class="dim">Found 0 fragments to process</span>
+<span class="dim">No fragments to process!</span>
+  </div>
+</div>
   <p><strong>Fix:</strong></p>
   <ol>
     <li>Check the fragment count by querying <code>SELECT COUNT(*) FROM source_fragment;</code></li>
@@ -1278,8 +1487,18 @@ No fragments to process!</code></pre>
 
   <h3>DB_PASSWORD is required</h3>
   <p><strong>Fix:</strong></p>
-<pre><code>cp .env.example .env
-# The default password matches the Docker container: DB_PASSWORD=buildkg_dev</code></pre>
+<div class="terminal">
+  <div class="terminal-bar">
+    <span class="terminal-dot r"></span>
+    <span class="terminal-dot y"></span>
+    <span class="terminal-dot g"></span>
+    <span class="terminal-title">Terminal</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">cp .env.example .env</span>
+<span class="comment"># The default password matches the Docker container: DB_PASSWORD=buildkg_dev</span>
+  </div>
+</div>
 
   <h3>Empty entities in LLM output (ontology mode)</h3>
   <p>The parser reports many fragments as "skipped" with 0 entities extracted. This happens when the text is too short/generic, the ontology node types do not match the content, or chunks are too small.</p>

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "build-kg"
-version = "0.2.0"
+version = "0.3.0"
 description = "Claude Code skill that turns any topic into a structured knowledge graph stored in Apache AGE (PostgreSQL). One command, any topic, your own database."
 readme = "README.md"
 license = "Apache-2.0"
