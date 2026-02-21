@@ -179,6 +179,20 @@ class TestSingleton:
         assert p1.name == p2.name  # Same default
 
 
+# Helper: minimal ontology for tests that need one
+_TEST_ONTOLOGY = OntologyConfig(
+    nodes=[
+        NodeDef(label="Component", description="A software component", properties={"name": "string"}),
+        NodeDef(label="Concept", description="A technical concept", properties={"name": "string"}),
+    ],
+    edges=[
+        EdgeDef(label="USES", source="Component", target="Concept", description="Uses this concept"),
+    ],
+    root_node="Component",
+    json_schema='{"entities": [{"_label": "...", "name": "..."}], "relationships": []}',
+)
+
+
 class TestBuildPrompt:
     def test_returns_tuple(self):
         reset_profile()
@@ -186,6 +200,7 @@ class TestBuildPrompt:
             excerpt="The product must contain less than 5mg sodium.",
             authority="CFIA",
             jurisdiction="CA",
+            ontology=_TEST_ONTOLOGY,
         )
         assert isinstance(system_msg, str)
         assert isinstance(user_prompt, str)
@@ -212,6 +227,7 @@ class TestBuildPrompt:
             excerpt="Test text.",
             authority="TestAuth",
             jurisdiction="XX",
+            ontology=_TEST_ONTOLOGY,
         )
         assert "TestAuth" in user_prompt
         assert "XX" in user_prompt
@@ -223,9 +239,21 @@ class TestBuildPrompt:
             excerpt="Kubernetes uses iptables for packet filtering.",
             authority="",
             jurisdiction="",
+            ontology=_TEST_ONTOLOGY,
         )
         assert isinstance(system_msg, str)
         assert isinstance(user_prompt, str)
+
+    def test_raises_without_ontology(self):
+        """build_prompt raises ValueError when no ontology is available."""
+        reset_profile()
+        # Default profile has no ontology, and no explicit ontology passed
+        with pytest.raises(ValueError, match="Ontology with nodes and json_schema is required"):
+            build_prompt(
+                excerpt="Test text.",
+                authority="TestAuth",
+                jurisdiction="CA",
+            )
 
 
 class TestOntologyConfig:
@@ -283,17 +311,7 @@ class TestOntologyConfig:
         """When a profile has ontology with json_schema, build_prompt uses it."""
         profile = DomainProfile(
             name="Test Ontology",
-            ontology=OntologyConfig(
-                nodes=[
-                    NodeDef(label="Component", description="A software component", properties={"name": "string"}),
-                    NodeDef(label="Concept", description="A technical concept", properties={"name": "string"}),
-                ],
-                edges=[
-                    EdgeDef(label="USES", source="Component", target="Concept", description="Uses this concept"),
-                ],
-                root_node="Component",
-                json_schema='{"entities": [{"_label": "...", "name": "..."}], "relationships": []}',
-            ),
+            ontology=_TEST_ONTOLOGY,
         )
         system_msg, user_prompt = build_prompt(
             excerpt="kube-proxy uses iptables for packet filtering.",
@@ -303,17 +321,3 @@ class TestOntologyConfig:
         assert "Concept" in user_prompt
         assert "USES" in user_prompt
         assert "entities" in user_prompt
-
-    def test_legacy_prompt_without_ontology(self):
-        """When profile has no ontology, build_prompt uses domain-specific template."""
-        profile = load_profile("default")
-        # Default has no ontology nodes, so should fall back to domain-specific prompt
-        # with empty types
-        system_msg, user_prompt = build_prompt(
-            excerpt="Test text for extraction.",
-            authority="TestAuth",
-            jurisdiction="CA",
-            profile=profile,
-        )
-        assert isinstance(system_msg, str)
-        assert isinstance(user_prompt, str)

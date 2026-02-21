@@ -7,7 +7,7 @@ Step 3: Monitor batch status
 Step 4: Process results and load into AGE graph
 
 This is 50% cheaper than the standard API and designed for large-scale processing.
-Supports both domain-specific (Provision/Requirement/Constraint) and generic ontology modes.
+Ontology-driven: requires an OntologyConfig defining node types, edge types, and JSON schema.
 """
 import json
 import sys
@@ -28,13 +28,18 @@ from build_kg.llm import build_batch_request, create_client, extract_batch_respo
 class BatchPreparation:
     """Prepare batch requests from database."""
 
-    def __init__(self):
-        """Initialize batch preparation."""
+    def __init__(self, ontology: OntologyConfig):
+        """Initialize batch preparation.
+
+        Args:
+            ontology: Ontology defining node types, edge types, and JSON schema.
+        """
         validate_config()
         self.provider, _, self.model = get_provider_config()
         self.db_conn = None
         self.output_dir = Path.cwd() / "batch_data"
         self.output_dir.mkdir(exist_ok=True)
+        self.ontology = ontology
 
     def connect_db(self):
         """Establish database connection."""
@@ -89,6 +94,7 @@ class BatchPreparation:
             excerpt=fragment['excerpt'],
             authority=fragment.get('authority', '') or '',
             jurisdiction=fragment.get('jurisdiction', '') or '',
+            ontology=self.ontology,
         )
 
     def prepare_batch_file(self, fragments: List[Dict[str, Any]], output_file: str) -> str:
@@ -406,8 +412,12 @@ class BatchMonitor:
 class BatchProcessor:
     """Process batch results and load into AGE graph."""
 
-    def __init__(self, ontology: Optional[OntologyConfig] = None):
-        """Initialize batch processor."""
+    def __init__(self, ontology: OntologyConfig):
+        """Initialize batch processor.
+
+        Args:
+            ontology: Ontology defining node types, edge types, and JSON schema.
+        """
         validate_config()
         self.provider, api_key, self.model = get_provider_config()
         self.client = create_client(self.provider, api_key)
@@ -415,7 +425,6 @@ class BatchProcessor:
         self.graph_name = AGE_GRAPH_NAME
         self.output_dir = Path.cwd() / "batch_data"
         self.ontology = ontology
-        self._use_ontology_mode = bool(ontology and ontology.nodes and ontology.json_schema)
 
     def connect_db(self):
         """Establish database connection."""
@@ -487,145 +496,13 @@ class BatchProcessor:
 
         return str(output_path)
 
-    def load_to_graph(self, fragment_id: str, doc_id: str, jurisdiction: str,
-                      authority: str, parsed_data: Dict[str, Any]) -> bool:
-        """Load parsed provision into AGE graph."""
-        self.connect_db()
-        cursor = self.db_conn.cursor()
-
-        try:
-            provision_id = parsed_data.get('provision_id', 'UNKNOWN')
-            provision_text = parsed_data.get('provision_text', '')[:500]
-            requirements = parsed_data.get('requirements', [])
-
-            # Create unique provision ID
-            prov_id = f"{authority}_{provision_id}_{fragment_id[:8]}"
-
-            # Escape strings for Cypher
-            def escape(s):
-                if isinstance(s, str):
-                    # Escape backslashes first (important for regex patterns)
-                    s = s.replace('\\', '\\\\')
-                    # Then escape quotes and newlines
-                    s = s.replace("'", "\\'").replace('"', '\\"').replace('\n', ' ')
-                    return s
-                return s
-
-            # Create provision node
-            provision_cypher = f"""
-            SELECT * FROM cypher('{self.graph_name}', $$
-                CREATE (p:Provision {{
-                    id: '{escape(prov_id)}',
-                    provision_id: '{escape(provision_id)}',
-                    text: '{escape(provision_text)}',
-                    jurisdiction: '{escape(jurisdiction)}',
-                    authority: '{escape(authority)}',
-                    fragment_id: '{fragment_id}',
-                    doc_id: '{doc_id}',
-                    created_at: '{datetime.now().isoformat()}'
-                }})
-                RETURN id(p)
-            $$) as (provision_id agtype);
-            """
-
-            cursor.execute(provision_cypher)
-
-            # Process requirements
-            for idx, req in enumerate(requirements):
-                req_id = f"{prov_id}_req_{idx}"
-                req_type = escape(req.get('requirement_type', 'unknown'))
-                deontic = escape(req.get('deontic_modality', 'must'))
-                description = escape(req.get('description', '')[:500])
-                scope = escape(req.get('applies_to_scope', 'unknown'))
-
-                req_cypher = f"""
-                SELECT * FROM cypher('{self.graph_name}', $$
-                    CREATE (r:Requirement {{
-                        id: '{req_id}',
-                        requirement_type: '{req_type}',
-                        deontic_modality: '{deontic}',
-                        description: '{description}',
-                        applies_to_scope: '{scope}'
-                    }})
-                    RETURN id(r)
-                $$) as (req_id agtype);
-                """
-
-                cursor.execute(req_cypher)
-
-                # Link requirement to provision
-                link_cypher = f"""
-                SELECT * FROM cypher('{self.graph_name}', $$
-                    MATCH (p:Provision {{id: '{escape(prov_id)}'}}),
-                          (r:Requirement {{id: '{req_id}'}})
-                    CREATE (r)-[:DERIVED_FROM]->(p)
-                $$) as (result agtype);
-                """
-
-                cursor.execute(link_cypher)
-
-                # Process constraints
-                for c_idx, constraint in enumerate(req.get('constraints', [])):
-                    const_id = f"{req_id}_const_{c_idx}"
-                    logic_type = escape(constraint.get('logic_type', 'unknown'))
-                    target_signal = escape(constraint.get('target_signal', ''))
-                    operator = escape(constraint.get('operator', ''))
-                    threshold = constraint.get('threshold')
-                    unit = escape(constraint.get('unit', ''))
-                    pattern = escape(constraint.get('pattern', ''))
-
-                    const_props = [
-                        f"id: '{const_id}'",
-                        f"logic_type: '{logic_type}'",
-                        f"target_signal: '{target_signal}'",
-                    ]
-
-                    if operator:
-                        const_props.append(f"operator: '{operator}'")
-                    if threshold is not None and isinstance(threshold, (int, float)):
-                        # Only add numeric thresholds, skip string values like "current_date"
-                        const_props.append(f"threshold: {threshold}")
-                    if unit:
-                        const_props.append(f"unit: '{unit}'")
-                    if pattern:
-                        const_props.append(f"pattern: '{pattern}'")
-
-                    const_props_str = ", ".join(const_props)
-
-                    const_cypher = f"""
-                    SELECT * FROM cypher('{self.graph_name}', $$
-                        CREATE (c:Constraint {{{const_props_str}}})
-                        RETURN id(c)
-                    $$) as (const_id agtype);
-                    """
-
-                    cursor.execute(const_cypher)
-
-                    const_link_cypher = f"""
-                    SELECT * FROM cypher('{self.graph_name}', $$
-                        MATCH (r:Requirement {{id: '{req_id}'}}),
-                              (c:Constraint {{id: '{const_id}'}})
-                        CREATE (r)-[:HAS_CONSTRAINT]->(c)
-                    $$) as (result agtype);
-                    """
-
-                    cursor.execute(const_link_cypher)
-
-            cursor.close()
-            return True
-
-        except Exception as e:
-            print(f"  ✗ Graph loading failed for {fragment_id}: {e}")
-            cursor.close()
-            return False
-
     def _escape_cypher(self, value: str) -> str:
         """Escape a string for Cypher embedding."""
         if not isinstance(value, str):
             return str(value)
         return value.replace('\\', '\\\\').replace("'", "\\'").replace('"', '\\"').replace('\n', ' ')
 
-    def load_to_graph_generic(self, fragment_id: str, doc_id: str, parsed_data: Dict[str, Any]) -> bool:
+    def load_to_graph(self, fragment_id: str, doc_id: str, parsed_data: Dict[str, Any]) -> bool:
         """Load ontology-driven LLM output into AGE graph."""
         self.connect_db()
         cursor = self.db_conn.cursor()
@@ -775,30 +652,15 @@ class BatchProcessor:
                 fragment_meta = fragment_lookup.get(fragment_id, {})
                 doc_id = fragment_meta.get('doc_id', 'UNKNOWN')
 
-                if self._use_ontology_mode:
-                    # Generic ontology mode
-                    if not parsed_data.get('entities'):
-                        stats['skipped'] += 1
-                        continue
-                    if self.load_to_graph_generic(fragment_id, doc_id, parsed_data):
-                        stats['success'] += 1
-                        if stats['success'] % 100 == 0:
-                            print(f"  Processed {stats['success']} entities...")
-                    else:
-                        stats['failed'] += 1
+                if not parsed_data.get('entities'):
+                    stats['skipped'] += 1
+                    continue
+                if self.load_to_graph(fragment_id, doc_id, parsed_data):
+                    stats['success'] += 1
+                    if stats['success'] % 100 == 0:
+                        print(f"  Processed {stats['success']} entities...")
                 else:
-                    # Domain-specific mode (Provision/Requirement/Constraint)
-                    if not parsed_data.get('requirements'):
-                        stats['skipped'] += 1
-                        continue
-                    jurisdiction = fragment_meta.get('jurisdiction', 'UNKNOWN')
-                    authority = fragment_meta.get('authority', 'UNKNOWN')
-                    if self.load_to_graph(fragment_id, doc_id, jurisdiction, authority, parsed_data):
-                        stats['success'] += 1
-                        if stats['success'] % 100 == 0:
-                            print(f"  Processed {stats['success']} provisions...")
-                    else:
-                        stats['failed'] += 1
+                    stats['failed'] += 1
 
         print("\n" + "=" * 70)
         print("SUMMARY")
@@ -821,7 +683,7 @@ def main():
         epilog="""
 Examples:
   # Step 1: Prepare batch (test with 100 fragments)
-  build-kg-parse-batch prepare --limit 100
+  build-kg-parse-batch prepare --ontology ontology.yaml --limit 100
 
   # Step 2: Submit batch
   build-kg-parse-batch submit batch_data/batch_requests.jsonl
@@ -833,7 +695,7 @@ Examples:
   build-kg-parse-batch status batch_xyz123 --watch
 
   # Step 4: Process results
-  build-kg-parse-batch process batch_xyz123
+  build-kg-parse-batch process batch_xyz123 --ontology ontology.yaml
         """
     )
 
@@ -846,6 +708,7 @@ Examples:
     prepare_parser.add_argument('--jurisdiction', type=str, help='Filter by jurisdiction code (e.g., SG, CA)')
     prepare_parser.add_argument('--output', default='batch_requests.jsonl', help='Output filename')
     prepare_parser.add_argument('--domain', type=str, help='Domain profile name or path')
+    prepare_parser.add_argument('--ontology', type=str, required=True, help='Path to ontology YAML file (required)')
 
     # Submit command
     submit_parser = subparsers.add_parser('submit', help='Submit batch to LLM provider')
@@ -859,7 +722,7 @@ Examples:
     # Process command
     process_parser = subparsers.add_parser('process', help='Process batch results')
     process_parser.add_argument('batch_id', help='Batch ID')
-    process_parser.add_argument('--ontology', type=str, help='Path to ontology YAML file for generic mode')
+    process_parser.add_argument('--ontology', type=str, required=True, help='Path to ontology YAML file (required)')
 
     args = parser.parse_args()
 
@@ -871,7 +734,8 @@ Examples:
         set_profile(load_profile(args.domain))
 
     if args.command == 'prepare':
-        prep = BatchPreparation()
+        ontology = load_ontology(args.ontology)
+        prep = BatchPreparation(ontology=ontology)
         prep.run(limit=args.limit, offset=args.offset, output_file=args.output, jurisdiction=getattr(args, 'jurisdiction', None))
 
     elif args.command == 'submit':
@@ -883,9 +747,7 @@ Examples:
         mon.check_status(args.batch_id, watch=args.watch)
 
     elif args.command == 'process':
-        ontology = None
-        if hasattr(args, 'ontology') and args.ontology:
-            ontology = load_ontology(args.ontology)
+        ontology = load_ontology(args.ontology)
         proc = BatchProcessor(ontology=ontology)
         proc.process_results(args.batch_id)
 

@@ -37,7 +37,7 @@ The parser reads these from `.env` or the environment:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `AGE_GRAPH_NAME` | `reg_ca` | Apache AGE graph to load results into |
+| `AGE_GRAPH_NAME` | `knowledge_graph` | Apache AGE graph to load results into |
 | `LLM_PROVIDER` | `anthropic` | LLM provider (`anthropic` or `openai`) |
 | `ANTHROPIC_API_KEY` | **(required)** | Anthropic API key (required if provider is `anthropic`) |
 | `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Anthropic model to use for parsing |

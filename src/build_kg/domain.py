@@ -2,8 +2,7 @@
 Domain Profile System for build-kg.
 
 Loads YAML domain profiles that parameterize the pipeline
-for different domains. Supports both generic knowledge graphs
-and specialized domains (food safety, financial AML, data privacy, etc.).
+for different topics. All parsing is ontology-driven.
 """
 import os
 import re
@@ -19,23 +18,14 @@ from pydantic import BaseModel, Field
 class ParsingConfig(BaseModel):
     """LLM parsing configuration from domain profile."""
     system_message: str = "You are a knowledge extraction expert. Always respond with valid JSON."
-    requirement_types: List[str] = Field(default_factory=lambda: [
-        "obligation", "prohibition", "permission", "documentation",
-        "process", "testing", "reporting"
-    ])
-    deontic_modalities: List[str] = Field(default_factory=lambda: [
-        "must", "must_not", "may", "should", "should_not"
-    ])
-    constraint_logic_types: List[str] = Field(default_factory=lambda: [
-        "threshold", "pattern", "enumeration", "boolean"
-    ])
-    target_signal_examples: List[str] = Field(default_factory=lambda: [
-        "entity.attribute", "document.field", "process.step"
-    ])
-    scope_examples: List[str] = Field(default_factory=lambda: [
-        "entity", "document", "process", "organization"
-    ])
     prompt_template: Optional[str] = None
+    # Legacy fields — retained so existing domain YAML files load without error.
+    # Not used by the core pipeline (ontology-driven parsing only).
+    requirement_types: List[str] = Field(default_factory=list)
+    deontic_modalities: List[str] = Field(default_factory=list)
+    constraint_logic_types: List[str] = Field(default_factory=list)
+    target_signal_examples: List[str] = Field(default_factory=list)
+    scope_examples: List[str] = Field(default_factory=list)
 
 
 class IDPatternConfig(BaseModel):
@@ -259,29 +249,36 @@ def build_prompt(
     authority: str = "",
     jurisdiction: str = "",
     profile: Optional[DomainProfile] = None,
+    ontology: Optional[OntologyConfig] = None,
 ) -> Tuple[str, str]:
     """
-    Build LLM prompt from domain profile.
+    Build LLM prompt for ontology-driven knowledge extraction.
 
-    When the profile has an ontology with json_schema, generates an
-    ontology-driven prompt. Otherwise falls back to the domain-specific
-    prompt format (Provision/Requirement/Constraint).
+    Args:
+        excerpt: Text to extract knowledge from.
+        authority: Publishing organization (optional).
+        jurisdiction: Geographic/topical scope (optional).
+        profile: Domain profile (uses active profile if None).
+        ontology: Explicit ontology (takes priority over profile ontology).
 
     Returns:
         (system_message, user_prompt)
+
+    Raises:
+        ValueError: If no ontology with nodes and json_schema is available.
     """
     if profile is None:
         profile = get_profile()
 
-    parsing = profile.parsing
-    ontology = profile.ontology
+    effective_ontology = ontology or profile.ontology
 
-    # Ontology-driven prompt: when profile has an explicit ontology with json_schema
-    if ontology.nodes and ontology.json_schema:
-        return _build_ontology_prompt(excerpt, ontology, parsing, authority, jurisdiction)
+    if not effective_ontology.nodes or not effective_ontology.json_schema:
+        raise ValueError(
+            "Ontology with nodes and json_schema is required. "
+            "Pass --ontology <file> or use a domain profile with an ontology section."
+        )
 
-    # Legacy domain-specific prompt (Provision/Requirement/Constraint)
-    return _build_regulatory_prompt(excerpt, parsing, authority, jurisdiction)
+    return _build_ontology_prompt(excerpt, effective_ontology, profile.parsing, authority, jurisdiction)
 
 
 def _build_ontology_prompt(
@@ -328,87 +325,6 @@ Respond with valid JSON in this exact format:
 {ontology.json_schema}
 
 If no meaningful entities are found, return minimal valid JSON with empty arrays."""
-
-    return parsing.system_message, user_prompt
-
-
-def _build_regulatory_prompt(
-    excerpt: str,
-    parsing: ParsingConfig,
-    authority: str,
-    jurisdiction: str,
-) -> Tuple[str, str]:
-    """Build the domain-specific Provision/Requirement/Constraint prompt."""
-    req_types = ", ".join(parsing.requirement_types)
-    modalities = ", ".join(parsing.deontic_modalities)
-    logic_types = ", ".join(parsing.constraint_logic_types)
-    signal_examples = ", ".join(f'"{s}"' for s in parsing.target_signal_examples)
-    scope_examples = ", ".join(f'"{s}"' for s in parsing.scope_examples)
-
-    if parsing.prompt_template:
-        user_prompt = parsing.prompt_template.format(
-            authority=authority,
-            jurisdiction=jurisdiction,
-            requirement_types=req_types,
-            deontic_modalities=modalities,
-            constraint_logic_types=logic_types,
-            target_signal_examples=signal_examples,
-            scope_examples=scope_examples,
-            excerpt=excerpt,
-        )
-    else:
-        user_prompt = f"""You are a regulatory compliance expert analyzing regulatory text from {authority} in jurisdiction {jurisdiction}.
-
-Extract the following structured information from the regulatory text below:
-
-1. **Provision ID**: If mentioned, extract it. Otherwise, use "UNKNOWN".
-
-2. **Requirements**: Extract all regulatory requirements as a list. Each requirement should have:
-   - `requirement_type`: One of [{req_types}]
-   - `deontic_modality`: One of [{modalities}]
-   - `description`: Clear description of what is required
-   - `applies_to_scope`: What the requirement applies to (e.g., {scope_examples})
-
-3. **Constraints**: For each requirement, identify testable constraints:
-   - `logic_type`: One of [{logic_types}]
-   - `target_signal`: What is being measured/checked (e.g., {signal_examples})
-   - `operator`: For thresholds (e.g., "<=", ">=", "==", "!=")
-   - `threshold`: Numeric value (if applicable)
-   - `unit`: Unit of measurement (if applicable)
-   - `pattern`: Regex pattern (for text matching)
-   - `allowed_values`: List of allowed values (for enumerations)
-
-Regulatory Text:
-\"\"\"
-{excerpt}
-\"\"\"
-
-Respond with valid JSON in this exact format:
-{{
-  "provision_id": "...",
-  "provision_text": "...",
-  "requirements": [
-    {{
-      "requirement_type": "...",
-      "deontic_modality": "...",
-      "description": "...",
-      "applies_to_scope": "...",
-      "constraints": [
-        {{
-          "logic_type": "...",
-          "target_signal": "...",
-          "operator": "...",
-          "threshold": null,
-          "unit": null,
-          "pattern": null,
-          "allowed_values": null
-        }}
-      ]
-    }}
-  ]
-}}
-
-If no clear requirements are found, return an empty requirements array."""
 
     return parsing.system_message, user_prompt
 

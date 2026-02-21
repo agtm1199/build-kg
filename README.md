@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Version](https://img.shields.io/badge/version-0.2.0-green.svg)](release-notes/v0.2.0.md)
 [![CI](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/build-kg/actions/workflows/ci.yml)
 
 **One command. Any topic. Knowledge graph in your own PostgreSQL.**
@@ -13,7 +14,7 @@ build-kg is a skill for coding agents that turns any topic into a structured kno
 
 Your coding agent autonomously:
   -> Generates an ontology (Component, Concept, Configuration)
-  -> Researches authoritative sources (5-round discovery)
+  -> Researches authoritative sources
   -> Crawls official documentation
   -> Chunks documents by section boundaries
   -> Loads to PostgreSQL
@@ -30,10 +31,10 @@ Building knowledge graphs is hard. The #1 pain point? **Ontology design** — fi
 ## What You Get
 
 ```
-/build-kg React architecture patterns
+/build-kg kubernetes networking
 /build-kg machine learning optimization algorithms
 /build-kg React architecture patterns
-/build-kg kubernetes networking
+/build-kg distributed systems consensus algorithms
 ```
 
 For **"kubernetes networking"**, the agent generates:
@@ -150,7 +151,7 @@ All configuration is via `.env` file or environment variables:
 | `DB_NAME` | `buildkg` | Database name |
 | `DB_USER` | `buildkg` | Database user |
 | `DB_PASSWORD` | -- | Database password (**required**) |
-| `AGE_GRAPH_NAME` | `reg_ca` | Apache AGE graph name |
+| `AGE_GRAPH_NAME` | `knowledge_graph` | Apache AGE graph name |
 | `DOMAIN` | `default` | Domain profile name or path |
 
 ## Cost
@@ -169,6 +170,7 @@ The only cost is LLM API calls during parsing. Everything else runs locally.
 |-----|-------------|
 | [Documentation](docs/docs.html) | Complete reference: architecture, configuration, troubleshooting |
 | [Tutorial](docs/tutorial.html) | Hands-on guide from setup to querying your first knowledge graph |
+| [Release Notes](release-notes/v0.2.0.md) | What's new in v0.2.0 |
 
 ## Contributing
 

@@ -118,7 +118,7 @@ build-kg-crawl \
   --depth 3 \
   --pages 100 \
   --delay 1500 \
-  --output ./pipelines/reg_ca_fb/crawl_output/fdr/
+  --output ./kg_builds/ca_food_safety/crawled/fdr/
 ```
 
 ## Rate Limiting

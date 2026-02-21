@@ -38,7 +38,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
 
 # AGE Graph Configuration
-AGE_GRAPH_NAME = os.getenv('AGE_GRAPH_NAME', 'reg_ca')
+AGE_GRAPH_NAME = os.getenv('AGE_GRAPH_NAME', 'knowledge_graph')
 
 # Domain Profile Configuration
 DOMAIN = os.getenv('DOMAIN', 'default')

@@ -169,7 +169,7 @@ Note: `authority`, `jurisdiction`, and `doc_type` are omitted — they are nulla
 ```json
 {
   "topic": "Full regulatory compliance landscape of Canada for food and beverage",
-  "graph_name": "reg_ca_fb",
+  "graph_name": "ca_food_safety",
   "created_at": "2026-02-18T10:00:00Z",
   "sources": [
     {

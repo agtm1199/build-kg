@@ -4,15 +4,17 @@ LLM provider abstraction for build-kg.
 Supports Anthropic (default) and OpenAI as alternative.
 Switch providers via the LLM_PROVIDER environment variable.
 """
-import json
 from typing import Tuple
 
 
 def get_provider_config() -> Tuple[str, str, str]:
     """Return (provider, api_key, model) from config."""
     from build_kg.config import (
-        LLM_PROVIDER, ANTHROPIC_API_KEY, ANTHROPIC_MODEL,
-        OPENAI_API_KEY, OPENAI_MODEL,
+        ANTHROPIC_API_KEY,
+        ANTHROPIC_MODEL,
+        LLM_PROVIDER,
+        OPENAI_API_KEY,
+        OPENAI_MODEL,
     )
     if LLM_PROVIDER == 'anthropic':
         return LLM_PROVIDER, ANTHROPIC_API_KEY, ANTHROPIC_MODEL

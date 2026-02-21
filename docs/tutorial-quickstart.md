@@ -73,32 +73,25 @@ Checking for Apache AGE extension...
   Apache AGE extension already installed
   AGE loaded into search path
 
-Checking for graph 'reg_ca'...
-Creating graph 'reg_ca'...
-  Graph 'reg_ca' created successfully
+Checking for graph 'knowledge_graph'...
+Creating graph 'knowledge_graph'...
+  Graph 'knowledge_graph' created successfully
 
 Creating graph schema...
-  Graph schema initialized
-
-Vertex labels created:
-  - RegulatorySource
-  - Provision
-  - Requirement
-  - Constraint
+No ontology provided — skipping label creation
+Labels will be created automatically when data is loaded.
 
 ======================================================================
   Setup completed successfully!
-Graph 'reg_ca' is ready for use
+Graph 'knowledge_graph' is ready for use
 ======================================================================
 ```
 
-To create a graph with a custom ontology (for generic topics):
+To create a graph with a custom ontology (pre-creates vertex labels):
 
 ```bash
 AGE_GRAPH_NAME=kg_k8s_net python -m build_kg.setup_graph --ontology ./ontology.yaml
 ```
-
-This creates vertex labels from the ontology definition instead of the default regulatory labels.
 
 ## Step 5: Verify Setup
 
@@ -117,7 +110,7 @@ Setup Verification
      Version: PostgreSQL 16.x
 2. Verifying Apache AGE extension...
      AGE extension installed (version 1.5.0)
-     Graph 'reg_ca' exists
+     Graph 'knowledge_graph' exists
 3. Verifying source data...
      Found 0 fragments with excerpts
      Found 0 source documents
@@ -233,7 +226,7 @@ First, create a minimal crawl manifest for our tutorial data:
 cat > tutorial/crawl_manifest.json << 'EOF'
 {
   "topic": "Canadian food labelling",
-  "graph_name": "reg_ca",
+  "graph_name": "knowledge_graph",
   "created_at": "2026-02-18T14:30:00Z",
   "sources": [
     {
@@ -316,7 +309,7 @@ Expected output (abbreviated):
 ======================================================================
 Knowledge Graph Parser
 ======================================================================
-Graph: reg_ca
+Graph: knowledge_graph
 Model: claude-haiku-4-5-20251001
 Batch size: 10
 ======================================================================

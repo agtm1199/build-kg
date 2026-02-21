@@ -99,10 +99,10 @@ def create_graph():
         return False
 
 def _get_node_labels(ontology: Optional[OntologyConfig]) -> List[str]:
-    """Get vertex labels from ontology or use legacy defaults."""
+    """Get vertex labels from ontology."""
     if ontology and ontology.nodes:
         return [node.label for node in ontology.nodes]
-    return ['RegulatorySource', 'Provision', 'Requirement', 'Constraint']
+    return []
 
 
 def create_graph_schema(ontology: Optional[OntologyConfig] = None):
@@ -120,6 +120,13 @@ def create_graph_schema(ontology: Optional[OntologyConfig] = None):
         print("\nCreating graph schema...")
 
         labels = _get_node_labels(ontology)
+
+        if not labels:
+            print("No ontology provided — skipping label creation")
+            print("Labels will be created automatically when data is loaded.")
+            cursor.close()
+            conn.close()
+            return True
 
         # Create sample vertices to establish labels
         # Note: AGE creates labels automatically when first used

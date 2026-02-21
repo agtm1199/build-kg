@@ -41,7 +41,7 @@ Required: `DB_PASSWORD`, `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`)
 | `LLM_PROVIDER` | `anthropic` | `anthropic` or `openai` |
 | `ANTHROPIC_MODEL` | `claude-haiku-4-5-20251001` | Model for parsing |
 | `OPENAI_MODEL` | `gpt-4o-mini` | Model for parsing (if openai) |
-| `AGE_GRAPH_NAME` | `reg_ca` | Graph name in PostgreSQL |
+| `AGE_GRAPH_NAME` | `knowledge_graph` | Graph name in PostgreSQL |
 | `DOMAIN` | `default` | Domain profile |
 | `DB_HOST` | `localhost` | PostgreSQL host |
 | `DB_PORT` | `5432` | PostgreSQL port |

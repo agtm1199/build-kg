@@ -340,7 +340,7 @@ find "$WORK_DIR/chunk_output/" -name "*_chunk_*.json" | wc -l
 
 ## Step 5: Load to Database
 
-Create the graph for Singapore F&B (if not already using `reg_ca`):
+Create the graph for Singapore F&B:
 
 ```bash
 AGE_GRAPH_NAME=reg_sg_fb python -m build_kg.setup_graph

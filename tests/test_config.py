@@ -21,7 +21,7 @@ class TestConfig:
         assert isinstance(DB_CONFIG["port"], int)
 
     def test_llm_provider_config_exists(self):
-        from build_kg.config import LLM_PROVIDER, ANTHROPIC_MODEL, OPENAI_MODEL
+        from build_kg.config import ANTHROPIC_MODEL, LLM_PROVIDER, OPENAI_MODEL
 
         assert LLM_PROVIDER in ('anthropic', 'openai')
         assert ANTHROPIC_MODEL  # Should have a default
@@ -43,7 +43,7 @@ class TestConfig:
         assert RATE_LIMIT_DELAY >= 0
 
     def test_validate_config_raises_without_credentials(self):
-        from build_kg.config import DB_CONFIG, ANTHROPIC_API_KEY, LLM_PROVIDER, OPENAI_API_KEY, validate_config
+        from build_kg.config import ANTHROPIC_API_KEY, DB_CONFIG, LLM_PROVIDER, OPENAI_API_KEY, validate_config
 
         # Only test if credentials are not set
         api_key = ANTHROPIC_API_KEY if LLM_PROVIDER == 'anthropic' else OPENAI_API_KEY
