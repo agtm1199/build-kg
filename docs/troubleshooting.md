@@ -309,7 +309,7 @@ ERROR: PDF support not installed (missing unstructured[pdf])
 **Fix:**
 
 ```bash
-pip install "build-kg[pdf]"
+make setup
 ```
 
 For OCR-based PDF extraction, you also need system packages:

@@ -21,17 +21,10 @@ Thanks for considering contributing to build-kg! This project turns any topic in
 git clone https://github.com/YOUR_USERNAME/build-kg.git
 cd build-kg
 
-# 2. Create a virtual environment
-python3 -m venv venv
-source venv/bin/activate
+# 2. Install all dependencies (venv, packages, browser)
+make setup
 
-# 3. Install in development mode
-pip install -e ".[dev]"
-
-# 4. Install the browser for crawling
-crawl4ai-setup
-
-# 5. Start the database
+# 3. Start the database
 docker compose -f db/docker-compose.yml up -d
 
 # 6. Configure environment

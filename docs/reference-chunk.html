@@ -168,15 +168,12 @@
           <tr>
             <td><code>.pdf</code></td>
             <td><code>unstructured.partition.pdf</code></td>
-            <td>Requires the <code>[pdf]</code> extra: <code>pip install build-kg[pdf]</code></td>
+            <td>Included with <code>make setup</code></td>
           </tr>
         </tbody>
       </table>
 
-      <p>To install PDF support:</p>
-      <pre><code>pip install "build-kg[pdf]"</code></pre>
-
-      <p>PDF processing may also require system packages <code>poppler-utils</code> and <code>tesseract-ocr</code> for OCR-based extraction:</p>
+      <p>PDF support is included when you run <code>make setup</code>. PDF processing may also require system packages <code>poppler-utils</code> and <code>tesseract-ocr</code> for OCR-based extraction:</p>
       <pre><code># Ubuntu/Debian
 sudo apt install poppler-utils tesseract-ocr
 
@@ -323,8 +320,7 @@ food-labelling_depth0_20260218_143022_chunk_3.json
       <pre><code>build-kg-chunk ./crawl_output/ ./chunk_output/ --strategy basic --max-chars 500</code></pre>
 
       <h3>Chunking PDF documents</h3>
-      <pre><code>pip install "build-kg[pdf]"
-build-kg-chunk ./pdf_documents/ ./chunk_output/ --strategy by_title --max-chars 1200</code></pre>
+      <pre><code>build-kg-chunk ./pdf_documents/ ./chunk_output/ --strategy by_title --max-chars 1200</code></pre>
     </section>
 
     <!-- Choosing max-chars -->
@@ -372,7 +368,7 @@ build-kg-chunk ./pdf_documents/ ./chunk_output/ --strategy by_title --max-chars 
           </tr>
           <tr>
             <td>"PDF support not installed"</td>
-            <td>Run <code>pip install "build-kg[pdf]"</code></td>
+            <td>Run <code>make setup</code> which installs all dependencies including PDF support</td>
           </tr>
           <tr>
             <td>PDF chunking fails with OCR errors</td>

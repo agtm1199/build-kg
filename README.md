@@ -94,7 +94,7 @@ Every constraint is machine-testable: thresholds with operators and units, regex
 
 ### Prerequisites
 
-- **Python 3.10+**
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - **Docker** (for PostgreSQL + Apache AGE)
 - **OpenAI API key** (for text parsing)
 
@@ -103,17 +103,7 @@ Every constraint is machine-testable: thresholds with operators and units, regex
 ```bash
 git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
-
-# Option A: Full setup (creates venv, starts DB, initializes graph)
 make setup
-
-# Option B: Step by step
-python3 -m venv venv
-source venv/bin/activate
-pip install -e ".[dev]"
-crawl4ai-setup
-docker compose -f db/docker-compose.yml up -d
-python -m build_kg.setup_graph
 ```
 
 ```bash
@@ -125,17 +115,9 @@ cp .env.example .env
 make verify
 ```
 
-### Or install from PyPI
-
-```bash
-pip install build-kg
-```
-
 ## Usage
 
-### With Claude Code (Recommended)
-
-If you use [Claude Code](https://docs.anthropic.com/en/docs/claude-code), the `/build-kg` skill automates the entire pipeline:
+In Claude Code, the `/build-kg` skill automates the entire pipeline:
 
 ```
 /build-kg kubernetes networking

@@ -15,20 +15,12 @@ Before you begin, make sure you have:
 ```bash
 git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
-
-# Create virtual environment and install dependencies
-python3 -m venv venv
-source venv/bin/activate
-pip install -e ".[dev]"
-
-# Install Chromium for the web crawler
-crawl4ai-setup
+make setup
 ```
 
 Expected output (last few lines):
 
 ```
-Successfully installed build-kg-0.3.0
 [crawl4ai] Chromium installed successfully
 ```
 

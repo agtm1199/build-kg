@@ -57,13 +57,7 @@ Parameters used internally:
 | Extension | Library | Notes |
 |-----------|---------|-------|
 | `.md` | `unstructured.partition.md` | Included in base install |
-| `.pdf` | `unstructured.partition.pdf` | Requires the `[pdf]` extra: `pip install build-kg[pdf]` |
-
-To install PDF support:
-
-```bash
-pip install "build-kg[pdf]"
-```
+| `.pdf` | `unstructured.partition.pdf` | Included with `make setup` |
 
 PDF processing may also require system packages `poppler-utils` and `tesseract-ocr` for OCR-based extraction:
 
@@ -183,7 +177,6 @@ build-kg-chunk ./crawl_output/ ./chunk_output/ --strategy basic --max-chars 500
 ### Chunking PDF documents
 
 ```bash
-pip install "build-kg[pdf]"
 build-kg-chunk ./pdf_documents/ ./chunk_output/ --strategy by_title --max-chars 1200
 ```
 
@@ -202,7 +195,7 @@ For most text, 1000 characters typically captures one coherent section or subsec
 | Problem | Solution |
 |---------|----------|
 | "No PDF or MD files found" | Check that the input directory contains `.md` or `.pdf` files (the search is recursive) |
-| "PDF support not installed" | Run `pip install "build-kg[pdf]"` |
+| "PDF support not installed" | Run `make setup` to install all dependencies including PDF support |
 | PDF chunking fails with OCR errors | Install `poppler-utils` and `tesseract-ocr` system packages |
 | Very small chunks (< 50 chars) | These are filtered out by the database loader (min 10 chars) and parser (min 50 chars) |
 | "Unsupported file type" | Only `.md` and `.pdf` are supported. Convert other formats to markdown first. |

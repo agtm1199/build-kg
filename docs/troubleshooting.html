@@ -392,11 +392,9 @@ build-kg-load ./chunk_output/ --manifest ./crawl_manifest.json</code></pre>
 
 <pre><code>ERROR: PDF support not installed (missing unstructured[pdf])</code></pre>
 
-    <p><strong>Cause:</strong> The <code>unstructured[pdf]</code> extra is not installed.</p>
+    <p><strong>Cause:</strong> The PDF dependencies are not installed.</p>
 
-    <p><strong>Fix:</strong></p>
-
-<pre><code>pip install &quot;build-kg[pdf]&quot;</code></pre>
+    <p><strong>Fix:</strong> Run <code>make setup</code> which installs all dependencies including PDF support.</p>
 
     <p>For OCR-based PDF extraction, you also need system packages:</p>
 

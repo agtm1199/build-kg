@@ -372,23 +372,12 @@
     <li><strong>OpenAI API key</strong> (for text parsing)</li>
   </ul>
 
-  <h3>From source (recommended)</h3>
+  <h3>Install</h3>
   <pre><code>git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
 
-# Full setup: creates venv, starts DB, initializes graph
-make setup
-
-# Or step-by-step:
-python3 -m venv venv
-source venv/bin/activate
-pip install -e ".[dev]"
-crawl4ai-setup
-docker compose -f db/docker-compose.yml up -d
-python -m build_kg.setup_graph</code></pre>
-
-  <h3>From PyPI</h3>
-  <pre><code>pip install build-kg</code></pre>
+# Full setup: creates venv, installs dependencies, starts DB, initializes graph
+make setup</code></pre>
 
   <h3>Configure</h3>
   <pre><code>cp .env.example .env
@@ -855,8 +844,7 @@ $$) as (comp_a agtype, comp_b agtype, concept agtype);</code></pre>
   <pre><code># Development setup
 git clone https://github.com/YOUR_USERNAME/build-kg.git
 cd build-kg
-python3 -m venv venv &amp;&amp; source venv/bin/activate
-pip install -e ".[dev]"
+make setup
 pytest tests/ -v</code></pre>
 
   <p>Full contributing guide: <a href="../CONTRIBUTING.md">CONTRIBUTING.md</a></p>

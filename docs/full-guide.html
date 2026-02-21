@@ -609,23 +609,12 @@
     <li><strong>OpenAI API key</strong> &mdash; for LLM-based text parsing</li>
   </ul>
 
-  <h3>From source (recommended)</h3>
+  <h3>Install</h3>
 <pre><code>git clone https://github.com/agtm1199/build-kg.git
 cd build-kg
 
-# Full setup: creates venv, starts DB, initializes graph
-make setup
-
-# Or step-by-step:
-python3 -m venv venv
-source venv/bin/activate
-pip install -e &quot;.[dev]&quot;
-crawl4ai-setup
-docker compose -f db/docker-compose.yml up -d
-python -m build_kg.setup_graph</code></pre>
-
-  <h3>From PyPI</h3>
-<pre><code>pip install build-kg</code></pre>
+# Full setup: creates venv, installs dependencies, starts DB, initializes graph
+make setup</code></pre>
 
   <h3>Configure your environment</h3>
 <pre><code>cp .env.example .env
@@ -1439,7 +1428,7 @@ $$) as (id agtype, authority agtype, text agtype);</code></pre>
     <tr>
       <td>PDF support not installed</td>
       <td>Chunk</td>
-      <td>Install the PDF extra: <code>pip install &quot;build-kg[pdf]&quot;</code></td>
+      <td>Run <code>make setup</code> which installs all dependencies including PDF support</td>
     </tr>
   </table>
 
