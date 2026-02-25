@@ -62,10 +62,13 @@ build-kg/
 ├── docs/                  # Documentation
 ├── examples/              # Example manifests and data
 ├── tests/                 # Test suite
-├── AGENTS.md              # Codex agent instructions
-└── .claude/skills/        # Claude Code skills
-    └── build-kg/
-        └── SKILL.md       # /build-kg skill definition
+├── AGENTS.md              # OpenAI Codex instructions
+├── .claude/skills/        # Claude Code / Kiro / Qoder / Antigravity skill
+│   └── build-kg/
+│       └── SKILL.md       # /build-kg skill definition (Agent Skills standard)
+├── .github/copilot-instructions.md  # GitHub Copilot instructions
+├── .cursor/rules/build-kg.mdc      # Cursor rules
+└── .windsurf/rules/build-kg.md     # Windsurf rules
 ```
 
 ## Code Style

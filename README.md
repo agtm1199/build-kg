@@ -111,15 +111,22 @@ Algorithm              "Adam optimizer"
 ## ✨ Features
 
 <details>
-<summary><b>🤖 Agent-Native Skill</b></summary>
+<summary><b>🤖 Works with 8 Coding Agent Platforms</b></summary>
 
-build-kg is a **skill file**, not a CLI tool. It runs inside your coding agent:
+build-kg is a **skill file**, not a CLI tool. It runs inside your coding agent — with native support for 8 platforms:
 
 | Agent | Skill File | Activation |
 |-------|-----------|------------|
 | **Claude Code** | `.claude/skills/build-kg/SKILL.md` | Auto-detected. Type `/build-kg <topic>` |
+| **Amazon Kiro** | `.claude/skills/build-kg/SKILL.md` | Auto-detected (Agent Skills standard). Type `/build-kg <topic>` |
+| **Qoder** | `.claude/skills/build-kg/SKILL.md` | Auto-detected (Agent Skills standard). Type `/build-kg <topic>` |
+| **Antigravity** | `.claude/skills/build-kg/SKILL.md` | Auto-detected (Agent Skills standard). Type `/build-kg <topic>` |
 | **OpenAI Codex** | `AGENTS.md` | Auto-detected. Ask "build a knowledge graph about \<topic\>" |
-| **Other agents** | Either file | Point your agent at `.claude/skills/build-kg/SKILL.md` or `AGENTS.md` |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Auto-detected. Ask "build a knowledge graph about \<topic\>" |
+| **Cursor** | `.cursor/rules/build-kg.mdc` | Auto-detected. Ask "build a knowledge graph about \<topic\>" |
+| **Windsurf** | `.windsurf/rules/build-kg.md` | Auto-detected. Ask "build a knowledge graph about \<topic\>" |
+
+All skill files ship with the repo — cloning is all it takes.
 
 </details>
 
@@ -208,7 +215,7 @@ make verify
 <details>
 <summary><b>Prerequisites</b></summary>
 
-- A coding agent that supports skills ([Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/index/codex/), etc.)
+- A coding agent: [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/index/codex/), [GitHub Copilot](https://github.com/features/copilot), [Cursor](https://cursor.com), [Windsurf](https://windsurf.com), [Amazon Kiro](https://kiro.dev), [Qoder](https://qoder.com), or [Antigravity](https://idx.google.com)
 - **Docker** (for PostgreSQL + Apache AGE)
 - **Anthropic API key** or **OpenAI API key** (for LLM parsing)
 

@@ -637,17 +637,42 @@
     <tr>
       <td><strong>Claude Code</strong></td>
       <td><code>.claude/skills/build-kg/SKILL.md</code></td>
-      <td>Auto-detected when you open the project in Claude Code. Type <code>/build-kg</code> to use.</td>
+      <td>Auto-detected. Type <code>/build-kg &lt;topic&gt;</code> to use.</td>
+    </tr>
+    <tr>
+      <td><strong>Amazon Kiro</strong></td>
+      <td><code>.claude/skills/build-kg/SKILL.md</code></td>
+      <td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Qoder</strong></td>
+      <td><code>.claude/skills/build-kg/SKILL.md</code></td>
+      <td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Antigravity</strong></td>
+      <td><code>.claude/skills/build-kg/SKILL.md</code></td>
+      <td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code>.</td>
     </tr>
     <tr>
       <td><strong>OpenAI Codex</strong></td>
       <td><code>AGENTS.md</code></td>
-      <td>Auto-detected when you open the project in Codex. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
+      <td>Auto-detected. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
     </tr>
     <tr>
-      <td><strong>Other agents</strong></td>
-      <td>Either file</td>
-      <td>Point your agent at <code>.claude/skills/build-kg/SKILL.md</code> or <code>AGENTS.md</code> as its instruction file.</td>
+      <td><strong>GitHub Copilot</strong></td>
+      <td><code>.github/copilot-instructions.md</code></td>
+      <td>Auto-detected. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
+    </tr>
+    <tr>
+      <td><strong>Cursor</strong></td>
+      <td><code>.cursor/rules/build-kg.mdc</code></td>
+      <td>Auto-detected. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
+    </tr>
+    <tr>
+      <td><strong>Windsurf</strong></td>
+      <td><code>.windsurf/rules/build-kg.md</code></td>
+      <td>Auto-detected. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</td>
     </tr>
   </table>
 
@@ -664,7 +689,7 @@
   <h2>Quick Start</h2>
 
   <p>
-    Use the <code>/build-kg</code> skill in your coding agent (<a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>, <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>, etc.) to build a knowledge graph:
+    Use the <code>/build-kg</code> skill in your coding agent (<a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>, <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>, <a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot</a>, <a href="https://cursor.com" target="_blank" rel="noopener">Cursor</a>, <a href="https://windsurf.com" target="_blank" rel="noopener">Windsurf</a>, <a href="https://kiro.dev" target="_blank" rel="noopener">Amazon Kiro</a>, <a href="https://qoder.com" target="_blank" rel="noopener">Qoder</a>, or <a href="https://idx.google.com" target="_blank" rel="noopener">Antigravity</a>) to build a knowledge graph:
   </p>
 <div class="terminal">
   <div class="terminal-bar">
@@ -1552,7 +1577,7 @@ $$) <span class="sk">AS</span> (algorithm agtype, application agtype);</code></p
   <div class="faq-item">
     <div class="faq-q">Do I need a coding agent?</div>
     <div class="faq-a">
-      Yes. The <code>/build-kg</code> skill works with any coding agent that supports skill files, including <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a> and <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>.
+      Yes. build-kg natively supports 8 coding agent platforms: <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>, <a href="https://openai.com/index/codex/" target="_blank" rel="noopener">OpenAI Codex</a>, <a href="https://github.com/features/copilot" target="_blank" rel="noopener">GitHub Copilot</a>, <a href="https://cursor.com" target="_blank" rel="noopener">Cursor</a>, <a href="https://windsurf.com" target="_blank" rel="noopener">Windsurf</a>, <a href="https://kiro.dev" target="_blank" rel="noopener">Amazon Kiro</a>, <a href="https://qoder.com" target="_blank" rel="noopener">Qoder</a>, and <a href="https://idx.google.com" target="_blank" rel="noopener">Antigravity</a>. Each has a dedicated skill file that ships with the repo.
     </div>
   </div>
 

@@ -203,7 +203,7 @@
 
     <ul>
       <li><strong>Docker</strong> installed and running (<code>docker --version</code>)</li>
-      <li><strong>A coding agent</strong> that supports skills &mdash; <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>, <a href="https://openai.com/index/codex/">OpenAI Codex</a>, or compatible platforms</li>
+      <li><strong>A coding agent</strong> &mdash; <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>, <a href="https://openai.com/index/codex/">OpenAI Codex</a>, <a href="https://github.com/features/copilot">GitHub Copilot</a>, <a href="https://cursor.com">Cursor</a>, <a href="https://windsurf.com">Windsurf</a>, <a href="https://kiro.dev">Amazon Kiro</a>, <a href="https://qoder.com">Qoder</a>, or <a href="https://idx.google.com">Antigravity</a></li>
       <li><strong>An API key</strong> from either:
         <ul>
           <li>Anthropic (<a href="https://console.anthropic.com">console.anthropic.com</a>) &mdash; default provider</li>
@@ -311,11 +311,17 @@
 
     <p>The <code>/build-kg</code> skill is included in the repository and activates automatically:</p>
 
-    <ul>
-      <li><strong>Claude Code</strong> &mdash; reads <code>.claude/skills/build-kg/SKILL.md</code> automatically. Type <code>/build-kg</code> to use.</li>
-      <li><strong>OpenAI Codex</strong> &mdash; reads <code>AGENTS.md</code> automatically. Ask the agent to &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;.</li>
-      <li><strong>Other agents</strong> &mdash; point your agent at either file as its instruction file.</li>
-    </ul>
+    <table>
+      <tr><th>Agent</th><th>Skill file</th><th>Activation</th></tr>
+      <tr><td><strong>Claude Code</strong></td><td><code>.claude/skills/build-kg/SKILL.md</code></td><td>Auto-detected. Type <code>/build-kg &lt;topic&gt;</code></td></tr>
+      <tr><td><strong>Amazon Kiro</strong></td><td><code>.claude/skills/build-kg/SKILL.md</code></td><td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code></td></tr>
+      <tr><td><strong>Qoder</strong></td><td><code>.claude/skills/build-kg/SKILL.md</code></td><td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code></td></tr>
+      <tr><td><strong>Antigravity</strong></td><td><code>.claude/skills/build-kg/SKILL.md</code></td><td>Auto-detected (Agent Skills standard). Type <code>/build-kg &lt;topic&gt;</code></td></tr>
+      <tr><td><strong>OpenAI Codex</strong></td><td><code>AGENTS.md</code></td><td>Auto-detected. Ask &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;</td></tr>
+      <tr><td><strong>GitHub Copilot</strong></td><td><code>.github/copilot-instructions.md</code></td><td>Auto-detected. Ask &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;</td></tr>
+      <tr><td><strong>Cursor</strong></td><td><code>.cursor/rules/build-kg.mdc</code></td><td>Auto-detected. Ask &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;</td></tr>
+      <tr><td><strong>Windsurf</strong></td><td><code>.windsurf/rules/build-kg.md</code></td><td>Auto-detected. Ask &ldquo;build a knowledge graph about &lt;topic&gt;&rdquo;</td></tr>
+    </table>
 
     <div class="callout tip">
       <strong>Tip</strong>

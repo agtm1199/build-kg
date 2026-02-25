@@ -1,2 +1,2 @@
-"""build-kg: Claude Code skill that turns any topic into a structured knowledge graph."""
+"""build-kg: Open-source knowledge graph builder for AI coding agents."""
 __version__ = "0.3.0"
