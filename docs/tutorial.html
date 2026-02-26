@@ -517,11 +517,21 @@ $$) <span class="sk">AS</span> (from_name agtype, to_name agtype, path_len agtyp
   <!-- ============================================================ -->
   <section id="next-steps" class="tutorial-section">
     <span class="step-label">Section 5</span>
+    <h2>Visualize Your Graph</h2>
+
+    <p><a href="https://github.com/agtm1199/build-kg-viewer" target="_blank" rel="noopener"><strong>build-kg-viewer</strong></a> is the visual companion to build-kg. Point it at the same database and explore your graph interactively.</p>
+
+    <pre><code>git clone https://github.com/agtm1199/build-kg-viewer.git && cd build-kg-viewer
+npm run setup && npm start</code></pre>
+
+    <p>Connect using the same database credentials from your <code>.env</code> file. Features include 24+ visualization components, AI-powered chat (natural language to Cypher), dark mode, path finder, graph algorithms, and more.</p>
+
     <h2>Next Steps</h2>
 
     <ul>
       <li><a href="docs.html">Docs</a> &mdash; Architecture, configuration, domain profiles, and more.</li>
       <li><a href="docs.html#domain-profiles">Domain profiles</a> &mdash; Pre-configured ontologies for specialized domains, or create your own.</li>
+      <li><a href="https://github.com/agtm1199/build-kg-viewer" target="_blank" rel="noopener">build-kg-viewer</a> &mdash; Interactive graph visualization with AI-powered queries.</li>
       <li><a href="https://github.com/agtm1199/build-kg">GitHub repository</a> &mdash; Source code, issues, and contributing guidelines.</li>
       <li>Create a custom domain profile &mdash; write your own ontology YAML and set <code>DOMAIN=/path/to/your-profile.yaml</code> in <code>.env</code>.</li>
       <li>Try more topics &mdash; <code>/build-kg React architecture patterns</code>, <code>/build-kg machine learning algorithms</code>, <code>/build-kg python async programming</code>.</li>

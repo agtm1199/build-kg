@@ -259,10 +259,24 @@ All configuration is via `.env` file or environment variables:
 
 ---
 
+## 🔍 Graph Viewer
+
+**[build-kg-viewer](https://github.com/agtm1199/build-kg-viewer)** is the visual companion to build-kg — explore your knowledge graphs interactively with AI-powered queries.
+
+```bash
+# Point build-kg-viewer at your build-kg database and start exploring
+git clone https://github.com/agtm1199/build-kg-viewer.git && cd build-kg-viewer
+npm run setup && npm start
+```
+
+Features: 24+ visualization components, AI chat (natural language to Cypher), dark mode, path finder, graph algorithms, and more. Same PostgreSQL database — no data export needed.
+
+---
+
 ## 🗺️ Roadmap
 
 - [ ] PyPI package (`pip install build-kg`)
-- [ ] Web UI for graph exploration
+- [x] ~~Web UI for graph exploration~~ → [build-kg-viewer](https://github.com/agtm1199/build-kg-viewer)
 - [ ] Multi-source graphs (combine topics into one graph)
 - [ ] Incremental updates (add to existing graphs)
 - [ ] More domain profiles (pharma, legal, finance, telecom)
